@@ -8,8 +8,14 @@
       <div class="left">Disneyland Hotel</div>
       <div class="middle">
         <div>
-        <h1>Get Tickets & Reservations To Enjoy the Magic!</h1>
-        <p>To add a 3% kerning to the font, you can use the letter-spacing property in CSS. Since kerning is about adjusting the space between characters, letter-spacing can be used to achieve a similar effect. Here’s how you can integrate this into the previous setup:</p>
+        <titleBlock>Welcome to Disneyland Resort!</titleBlock>
+        <p>This is a replica page designed to reproduce and enhance the dashboard found on the TVs in the Disneyland Resort. Future plans for this page include:
+          <br>- Live park updates (open/close times, wait times)
+          <br>- Multiple options for UI layouts- including the pre and post 2023 designs
+          <br>- Options for various music loops and themes
+          <br>- Actually finishing the UI (i made this in 2 hours)
+          <br>- And More!!! (potentially)
+        </p>
       
       </div></div>
       <div class="right">
@@ -17,6 +23,7 @@
         <date>March 17<br></date>
         <time>12:57 AM<br></time>
         <br>
+
         <div class="weatherContainer">
           <div class="weatherElem">
             <span class="defGrey">
@@ -25,7 +32,15 @@
             <span id="currentWeather">
             </span>
           </div>
+            <div class="weatherElem">
+              <span class="defGrey">
+                Later
+              </span>
+              <span id="laterWeather">
+                ??°
+              </span>
         </div>
+
       </div>
   </div>
 
@@ -59,12 +74,12 @@
     setInterval(updateClock, 1000);
     updateClock();  // Initial call to display clock immediately
 
-    const latitude = 33.84568;  // Latitude of Anaheim, CA
-    const longitude = -117.90953;  // Longitude of Anaheim, CA
+    const latitude = 33.84568;  // Latitude of Anaheim
+    const longitude = -117.90953;  // Longitude of Anaheim
 
     async function getWeather() {
         try {
-            // Fetch current weather
+            // woo a free weather API
             const currentWeatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weathercode&timezone=America/Los_Angeles&lang=en`;
             const currentResponse = await fetch(currentWeatherUrl);
             const currentData = await currentResponse.json();
@@ -81,7 +96,9 @@
         }
     }
 
-    // Helper function to get weather description based on WMO code
+    // went down a rabbit hole of WMO codes, theyre neat
+    //TODO: add lil icons to show the weather state
+    //TODO: add a "later" forecast section
     function getWeatherDescription(wmoCode) {
         switch (wmoCode) {
             case 1:

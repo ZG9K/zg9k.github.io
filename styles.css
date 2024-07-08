@@ -43,8 +43,8 @@ body, html {
     align-items: center;
 }
 
-.middle h1{
-    font-size: 50px;
+.middle titleBlock{
+    font-size: 60px;
     font-weight: 0.01px;
 }
 .middle p{
