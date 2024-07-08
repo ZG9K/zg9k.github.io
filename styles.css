@@ -55,8 +55,43 @@ body, html {
 
 .right {
     width: 320px;
-    background-color: rgba(0, 0, 0,0.4);
-    padding: 20px;
+    background-color: rgba(8, 39, 80, 0.55);
+    padding: 24px;
     box-sizing: border-box;
     margin: 0;
 }
+
+.right day{
+    font-size: 32px;
+    color: #6c92c1;
+    display: block;
+}
+.right date{
+    font-size: 42px;
+    color:#6c92c1;
+    display: block;
+}
+
+.right time{
+    font-size: 50px;
+    display: block;
+}
+
+.defGrey{
+    font-size: 32px;
+    color: #6c92c1;
+    display: block;
+}
+
+.weatherContainer{
+    display:flex;
+    flex-direction: row;
+    flex:auto;
+}
+.weatherElem{
+    flex-grow: 1;
+    flex-basis: 0;
+    color:white;
+    font-size: 40;
+}
+
