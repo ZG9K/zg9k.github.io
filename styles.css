@@ -1,0 +1,62 @@
+@font-face {
+    font-family: 'DisneyFont';
+    src: url('fonts/disneyFont.ttf') format('truetype');
+}
+
+body, html {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    font-family: 'DisneyFont', sans-serif;
+    letter-spacing: 0.03em; /* 3% kerning */
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+    background-image: url(fonts/sillything.png);
+    background-size: cover;
+    color: white;
+}
+
+.left {
+    width: 580px;
+    background-color: rgba(240, 128, 128,0.0);
+    padding: 100px 80px 80px 80px;
+    box-sizing: border-box;
+    margin: 0;
+    font-size: 60px;
+
+}
+
+.middle {
+    width: 1020px;
+    background-color: rgba(173, 216, 230,0.0);
+    
+    padding-right: 120px;
+    padding: 20px;
+    box-sizing: border-box;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.middle h1{
+    font-size: 50px;
+    font-weight: 0.01px;
+}
+.middle p{
+    margin: 0;
+    font-size: 38px;
+}
+
+
+.right {
+    width: 320px;
+    background-color: rgba(0, 0, 0,0.4);
+    padding: 20px;
+    box-sizing: border-box;
+    margin: 0;
+}
