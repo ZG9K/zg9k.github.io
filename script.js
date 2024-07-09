@@ -78,15 +78,15 @@ function updateLocationLabel(location) {
     const locationLabel = document.getElementById("Location");
     switch (location) {
         case 'Disneyland':
-            locationLabel.innerHTML = 'Disneyland';
+            locationLabel.innerHTML = 'Disneyland Park';
             infoContainer.style.backgroundImage = "url('assets/backgrounds/disneyland.png')"
             break;
         case 'DCA':
-            locationLabel.innerHTML = 'California Adventure';
+            locationLabel.innerHTML = 'Disney California Adventure Park';
             infoContainer.style.backgroundImage = "url('assets/backgrounds/californiaAdventure.png')"
             break;
         case 'Downtown':
-            locationLabel.innerHTML = 'Downtown Disney';
+            locationLabel.innerHTML = 'Downtown Disney District';
             infoContainer.style.backgroundImage = "url('assets/backgrounds/Downtown.png')"
             break;
         case 'Hotel':
@@ -94,11 +94,11 @@ function updateLocationLabel(location) {
             infoContainer.style.backgroundImage = "url('assets/backgrounds/disneyHotel.png')"
             break;
         case 'Grand':
-            locationLabel.innerHTML = 'Grand Californian Hotel';
+            locationLabel.innerHTML = "Disney's Grand Californian Hotel & Spa";
             infoContainer.style.backgroundImage = "url('assets/backgrounds/grandCali.png')"
             break;
         case 'Pixar': 
-            locationLabel.innerHTML = 'Pixar Place Hotel';
+            locationLabel.innerHTML = "Disney's Pixar Place Hotel";
             break;
         default:
             console.log('Unknown location');
@@ -107,7 +107,7 @@ function updateLocationLabel(location) {
 }
 
 cycleInfo()
-setInterval(cycleInfo,1000*10)
+setInterval(cycleInfo,1000*75)
 
 console.log(anaheimTime.checked)
 

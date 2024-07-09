@@ -80,14 +80,37 @@ body, html {
     }
 }
 
+.midleftContainer{
+    width: 1600px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+}
+
+.topTitle{
+    background-color: none;
+    width: 100%;
+    padding-top: 100px;
+    margin: 0px;
+    padding-left:80px
+}
+
+.midleftLower{
+    display:flex;
+    flex-direction: row;
+    height: 848px;
+}
 .left{
     width: 480px;
     background-color: rgba(240, 128, 128,0.0);
-    padding:100px 20px 80px 80px;
+    padding:20px 20px 40px 80px;
+    height:100%;
 }
 
-.left p{
-    width:580px;
+.topTitle p{
+    width:100%;
     box-sizing: border-box;
     margin: 0;
     font-size: 60px;
@@ -151,7 +174,6 @@ body, html {
 .middle {
     width: 1020px;
     background-color: rgba(173, 216, 230,0.0);
-    
     padding-right: 120px;
     padding: 20px;
     box-sizing: border-box;
