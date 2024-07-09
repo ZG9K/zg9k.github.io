@@ -15,17 +15,11 @@
 
 <audio id="background-music" src="assets/Disneyland Hotel TV Splash Screen (March 2022).mp3"></audio>
 
-<div class="overlay" id="settingsOverlay">
-  <div class="settings-content">
-      hello!
-  </div>
-</div>
-
   <div class="container">
-      <div class="left"><p>Disneyland Hotel</p>
+      <div class="left" id="main"><p id="Location">Disneyland Hotel</p>
       
         <div class="waitContainer">
-          <div class="waitElement">
+          <div class="waitElement" style="display: none;">
             <div class="waitName">
               <!--Attraction Name-->
               <span>Matterhorn Mountain</span>
@@ -40,8 +34,8 @@
             </div>
           </div>
         </div>
-      
       </div>
+
       <div class="middle">
         <div>
         <titleBlock>Welcome to Disneyland Resort!</titleBlock>
@@ -55,7 +49,7 @@
       
         </div>
      </div>
-      <div class="right">
+      <div class="right" id="parkInfo">
         <day>Thursday<br></day>
         <date>March 17<br></date>
         <time>12:57 AM<br></time>
@@ -78,21 +72,75 @@
               </span>
           </div>
         </div>
-        <div class="footer-container">
-          <div class="footer">
-              <button class="footer-button" id="musicButton">
-                  <img src="assets/music-record-64.png" alt="Music">
-              </button>
-              <button class="footer-button" id="settingsButton">
-                  <img src="assets/settings-5-64.png" alt="Settings">
-              </button>
-              <button class="footer-button" id="exitButton">
-                <img src="assets/exit-64.png" alt="Exit">
-            </button>
-          </div>
-     </div>
-  </div>  
+
   </div>
+  <div class="right" id="settings" style="display:none">
+    <h1>Settings</h1>
+    <head3>Shown Locations</head3>
+      <label class="checkboxContainer">Disneyland
+        <input type="checkbox" checked="checked" id="disneylandActive">
+        <span class="checkmark"></span>
+      </label>
+
+      <label class="checkboxContainer">California Adventure
+        <input type="checkbox" checked="checked" id="dcaActive">
+        <span class="checkmark"></span>
+      </label>
+
+      <label class="checkboxContainer">Downtown Disney
+        <input type="checkbox" checked="checked" id="downtownActive">
+        <span class="checkmark"></span>
+      </label>
+
+      <label class="checkboxContainer">Disneyland Hotel
+        <input type="checkbox" checked="checked" id="dhActive">
+        <span class="checkmark"></span>
+      </label>
+
+      <label class="checkboxContainer">Grand Californian Hotel
+        <input type="checkbox" checked="checked" id="gchActive">
+        <span class="checkmark"></span>
+      </label>
+
+      <label class="checkboxContainer">Pixar Place Hotel
+        <input type="checkbox" checked="checked" id="pphActive">
+        <span class="checkmark"></span>
+      </label>
+
+      <head3>Fucntionality</head3>
+      <label class="checkboxContainer">Wait Time Scrolling
+        <input type="checkbox" checked="checked" id="scrollingActive">
+        <span class="checkmark"></span>
+      </label>
+
+      <label class="checkboxContainer">Genie+ Information
+        <input type="checkbox" checked="checked" id="genieActive">
+        <span class="checkmark"></span>
+      </label>
+
+
+      <label>Cycle Time</label><br>
+      <select name="cars" id="cars">
+        <option value="volvo">30s</option>
+        <option value="saab">1m</option>
+        <option value="mercedes">5m</option>
+        <option value="audi">10m</option>
+      </select>
+  </div>
+  <div class="footer-container">
+    <div class="footer">
+        <button class="footer-button" id="musicButton">
+            <img src="assets/music-record-64.png" alt="Music">
+        </button>
+        <button class="footer-button" id="settingsButton">
+            <img src="assets/settings-5-64.png" alt="Settings">
+        </button>
+        <button class="footer-button" id="exitButton">
+          <img src="assets/exit-64.png" alt="Exit">
+      </button>
+    </div>
+</div>
+</div>
 
   <script src="script.js"></script>
 </body>

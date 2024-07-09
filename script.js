@@ -1,3 +1,98 @@
+document.addEventListener('DOMContentLoaded', function() {
+    // Get all checkboxes inside the div with id "settings"
+    var checkboxes = document.querySelectorAll('#settings input[type="checkbox"]');
+    
+    // Function to update variables based on checkbox states
+    function updateVariables() {
+        checkboxes.forEach(function(checkbox) {
+            // Use the checkbox id directly as the variable name
+            window[checkbox.id] = checkbox.checked;
+            console.log(checkbox.id +"=" +window[checkbox.id])
+        });
+    }
+    
+    // Initial call to update variables based on current checkbox states
+    updateVariables();
+    
+    // Add event listeners to checkboxes to update variables on change
+    checkboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            updateVariables();
+        });
+    });
+});
+
+const locations = ['Disneyland', 'DCA', 'Downtown', 'Hotel', 'Grand', 'Pixar'];
+let currentIndex = 0;
+
+function cycleInfo() {
+    let nextIndex = currentIndex;
+    do {
+        const currentLocation = locations[nextIndex];
+        if (isActive(currentLocation)) {
+            populateWaitTimes(currentLocation);
+            currentIndex = nextIndex;
+            updateLocationLabel(currentLocation);
+            break;
+        }
+        nextIndex = (nextIndex + 1) % locations.length;
+    } while (nextIndex !== currentIndex);
+    currentIndex = (currentIndex + 1) % locations.length;
+}
+
+// Function to check if a location is active
+function isActive(location) {
+    switch (location) {
+        case 'Disneyland':
+            return disneylandActive;
+        case 'DCA':
+            return dcaActive;
+        case 'Downtown':
+            return downtownActive;
+        case 'Hotel':
+            return dhActive;
+        case 'Grand':
+            return gchActive;
+        case 'Pixar':
+            return pphActive;
+        default:
+            return false; // Default to false for unknown locations
+    }
+}
+
+// Function to update the heading based on the current location
+function updateLocationLabel(location) {
+    const locationLabel = document.getElementById("Location");
+    switch (location) {
+        case 'Disneyland':
+            locationLabel.innerHTML = 'Disneyland';
+            break;
+        case 'DCA':
+            locationLabel.innerHTML = 'California Adventure';
+            break;
+        case 'Downtown':
+            locationLabel.innerHTML = 'Downtown Disney';
+            break;
+        case 'Hotel':
+            locationLabel.innerHTML = 'Disneyland Hotel';
+            break;
+        case 'Grand':
+            locationLabel.innerHTML = 'Grand Californian Hotel';
+            break;
+        case 'Pixar':
+            locationLabel.innerHTML = 'Pixar Place Hotel';
+            break;
+        default:
+            console.log('Unknown location');
+            return;
+    }
+}
+
+
+
+cycleInfo()
+setInterval(cycleInfo, 1000*5);
+
 function updateClock() {
     const now = new Date();
     
@@ -102,76 +197,97 @@ window.onload = checkScreenSize;
 // Optionally, check screen size on window resize
 window.onresize = checkScreenSize;
 
+
 //Stuff for footer buttons
 document.getElementById("settingsButton").addEventListener('click', function(){
-    document.getElementById('settingsOverlay').style.display = 'flex'
+
+    if(document.getElementById('settings').style.display == 'block'){
+        console.log("passed")
+        document.getElementById('parkInfo').style.display = 'block'
+        document.getElementById('settings').style.display = 'none'
+    }else{
+        console.log("elsed")
+    document.getElementById('parkInfo').style.display = 'none'
+    document.getElementById('settings').style.display = 'block'
+    }
 })
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Function to fetch and populate wait times
-    function populateWaitTimes() {
-        fetch('https://cors-anywhere.herokuapp.com/https://queue-times.com/parks/16/queue_times.json')
-            .then(response => response.json())
-            .then(data => {
-                const lands = data.lands;
-                const waitContainer = document.querySelector('.waitContainer');
-                waitContainer.innerHTML = ''; // Clear previous content
+function populateWaitTimes(park) {
+    let parkId;
 
-                // Flatten rides array and sort by wait_time, placing closed attractions last
-                let rides = [];
-                lands.forEach(land => {
-                    rides.push(...land.rides);
-                });
-                rides.sort((b, a) => {
-                    if (a.wait_time === 0 && b.wait_time === 0) return 0; // Keep order if both closed
-                    if (b.wait_time === 0) return 1; // Closed attractions move to end
-                    if (a.wait_time === 0) return -1; // Closed attractions move to end
-                    return a.wait_time - b.wait_time; // Sort by wait_time ascending
-                });
+    if (park === 'Disneyland') {
+        parkId = 16;
+    } else if (park === 'DCA') {
+        parkId = 17;
+    } else {
+        console.log('Park ' + park + ' does not have wait times.');
+        document.querySelector('.waitContainer').innerHTML = ''; // Clear previous content
+        return; // Exit function if park is not supported 
+    }
 
-                rides.forEach(ride => {
-                    const waitTime = ride.wait_time === 0 ? 'CLOSED' : `${ride.wait_time} Minutes`;
-                    const backgroundColor = ride.wait_time === 0 ? 'rgba(0, 0, 0, 0.4)' : getBackgroundColor(ride.wait_time);
-                    const rideElement = document.createElement('div');
-                    rideElement.classList.add('waitElement');
+    fetch(`https://cors-anywhere.herokuapp.com/https://queue-times.com/parks/${parkId}/queue_times.json`)
+        .then(response => response.json())
+        .then(data => {
+            const lands = data.lands;
+            const waitContainer = document.querySelector('.waitContainer');
+            waitContainer.innerHTML = '';
 
-                    rideElement.innerHTML = `
-                        <div class="waitName">
-                            <span>${ride.name}</span>
-                        </div>
-                        <div class="waitTime" style="background-color: ${backgroundColor};">
-                            <span>${waitTime}</span>
-                        </div>
-                    `;
-                    waitContainer.appendChild(rideElement);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching wait times:', error);
+            // Flatten rides array and sort by wait_time, placing closed attractions last
+            let rides = [];
+            lands.forEach(land => {
+                rides.push(...land.rides);
             });
-    }
+            rides.sort((b, a) => {
+                if (a.wait_time === 0 && b.wait_time === 0) return 0; // Keep order if both closed
+                if (b.wait_time === 0) return 1; // Closed attractions move to end
+                if (a.wait_time === 0) return -1; // Closed attractions move to end
+                return a.wait_time - b.wait_time; // Sort by wait_time ascending
+            });
 
-    // Function to determine background color based on wait time
-    function getBackgroundColor(waitTime) {
-        // Calculate color based on linear scale from 5 minutes to 75 minutes
-        const minWait = 5; // Minimum wait time for green (0, 255, 0)
-        const maxWait = 75; // Maximum wait time for red (255, 0, 0)
-        const green = 0;
-        const red = 255;
+            rides.forEach(ride => {
+                const waitTime = ride.wait_time === 0 ? 'CLOSED' : `${ride.wait_time} Minutes`;
+                const backgroundColor = ride.wait_time === 0 ? 'rgba(0, 0, 0, 0.4)' : getBackgroundColor(ride.wait_time);
+                const rideElement = document.createElement('div');
+                rideElement.classList.add('waitElement');
 
-        // Interpolate color based on wait time
-        const normalizedWait = (waitTime - minWait) / (maxWait - minWait);
-        const r = Math.round(green + (red - green) * normalizedWait);
-        const g = Math.round(red - r);
-        const b = 0;
-        const alpha = 0.4;
+                rideElement.innerHTML = `
+                    <div class="waitName">
+                        <span>${ride.name}</span>
+                    </div>
+                    <div class="waitTime" style="background-color: ${backgroundColor};">
+                        <span>${waitTime}</span>
+                    </div>
+                `;
+                waitContainer.appendChild(rideElement);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching wait times:', error);
+        });
+}
 
-        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-    }
+//yay for chatgpt so i dont need to do proper maths
+// Function to determine background color based on wait time
+function getBackgroundColor(waitTime) {
+    // Calculate color based on linear scale from 5 minutes to 75 minutes
+    const minWait = 5; // Minimum wait time for green (0, 255, 0)
+    const maxWait = 75; // Maximum wait time for red (255, 0, 0)
+    const green = 0;
+    const red = 255;
 
-    // Initial call to populate wait times
-    populateWaitTimes();
+    // Interpolate color based on wait time
+    const normalizedWait = (waitTime - minWait) / (maxWait - minWait);
+    const r = Math.round(green + (red - green) * normalizedWait);
+    const g = Math.round(red - r);
+    const b = 0;
+    const alpha = 0.4;
 
-    // Refresh wait times every 5 minutes
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+
+document.addEventListener('DOMContentLoaded', function (){
+    populateWaitTimes()
     setInterval(populateWaitTimes, 5 * 60 * 1000); // 5 minutes in milliseconds
-});
+    }
+)
