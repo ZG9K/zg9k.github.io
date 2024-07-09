@@ -4,8 +4,44 @@
 </head>
 
 <body>
+
+  <div class="overlay" id="errorOverlay">
+    <div class="overlay-content" id="overlay-content">
+        <p id="screenWarning">Your screen size does not meet the 1080x1920 reccomendation for the page. </p>
+        <p>Welcome to the Disneyland Today Website</p>
+        <button id="dismiss-btn">Enter</button>
+    </div>
+</div>
+
+<audio id="background-music" src="assets/Disneyland Hotel TV Splash Screen (March 2022).mp3"></audio>
+
+<div class="overlay" id="settingsOverlay">
+  <div class="settings-content">
+      hello!
+  </div>
+</div>
+
   <div class="container">
-      <div class="left">Disneyland Hotel</div>
+      <div class="left"><p>Disneyland Hotel</p>
+      
+        <div class="waitContainer">
+          <div class="waitElement">
+            <div class="waitName">
+              <!--Attraction Name-->
+              <span>Matterhorn Mountain</span>
+            </div>
+            <div class="lightningLane" style="display:none">
+              <!--Next Lightning Lane Reservation Time-->
+              <span>14:55</span>
+            </div>
+            <div class="waitTime">
+              <!--Current Attraction Wait Time-->
+              <span>25 Minutes</span>
+            </div>
+          </div>
+        </div>
+      
+      </div>
       <div class="middle">
         <div>
         <titleBlock>Welcome to Disneyland Resort!</titleBlock>
@@ -17,7 +53,8 @@
           <br>- And More!!! (potentially)
         </p>
       
-      </div></div>
+        </div>
+     </div>
       <div class="right">
         <day>Thursday<br></day>
         <date>March 17<br></date>
@@ -39,88 +76,24 @@
               <span id="laterWeather">
                 ??°
               </span>
+          </div>
         </div>
-
-      </div>
+        <div class="footer-container">
+          <div class="footer">
+              <button class="footer-button" id="musicButton">
+                  <img src="assets/music-record-64.png" alt="Music">
+              </button>
+              <button class="footer-button" id="settingsButton">
+                  <img src="assets/settings-5-64.png" alt="Settings">
+              </button>
+              <button class="footer-button" id="exitButton">
+                <img src="assets/exit-64.png" alt="Exit">
+            </button>
+          </div>
+     </div>
+  </div>  
   </div>
 
-  <script>
-    function updateClock() {
-        const now = new Date();
-        
-        // Update time
-        const hours = now.getHours();
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        const hour12 = hours % 12 || 12;
-        document.querySelector('time').textContent = `${hour12}:${minutes} ${ampm}`;
-
-        // Update day
-        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const dayName = days[now.getDay()];
-        document.querySelector('day').textContent = `${dayName}`;
-
-        // Update date
-        const monthNames = [
-            'January', 'February', 'March', 'April', 'May', 'June',
-            'July', 'August', 'September', 'October', 'November', 'December'
-        ];
-        const monthName = monthNames[now.getMonth()];
-        const day = now.getDate();
-        document.querySelector('date').textContent = `${monthName} ${day}`;
-    }
-
-    setInterval(updateClock, 1000);
-    updateClock();  // Initial call to display clock immediately
-
-    const latitude = 33.84568;  // Latitude of Anaheim
-    const longitude = -117.90953;  // Longitude of Anaheim
-
-    async function getWeather() {
-        try {
-            // woo a free weather API
-            const currentWeatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weathercode&timezone=America/Los_Angeles&lang=en`;
-            const currentResponse = await fetch(currentWeatherUrl);
-            const currentData = await currentResponse.json();
-            console.log(currentData)
-            const currentWeather = getWeatherDescription(currentData.current.weathercode);
-            const currentTemp = Math.ceil(currentData.current.temperature_2m);
-            console.log('Current Weather:', currentWeather);
-            console.log('Current Temp:', currentTemp);
-
-            document.getElementById("currentWeather").textContent = currentTemp+"°"
-
-        } catch (error) {
-            console.error('Error fetching weather data:', error);
-        }
-    }
-
-    // went down a rabbit hole of WMO codes, theyre neat
-    //TODO: add lil icons to show the weather state
-    //TODO: add a "later" forecast section
-    function getWeatherDescription(wmoCode) {
-        switch (wmoCode) {
-            case 1:
-                return 'Clear sky';
-            case 2:
-                return 'Nearly clear sky';
-            case 3:
-                return 'Partly cloudy';
-            case 4:
-                return 'Cloudy sky';
-            case 5:
-                return 'Fog';
-            case 10:
-                return 'Rain showers';
-            case 21:
-                return 'Thunderstorm';
-            default:
-                return 'Unknown';
-        }
-    }
-
-    getWeather();
-</script>
+  <script src="script.js"></script>
 </body>
 </html>
