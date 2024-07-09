@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 const locations = ['Disneyland', 'DCA', 'Downtown', 'Hotel', 'Grand', 'Pixar'];
 let currentIndex = 0;
+infoContainer = document.getElementById('infoContainer')
 
 function cycleInfo() {
     let nextIndex = currentIndex;
@@ -78,20 +79,25 @@ function updateLocationLabel(location) {
     switch (location) {
         case 'Disneyland':
             locationLabel.innerHTML = 'Disneyland';
+            infoContainer.style.backgroundImage = "url('assets/backgrounds/disneyland.png')"
             break;
         case 'DCA':
             locationLabel.innerHTML = 'California Adventure';
+            infoContainer.style.backgroundImage = "url('assets/backgrounds/californiaAdventure.png')"
             break;
         case 'Downtown':
             locationLabel.innerHTML = 'Downtown Disney';
+            infoContainer.style.backgroundImage = "url('assets/backgrounds/Downtown.png')"
             break;
         case 'Hotel':
             locationLabel.innerHTML = 'Disneyland Hotel';
+            infoContainer.style.backgroundImage = "url('assets/backgrounds/disneyHotel.png')"
             break;
         case 'Grand':
             locationLabel.innerHTML = 'Grand Californian Hotel';
+            infoContainer.style.backgroundImage = "url('assets/backgrounds/grandCali.png')"
             break;
-        case 'Pixar':
+        case 'Pixar': 
             locationLabel.innerHTML = 'Pixar Place Hotel';
             break;
         default:
@@ -278,6 +284,7 @@ function populateWaitTimes(park) {
             console.error('Error fetching wait times:', error);
         });
         document.getElementById('waitContainer').scrollTop=0;
+        console.log("populated tab")
 }
 
 //yay for chatgpt so i dont need to do proper maths
@@ -321,11 +328,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         }, 50); // Adjust the speed by changing the interval (in ms)
-    }
-
-    // Function to reset scroll
-    function resetScroll() {
-        scrollBox.scrollTop = 0;
     }
 
     // Start the scrolling after a 2-second delay

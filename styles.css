@@ -57,12 +57,27 @@ body, html {
     flex-direction: row;
     height: 100%;
     width: 100%;
-    background-image: url(fonts/sillything.png);
+    background-image: url(assets/backgrounds/disneyHotel.png);
     height: 100%;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
     color: white;
+    opacity: 1.0;
+    transition: background 1.5s linear; /* Smooth transition for background */
+}
+
+.fade-in-out {
+    animation: fadeInOut 3s infinite; /* Animation for fading */
+}
+
+@keyframes fadeInOut {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
 }
 
 .left{
@@ -79,7 +94,7 @@ body, html {
 }
 
 .waitContainer{
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.4);
     height:100%;
     overflow-y: scroll;
     border-radius: 40px;
@@ -90,7 +105,7 @@ body, html {
 
 .waitElement{
     width: calc(100%-12px);
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.4);
     margin-top:12px;
     height:auto;
     padding-top:8px;
