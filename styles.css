@@ -120,7 +120,7 @@ body, html {
 .waitContainer{
     background-color: rgba(0, 0, 0, 0.4);
     height:100%;
-    overflow-y: scroll;
+    overflow-y: hidden;
     border-radius: 40px;
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
