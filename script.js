@@ -175,7 +175,7 @@ function updateLocationLabel(location) {
             break;
         case 'Grand':
             locationLabel.innerHTML = "Disney's Grand Californian Hotel & Spa";
-            infoContainer.style.backgroundImage = "url('assets/backgrounds/grandCali.png')"
+            infoContainer.style.backgroundImage = "url('assets/backgrounds/GrandCali.png')"
             updateTip()
             break;
         case 'Pixar': 
@@ -196,7 +196,6 @@ console.log(anaheimTime.checked)
 function updateClock() {
     const now = new Date();
     
-    // Assuming anaheimTime is defined globally or can be accessed within this scope
     const anaheimTime = window.anaheimTime; 
 
     // Get time and date in Anaheim if anaheimTime is true, otherwise use local time and date
@@ -306,8 +305,6 @@ document.getElementById('dismiss-btn').addEventListener('click', function() {
 
 // Check screen size on page load
 window.onload = checkScreenSize;
-
-// Optionally, check screen size on window resize
 window.onresize = checkScreenSize;
 
 
