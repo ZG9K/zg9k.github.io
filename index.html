@@ -8,7 +8,7 @@
   <div class="overlay" id="errorOverlay">
     <div class="overlay-content" id="overlay-content">
         <p id="screenWarning">Your screen size does not meet the 1080x1920 reccomendation for the page. </p>
-        <p>Welcome to the Disneyland Today Website</p>
+        <p>Welcome to the Disneyland Today Website!</p>
         <button id="dismiss-btn">Enter</button>
     </div>
 </div>
@@ -18,7 +18,8 @@
   <div class="container">
       <div class="left" id="main"><p id="Location">Disneyland Hotel</p>
       
-        <div class="waitContainer">
+        <div class="waitContainer" id="waitContainer">
+          <h1>Live Wait Times</h1>
           <div class="waitElement" style="display: none;">
             <div class="waitName">
               <!--Attraction Name-->
@@ -88,22 +89,22 @@
       </label>
 
       <label class="checkboxContainer">Downtown Disney
-        <input type="checkbox" checked="checked" id="downtownActive">
+        <input type="checkbox" id="downtownActive">
         <span class="checkmark"></span>
       </label>
 
       <label class="checkboxContainer">Disneyland Hotel
-        <input type="checkbox" checked="checked" id="dhActive">
+        <input type="checkbox" id="dhActive">
         <span class="checkmark"></span>
       </label>
 
       <label class="checkboxContainer">Grand Californian Hotel
-        <input type="checkbox" checked="checked" id="gchActive">
+        <input type="checkbox" id="gchActive">
         <span class="checkmark"></span>
       </label>
 
       <label class="checkboxContainer">Pixar Place Hotel
-        <input type="checkbox" checked="checked" id="pphActive">
+        <input type="checkbox" id="pphActive">
         <span class="checkmark"></span>
       </label>
 
@@ -113,19 +114,23 @@
         <span class="checkmark"></span>
       </label>
 
+
       <label class="checkboxContainer">Genie+ Information
         <input type="checkbox" checked="checked" id="genieActive">
         <span class="checkmark"></span>
       </label>
 
+      <label class="checkboxContainer">Display Anaheim Time
+        <input type="checkbox" checked="checked" id="anaheimTime">
+        <span class="checkmark"></span>
+      </label>
 
-      <label>Cycle Time</label><br>
-      <select name="cars" id="cars">
-        <option value="volvo">30s</option>
-        <option value="saab">1m</option>
-        <option value="mercedes">5m</option>
-        <option value="audi">10m</option>
-      </select>
+      <label class="checkboxContainer">Display Anaheim Weather
+        <input type="checkbox" checked="checked" id="anaheimWeather">
+        <span class="checkmark"></span>
+      </label>
+
+
   </div>
   <div class="footer-container">
     <div class="footer">

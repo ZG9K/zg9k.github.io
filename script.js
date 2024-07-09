@@ -2,17 +2,29 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get all checkboxes inside the div with id "settings"
     var checkboxes = document.querySelectorAll('#settings input[type="checkbox"]');
     
-    // Function to update variables based on checkbox states
+    // Function to update variables and save to localStorage
     function updateVariables() {
         checkboxes.forEach(function(checkbox) {
             // Use the checkbox id directly as the variable name
             window[checkbox.id] = checkbox.checked;
-            console.log(checkbox.id +"=" +window[checkbox.id])
+            // Save the checkbox state to localStorage
+            localStorage.setItem(checkbox.id, checkbox.checked);
         });
     }
-    
-    // Initial call to update variables based on current checkbox states
-    updateVariables();
+
+    // Function to load variables from localStorage and set checkbox states
+    function loadVariables() {
+        checkboxes.forEach(function(checkbox) {
+            var savedState = localStorage.getItem(checkbox.id);
+            if (savedState !== null) {
+                checkbox.checked = (savedState === 'true');
+                window[checkbox.id] = (savedState === 'true');
+            }
+        });
+    }
+
+    // Load variables from localStorage and set initial checkbox states
+    loadVariables();
     
     // Add event listeners to checkboxes to update variables on change
     checkboxes.forEach(function(checkbox) {
@@ -88,38 +100,42 @@ function updateLocationLabel(location) {
     }
 }
 
-
-
 cycleInfo()
-setInterval(cycleInfo, 1000*5);
+setInterval(cycleInfo,1000*10)
+
+console.log(anaheimTime.checked)
 
 function updateClock() {
     const now = new Date();
     
+    // Assuming anaheimTime is defined globally or can be accessed within this scope
+    const anaheimTime = window.anaheimTime; 
+
+    // Get time and date in Anaheim if anaheimTime is true, otherwise use local time and date
+    const timeOptions = { timeZone: 'America/Los_Angeles', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+    const dateOptions = { timeZone: 'America/Los_Angeles', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+
+    const timeString = anaheimTime ? now.toLocaleTimeString('en-US', timeOptions) : now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+    const dateString = anaheimTime ? now.toLocaleDateString('en-US', dateOptions) : now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+    const [time, ampm] = timeString.split(' ');
+    const [hour12, minutes, seconds] = time.split(':');
+
     // Update time
-    const hours = now.getHours();
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    const hour12 = hours % 12 || 12;
     document.querySelector('time').textContent = `${hour12}:${minutes} ${ampm}`;
 
-    // Update day
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const dayName = days[now.getDay()];
-    document.querySelector('day').textContent = `${dayName}`;
+    // Update day and date
+    const dateParts = dateString.split(', ');
+    const dayName = dateParts[0];
+    const monthDay = dateParts[1];
 
-    // Update date
-    const monthNames = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    const monthName = monthNames[now.getMonth()];
-    const day = now.getDate();
-    document.querySelector('date').textContent = `${monthName} ${day}`;
+    document.querySelector('day').textContent = dayName;
+    document.querySelector('date').textContent = monthDay;
 }
 
+// Set an interval to update the clock every second
 setInterval(updateClock, 1000);
+
 updateClock();  // Initial call to display clock immediately
 
 const latitude = 33.84568;  // Latitude of Anaheim
@@ -131,7 +147,6 @@ async function getWeather() {
         const currentWeatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weathercode&timezone=America/Los_Angeles&lang=en`;
         const currentResponse = await fetch(currentWeatherUrl);
         const currentData = await currentResponse.json();
-        console.log(currentData)
         const currentWeather = getWeatherDescription(currentData.current.weathercode);
         const currentTemp = Math.ceil(currentData.current.temperature_2m);
         console.log('Current Weather:', currentWeather);
@@ -202,11 +217,9 @@ window.onresize = checkScreenSize;
 document.getElementById("settingsButton").addEventListener('click', function(){
 
     if(document.getElementById('settings').style.display == 'block'){
-        console.log("passed")
         document.getElementById('parkInfo').style.display = 'block'
         document.getElementById('settings').style.display = 'none'
     }else{
-        console.log("elsed")
     document.getElementById('parkInfo').style.display = 'none'
     document.getElementById('settings').style.display = 'block'
     }
@@ -221,7 +234,7 @@ function populateWaitTimes(park) {
         parkId = 17;
     } else {
         console.log('Park ' + park + ' does not have wait times.');
-        document.querySelector('.waitContainer').innerHTML = ''; // Clear previous content
+        document.querySelector('.waitContainer').innerHTML = '<h1>No Wait Times</h1 style="padding-left:40px;">'; // Clear previous content
         return; // Exit function if park is not supported 
     }
 
@@ -230,7 +243,7 @@ function populateWaitTimes(park) {
         .then(data => {
             const lands = data.lands;
             const waitContainer = document.querySelector('.waitContainer');
-            waitContainer.innerHTML = '';
+            waitContainer.innerHTML = '<h1>Live Wait Times</h1 style="padding-left:40px;">';
 
             // Flatten rides array and sort by wait_time, placing closed attractions last
             let rides = [];
@@ -264,6 +277,7 @@ function populateWaitTimes(park) {
         .catch(error => {
             console.error('Error fetching wait times:', error);
         });
+        document.getElementById('waitContainer').scrollTop=0;
 }
 
 //yay for chatgpt so i dont need to do proper maths
@@ -291,3 +305,29 @@ document.addEventListener('DOMContentLoaded', function (){
     setInterval(populateWaitTimes, 5 * 60 * 1000); // 5 minutes in milliseconds
     }
 )
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const scrollBox = document.getElementById('waitContainer');
+    let isScrolling = true;
+
+    // Function to start scrolling
+    function startScrolling() {
+        scrollInterval = setInterval(() => {
+            if (isScrolling) {
+                scrollBox.scrollTop += 1;
+                if (scrollBox.scrollTop + scrollBox.clientHeight >= scrollBox.scrollHeight) {
+                    scrollBox.scrollTop = 0; // Reset to top when bottom is reached
+                }
+            }
+        }, 50); // Adjust the speed by changing the interval (in ms)
+    }
+
+    // Function to reset scroll
+    function resetScroll() {
+        scrollBox.scrollTop = 0;
+    }
+
+    // Start the scrolling after a 2-second delay
+    setTimeout(startScrolling, 2000);
+});

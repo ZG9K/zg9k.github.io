@@ -85,18 +85,22 @@ body, html {
     border-radius: 40px;
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
+    padding: 0px 20px 0px 20px;
 }
 
 .waitElement{
     width: calc(100%-12px);
     background-color: rgba(0, 0, 0, 0.2);
-    margin:12px;
-    height:50px;
+    margin-top:12px;
+    height:auto;
+    padding-top:8px;
+    padding-bottom: 8px;
     box-sizing: border-box;
     display: flex;
     align-items: center;
     border-radius: 20px;
     padding-left: 20px;
+    font-size: 18px;
 }
 
 .waitName{
