@@ -65,6 +65,7 @@ body, html {
     color: white;
     opacity: 1.0;
     transition: background 1.5s linear; /* Smooth transition for background */
+    overflow: hidden;
 }
 
 .fade-in-out {
