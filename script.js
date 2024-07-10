@@ -41,7 +41,7 @@ var displayedLocation
 
 function cycleInfo() {
     const waitContainer = document.querySelector('.waitContainer');
-    waitContainer.innerHTML = '<h1>LOADING Wait Times...</h1 style="padding-left:40px; color:gray;">'
+    waitContainer.innerHTML = '<h1>Loading Wait Times...</h1 style="padding-left:40px;>'
     let nextIndex = currentIndex;
     do {
         const currentLocation = locations[nextIndex];
@@ -193,12 +193,10 @@ function updateLocationLabel(location) {
 cycleInfo()
 setInterval(cycleInfo,1000*90)
 
-console.log(anaheimTime.checked)
-
 function updateClock() {
     const now = new Date();
     
-    const anaheimTime = window.anaheimTime; 
+    anaheimTime = window.anaheimTime; 
 
     // Get time and date in Anaheim if anaheimTime is true, otherwise use local time and date
     const timeOptions = { timeZone: 'America/Los_Angeles', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
@@ -238,8 +236,6 @@ async function getWeather() {
         const currentData = await currentResponse.json();
         const currentWeather = getWeatherDescription(currentData.current.weathercode);
         const currentTemp = Math.ceil(currentData.current.temperature_2m);
-        console.log('Current Weather:', currentWeather);
-        console.log('Current Temp:', currentTemp);
 
         document.getElementById("currentWeather").textContent = currentTemp+"°"
 
@@ -332,7 +328,7 @@ function populateWaitTimes(park) {
         parkId = "DisneylandResortCaliforniaAdventure";
         waitContainer.style.display = "block"
     } else {
-        console.log('Park ' + park + ' does not have wait times.');
+        console.warn('Park ' + park + ' does not have wait times.');
         waitContainer.style.display = "none"; 
         return; // Exit function if park is not supported 
     }
@@ -341,30 +337,43 @@ function populateWaitTimes(park) {
     .then(response => response.json())
     .then(data => {
         waitContainer.style.display = "block";
-        waitContainer.innerHTML = '<br><br><h1>Live Wait Times</h1 style="padding-left:40px;">';
+        waitContainer.innerHTML = '<h1>Live Wait Times</h1 style="padding-left:40px;">';
 
-        // Flatten attractions array and sort by waitTime, placing closed attractions last
         let attractions = data;
 
-        attractions.sort((b, a) => {
-            if (a.waitTime === null && b.waitTime === null) return 0; // Keep order if both closed
-            if (b.waitTime === null) return 1; // Closed attractions move to end
-            if (a.waitTime === null) return -1; // Closed attractions move to end
-            return a.waitTime - b.waitTime; // Sort by waitTime ascending
+        attractions.sort((a, b) => {
+            // Sort by waitTime descending (highest to lowest)
+            if (a.waitTime !== null && b.waitTime !== null) {
+                return b.waitTime - a.waitTime;
+            } else if (a.waitTime !== null) {
+                return -1; // a has waitTime, b does not, so a comes before b
+            } else if (b.waitTime !== null) {
+                return 1; // b has waitTime, a does not, so b comes before a
+            }
+        
+            // If waitTime is null for both, sort by status
+            const statusOrder = {
+                "Operating": 1,
+                "Down": 2,
+                "Refurbishment": 3,
+                "Closed": 4,
+                "null": 5  // null status comes last
+            };
+        
+            return statusOrder[a.status] - statusOrder[b.status];
         });
 
         attractions.forEach(attraction => {
-            const waitTime = attraction.waitTime === null ? 'CLOSED' : `${attraction.waitTime} Minutes`;
-            const backgroundColor = attraction.waitTime === null ? 'rgba(0, 0, 0, 0.4)' : getBackgroundColor(attraction.waitTime);
+            const waitTime = attraction.waitTime === null ? (attraction.status === null ? "Unknown" : attraction.status) : `${attraction.waitTime} Minutes`;
+            const backgroundColor = attraction.waitTime === null ? (attraction.status === "Operating" ? 'rgba(100, 255, 100, 0.3)' : (attraction.status === "Down" ? 'rgba(240,180,100,0.3)' : (attraction.status === "Refurbishment" ? 'rgba(255, 80, 80, 0.3)' : 'rgba(0, 0, 0, 0.4)'))) : getBackgroundColor(attraction.waitTime);
             const attractionElement = document.createElement('div');
             let lightningLaneTime = '';
 
             if (attraction.meta.returnTime && attraction.meta.returnTime.returnStart !== undefined) {
                 if (attraction.meta.returnTime.returnStart === null) {
-                    lightningLaneTime = 'SOLD OUT';
+                    lightningLaneTime = 'Sold Out';
                 } else {
                     const returnTime = new Date(attraction.meta.returnTime.returnStart);
-                    console.log(attraction.name+ "Return Time: " + (returnTime))
                     const options = { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Los_Angeles' };
                     const formattedTime = returnTime.toLocaleString('en-US', options);
 
@@ -372,14 +381,14 @@ function populateWaitTimes(park) {
                 }
             }
 
-            if (waitTime !== 'CLOSED' || displayClosed == true) {
+            if (waitTime.includes("Minutes") || displayClosed == true) {
                 attractionElement.classList.add('waitElement');
 
                 attractionElement.innerHTML = `
                     <div class="waitName">
                         <span>${attraction.name}</span>
                     </div>
-                    ${lightningLaneTime ? `<div class="lightningLane" style="display: flex; background-color: ${lightningLaneTime === 'SOLD OUT' ? 'rgba(0,0,0,0.4)' : 'rgba(0, 204, 255, 0.4)'};">
+                    ${lightningLaneTime && window.genieActive ? `<div class="lightningLane" style="display: flex; background-color: ${lightningLaneTime === 'Sold Out' ? 'rgba(0,0,0,0.4)' : 'rgba(0, 204, 255, 0.4)'};">
                         <span>${lightningLaneTime}</span>
                     </div>` : ''}
                     <div class="waitTime" style="background-color: ${backgroundColor};">
@@ -394,7 +403,6 @@ function populateWaitTimes(park) {
         console.error('Error fetching wait times:', error);
     });
         document.getElementById('waitContainer').scrollTop=0;
-        console.log("populated tab")
 }
 
 // Event listener for keydown event
@@ -432,7 +440,6 @@ function getBackgroundColor(waitTime) {
 
 
 document.addEventListener('DOMContentLoaded', function (){
-    populateWaitTimes()
     setInterval(populateWaitTimes, 5 * 60 * 1000); // 5 minutes in milliseconds
     }
 )
@@ -440,12 +447,11 @@ document.addEventListener('DOMContentLoaded', function (){
 
 document.addEventListener('DOMContentLoaded', function () {
     const scrollBox = document.getElementById('waitContainer');
-    let isScrolling = true;
 
     // Function to start scrolling
     function startScrolling() {
         scrollInterval = setInterval(() => {
-            if (isScrolling) {
+            if (window.isScrolling) {
                 scrollBox.scrollTop += 1;
                 if (scrollBox.scrollTop + scrollBox.clientHeight >= scrollBox.scrollHeight) {
                     scrollBox.scrollTop = 0; // Reset to top when bottom is reached
