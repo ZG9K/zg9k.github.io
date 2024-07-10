@@ -125,7 +125,7 @@ body, html {
 .waitContainer{
     background-color: rgba(0, 0, 0, 0.4);
     height:100%;
-    overflow-y: hidden;
+    overflow-y: scroll;
     border-radius: 40px;
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
@@ -168,7 +168,7 @@ body, html {
     padding:7px;
     background-color: rgba(0, 204, 255, 0.4);
     border-style: solid;
-    border-color: rgba(0, 183, 255, 0.2);
+    border-color: rgba(0, 0, 0, 0.4);
     border-radius: 20px;
     align-items: center;
 }

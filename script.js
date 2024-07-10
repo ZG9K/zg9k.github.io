@@ -40,6 +40,8 @@ infoContainer = document.getElementById('infoContainer')
 var displayedLocation
 
 function cycleInfo() {
+    const waitContainer = document.querySelector('.waitContainer');
+    waitContainer.innerHTML = '<h1>LOADING Wait Times...</h1 style="padding-left:40px; color:gray;">'
     let nextIndex = currentIndex;
     do {
         const currentLocation = locations[nextIndex];
@@ -324,10 +326,10 @@ function populateWaitTimes(park) {
     let parkId;
     const waitContainer = document.querySelector('.waitContainer');
     if (park === 'Disneyland') {
-        parkId = 16;
+        parkId = "DisneylandResortMagicKingdom";
         waitContainer.style.display = "block"
     } else if (park === 'DCA') {
-        parkId = 17;
+        parkId = "DisneylandResortCaliforniaAdventure";
         waitContainer.style.display = "block"
     } else {
         console.log('Park ' + park + ' does not have wait times.');
@@ -335,53 +337,62 @@ function populateWaitTimes(park) {
         return; // Exit function if park is not supported 
     }
 
-    fetch(`https://cors-anywhere.herokuapp.com/https://api.themeparks.wiki/preview/parks/DisneylandResortMagicKingdom/waittime`).then(response=>response.json()).then(data=>{
-        console.log(data)
-    })
-    fetch(`https://cors-anywhere.herokuapp.com/https://queue-times.com/parks/${parkId}/queue_times.json`)
-    //switch to https://api.themeparks.wiki/v1/entity/bfc89fd6-314d-44b4-b89e-df1a89cf991e/live for return times, opening times, etc
-        .then(response => response.json())
-        .then(data => {
-            console.log(data)
-            const lands = data.lands;
-            waitContainer.style.display = "block"
-            waitContainer.innerHTML = '<br><br><h1>Live Wait Times</h1 style="padding-left:40px;">';
+    fetch(`https://cors-anywhere.herokuapp.com/https://api.themeparks.wiki/preview/parks/${parkId}/waittime`)
+    .then(response => response.json())
+    .then(data => {
+        waitContainer.style.display = "block";
+        waitContainer.innerHTML = '<br><br><h1>Live Wait Times</h1 style="padding-left:40px;">';
 
-            // Flatten rides array and sort by wait_time, placing closed attractions last
-            let rides = [];
-            lands.forEach(land => {
-                rides.push(...land.rides);
-            });
+        // Flatten attractions array and sort by waitTime, placing closed attractions last
+        let attractions = data;
 
-            rides.sort((b, a) => {
-                if (a.wait_time === 0 && b.wait_time === 0) return 0; // Keep order if both closed
-                if (b.wait_time === 0) return 1; // Closed attractions move to end
-                if (a.wait_time === 0) return -1; // Closed attractions move to end
-                return a.wait_time - b.wait_time; // Sort by wait_time ascending
-            });
+        attractions.sort((b, a) => {
+            if (a.waitTime === null && b.waitTime === null) return 0; // Keep order if both closed
+            if (b.waitTime === null) return 1; // Closed attractions move to end
+            if (a.waitTime === null) return -1; // Closed attractions move to end
+            return a.waitTime - b.waitTime; // Sort by waitTime ascending
+        });
 
-            rides.forEach(ride => {
-                const waitTime = ride.wait_time === 0 ? 'CLOSED' : `${ride.wait_time} Minutes`;
-                const backgroundColor = ride.wait_time === 0 ? 'rgba(0, 0, 0, 0.4)' : getBackgroundColor(ride.wait_time);
-                const rideElement = document.createElement('div');
+        attractions.forEach(attraction => {
+            const waitTime = attraction.waitTime === null ? 'CLOSED' : `${attraction.waitTime} Minutes`;
+            const backgroundColor = attraction.waitTime === null ? 'rgba(0, 0, 0, 0.4)' : getBackgroundColor(attraction.waitTime);
+            const attractionElement = document.createElement('div');
+            let lightningLaneTime = '';
 
-                if (waitTime !== 'CLOSED' || displayClosed == true){
-                rideElement.classList.add('waitElement');
+            if (attraction.meta.returnTime && attraction.meta.returnTime.returnStart !== undefined) {
+                if (attraction.meta.returnTime.returnStart === null) {
+                    lightningLaneTime = 'SOLD OUT';
+                } else {
+                    const returnTime = new Date(attraction.meta.returnTime.returnStart);
+                    console.log(attraction.name+ "Return Time: " + (returnTime))
+                    const options = { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Los_Angeles' };
+                    const formattedTime = returnTime.toLocaleString('en-US', options);
 
-                rideElement.innerHTML = `
+                    lightningLaneTime = `${formattedTime}`;
+                }
+            }
+
+            if (waitTime !== 'CLOSED' || displayClosed == true) {
+                attractionElement.classList.add('waitElement');
+
+                attractionElement.innerHTML = `
                     <div class="waitName">
-                        <span>${ride.name}</span>
+                        <span>${attraction.name}</span>
                     </div>
+                    ${lightningLaneTime ? `<div class="lightningLane" style="display: flex; background-color: ${lightningLaneTime === 'SOLD OUT' ? 'rgba(0,0,0,0.4)' : 'rgba(0, 204, 255, 0.4)'};">
+                        <span>${lightningLaneTime}</span>
+                    </div>` : ''}
                     <div class="waitTime" style="background-color: ${backgroundColor};">
                         <span>${waitTime}</span>
                     </div>
                 `;
-                waitContainer.appendChild(rideElement);
-            }});
-        })
-        .catch(error => {
-            console.error('Error fetching wait times:', error);
+                waitContainer.appendChild(attractionElement);
+            }
         });
+    })
+    .catch(error => {
+        console.error('Error fetching wait times:', error);
+    });
         document.getElementById('waitContainer').scrollTop=0;
         console.log("populated tab")
 }
