@@ -299,7 +299,7 @@ document.getElementById('dismiss-btn').addEventListener('click', function() {
         }
     var audio = document.getElementById('background-music');
     audio.loop = true;
-    audio.play();
+    //audio.play();
 });
 
 
@@ -335,10 +335,14 @@ function populateWaitTimes(park) {
         return; // Exit function if park is not supported 
     }
 
+    fetch(`https://cors-anywhere.herokuapp.com/https://api.themeparks.wiki/preview/parks/DisneylandResortMagicKingdom/waittime`).then(response=>response.json()).then(data=>{
+        console.log(data)
+    })
     fetch(`https://cors-anywhere.herokuapp.com/https://queue-times.com/parks/${parkId}/queue_times.json`)
     //switch to https://api.themeparks.wiki/v1/entity/bfc89fd6-314d-44b4-b89e-df1a89cf991e/live for return times, opening times, etc
         .then(response => response.json())
         .then(data => {
+            console.log(data)
             const lands = data.lands;
             waitContainer.style.display = "block"
             waitContainer.innerHTML = '<br><br><h1>Live Wait Times</h1 style="padding-left:40px;">';
@@ -348,6 +352,7 @@ function populateWaitTimes(park) {
             lands.forEach(land => {
                 rides.push(...land.rides);
             });
+
             rides.sort((b, a) => {
                 if (a.wait_time === 0 && b.wait_time === 0) return 0; // Keep order if both closed
                 if (b.wait_time === 0) return 1; // Closed attractions move to end

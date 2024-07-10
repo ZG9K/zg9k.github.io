@@ -6,6 +6,7 @@
 body, html {
     height: 100%;
     margin: 0;
+    width: 100%;
     display: flex;
     font-family: 'DisneyFont', sans-serif;
     letter-spacing: 0.03em; /* 3% kerning */
@@ -86,9 +87,9 @@ body, html {
 }
 
 .midleftContainer{
-    width: 1600px;
     height: 100%;
     display: flex;
+    width: 85%;
     flex-direction: column;
     padding: 0;
     margin: 0;
@@ -108,7 +109,7 @@ body, html {
     height: 848px;
 }
 .left{
-    width: 480px;
+    flex-grow: 1;
     background-color: rgba(240, 128, 128,0.0);
     padding:20px 20px 40px 80px;
     height:100%;
@@ -178,7 +179,7 @@ body, html {
 
 
 .middle {
-    width: 1020px;
+    width: 55%;
     background-color: rgba(173, 216, 230,0.0);
     padding-right: 120px;
     padding: 20px;
@@ -199,12 +200,13 @@ body, html {
 
 
 .right {
-    width: 320px;
+    width: 15%;
     background-color: rgba(8, 39, 80, 0.55);
     padding: 24px;
     box-sizing: border-box;
     margin: 0;
     height: 100%;
+    min-width: 170px;
 }
 
 .right day{
@@ -248,8 +250,7 @@ body, html {
     justify-content: flex-end; /* Aligns the footer to the bottom */
     right: 0;
     bottom: 0;
-    width: 280;
-    margin: 20px 20px 10px 20px;
+    width: 15%;
 }
 
 /* Footer styling */
@@ -257,6 +258,7 @@ body, html {
     display: flex;
     justify-content: space-around;
     padding: 10px 0;
+    width: 100%;
 }
 
 /* Button styling */
