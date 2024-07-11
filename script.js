@@ -197,31 +197,25 @@ function updateLocationLabel(location) {
         case 'Disneyland':
             locationLabel.innerHTML = 'Disneyland Park';
             setBackgroundImage(theme, location)
-            updateTip()
             break;
         case 'DCA':
             locationLabel.innerHTML = 'Disney California Adventure Park';
             setBackgroundImage(theme, location)
-            updateTip()
             break;
         case 'Downtown':
             locationLabel.innerHTML = 'Downtown Disney District';
             setBackgroundImage(theme, location)
-            updateTip()
             break;
         case 'Hotel':
             locationLabel.innerHTML = 'Disneyland Hotel';
             setBackgroundImage(theme, location)
-            updateTip()
             break;
         case 'Grand':
             locationLabel.innerHTML = "Disney's Grand Californian Hotel & Spa";
             setBackgroundImage(theme, location)
-            updateTip()
             break;
         case 'Pixar': 
             locationLabel.innerHTML = "Disney's Pixar Place Hotel";
-            updateTip()
             break;
         default:
             console.log('Unknown location');
@@ -343,13 +337,13 @@ function startMusic() {
         frontierTower: "https://disneychris.com/images/Audio/MULT/The_Adventure_Tower.mp3",
         grandCalifornian: "http://soundsofdisneyland.com/AudioFiles/Grizzly Peak/02 Grand Californian Hotel_ Entrance Path_ Area Loop.mp3",
         pixarPlace: "https://disneychris.com/images/Audio/MULT/Pixar_Fest_Area_Background_Music.mp3",
-        mainSt: "http://soundsofdisneyland.com/AudioFiles/Main Street U.S.A. (2013)/02 Area Loop.m4a",
-        esplanade: "http://soundsofdisneyland.com/AudioFiles/Disneyland Esplanade/31 Area Loop (2006).mp3",
-        jungleCruise: "http://soundsofdisneyland.com/AudioFiles/Jungle Cruise/33 Radio Queue Loop (1995).mp3",
+        mainSt: "https://disneychris.com/images/Audio/MULT/2012_Main_Street_USA_Area_Background_Music.mp3",
+        esplanade: "https://disneychris.com/images/Audio/CH1/TRK94_Disneyland_Esplanade_Area_Background_Music.mp3",
+        jungleCruise: "https://disneychris.com/images/Audio/CH6/TRK61_Jungle_Cruise_Boathouse_Global_Broadcasting_Service.mp3",
         steakhouse55: "https://disneychris.com/images/Audio/CH20/TRK83_Steakhouse_55_Atmosphere_Music.mp3",
         traderSams: "https://disneychris.com/images/Audio/MULT/Trader_Sams_Enchanted_Tiki_Bar_Part_1.mp3",
-        mainStHoliday: "http://soundsofdisneyland.com/AudioFiles/Holiday/03 Main Street_ Area Loop (Remastered).mp3",
-        mainStHalloween: "http://soundsofdisneyland.com/AudioFiles/Halloweentime/03 Mickey_s Not So Scary Halloween Party_ Area Loop (2015-2018).mp3",
+        mainStHoliday: "https://disneychris.com/images/Audio/CH23/TRK32_Main_Street_Holiday_Area_Music_Disneyland_1972.mp3",
+        mainStHalloween: "https://disneychris.com/images/Audio/MULT/Le_Bat_en_Rouge.mp3",
         jingleCruise: "https://disneychris.com/images/Audio/CH23/TRK57_The_Jingle_Cruise_Queue_Area_Background_Music.mp3",
         traderSamsChristmas: "https://disneychris.com/images/Audio/CH23/TRK56_Trader_Sams_Enchanted_Tiki_Bar_-_Holiday.mp3"
     };
@@ -529,6 +523,7 @@ function populateWaitTimes(park) {
         checkNone = document.getElementsByClassName('waitName')
         if(checkNone.length == 0){
             waitContainer.innerHTML = '<h1>Park is Closed</h1 style="padding-left:40px;">';
+            if(displayWaitParkClosed==false){waitContainer.style.display = "none";}
         }
     })
     .catch(error => {
