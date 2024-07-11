@@ -434,6 +434,14 @@ function toggleRight(panel) {
     }
 }
 
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        document.getElementById('settings').style.display = 'none';
+        document.getElementById('audio').style.display = 'none';
+        document.getElementById('parkInfo').style.display = 'block' 
+    }
+});
+
 //Stuff for footer buttons
 document.getElementById("settingsButton").addEventListener('click', function(){
     toggleRight("settings")
