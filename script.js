@@ -54,7 +54,7 @@ let currentIndex = 0;
 infoContainer = document.getElementById('infoContainer')
 var displayedLocation
 
-function cycleInfo() {
+function cycleWaitInfo() {
     const waitContainer = document.querySelector('.waitContainer');
     waitContainer.innerHTML = '<h1>Loading Wait Times...</h1 style="padding-left:40px;>'
     let nextIndex = currentIndex;
@@ -144,24 +144,38 @@ const californiaAdventureTips = [
 let tipIndex = 0;
 
 function updateTip() {
-    // Get the elements by ID
     const titleElement = document.querySelector('titleBlock');
     const tipInfoElement = document.getElementById('tipInfo');
+    let opacity = 1;
 
-    // Update the elements with new tip
-    if(displayedLocation == ("DCA" || "Grand" || "Pixar")){
-    titleElement.innerHTML = californiaAdventureTips[tipIndex].title;
-    tipInfoElement.innerHTML = californiaAdventureTips[tipIndex].body;
-    }else{
-    titleElement.innerHTML = disneylandTips[tipIndex].title;
-    tipInfoElement.innerHTML = disneylandTips[tipIndex].body;}
+    const fadeInterval = setInterval(() => {
+        if (opacity > 0) {
+            opacity -= 0.1;
+            titleElement.style.opacity = tipInfoElement.style.opacity = opacity;
+        } else {
+            clearInterval(fadeInterval);
+            
+            if (["DCA", "Grand", "Pixar"].includes(displayedLocation)) {
+                titleElement.innerHTML = californiaAdventureTips[tipIndex].title;
+                tipInfoElement.innerHTML = californiaAdventureTips[tipIndex].body;
+            } else {
+                titleElement.innerHTML = disneylandTips[tipIndex].title;
+                tipInfoElement.innerHTML = disneylandTips[tipIndex].body;
+            }
 
-    // Move to the next tip, cycle back to the first one if at the end
-    tipIndex = (tipIndex + 1) % disneylandTips.length;
+            tipIndex = (tipIndex + 1) % disneylandTips.length;
+
+            const fadeInInterval = setInterval(() => {
+                if (opacity < 1) {
+                    opacity += 0.1;
+                    titleElement.style.opacity = tipInfoElement.style.opacity = opacity;
+                } else {
+                    clearInterval(fadeInInterval);
+                }
+            }, 50);
+        }
+    }, 50);
 }
-
-// Initial call to set the first tip
-updateTip();
 
 // Set interval to update the tip every 20 seconds
 setInterval(updateTip, 20000);
@@ -220,8 +234,8 @@ function updateLocationLabel(location) {
     }
 }
 
-cycleInfo()
-setInterval(cycleInfo,1000*90)
+cycleWaitInfo()
+setInterval(cycleWaitInfo,1000*90)
 
 function updateClock() {
     const now = new Date();
@@ -327,17 +341,17 @@ function startMusic() {
         fantasyTower: "https://disneychris.com/images/Audio/MULT/The_Fantasy_Tower.mp3",
         adventureTower: "https://disneychris.com/images/Audio/MULT/The_Frontier_Tower.mp3",
         frontierTower: "https://disneychris.com/images/Audio/MULT/The_Adventure_Tower.mp3",
-        grandCalifornian: "https://soundsofdisneyland.com/AudioFiles/Grizzly%20Peak/02%20Grand%20Californian%20Hotel_%20Entrance%20Path_%20Area%20Loop.mp3",
+        grandCalifornian: "http://soundsofdisneyland.com/AudioFiles/Grizzly Peak/02 Grand Californian Hotel_ Entrance Path_ Area Loop.mp3",
         pixarPlace: "https://disneychris.com/images/Audio/MULT/Pixar_Fest_Area_Background_Music.mp3",
-        mainSt: "https://soundsofdisneyland.com/AudioFiles/Main%20Street%20U.S.A.%20(2013)/02%20Area%20Loop.m4a",
-        esplanade: "https://soundsofdisneyland.com/AudioFiles/Disneyland%20Esplanade/31%20Area%20Loop%20(2006).mp3",
-        jungleCruise: "url",
-        steakhouse55: "url",
+        mainSt: "http://soundsofdisneyland.com/AudioFiles/Main Street U.S.A. (2013)/02 Area Loop.m4a",
+        esplanade: "http://soundsofdisneyland.com/AudioFiles/Disneyland Esplanade/31 Area Loop (2006).mp3",
+        jungleCruise: "http://soundsofdisneyland.com/AudioFiles/Jungle Cruise/33 Radio Queue Loop (1995).mp3",
+        steakhouse55: "https://disneychris.com/images/Audio/CH20/TRK83_Steakhouse_55_Atmosphere_Music.mp3",
         traderSams: "https://disneychris.com/images/Audio/MULT/Trader_Sams_Enchanted_Tiki_Bar_Part_1.mp3",
-        mainStHoliday: "url",
-        mainStHalloween: "url",
-        jingleCruise: "url",
-        traderSamsChristmas: "url"
+        mainStHoliday: "http://soundsofdisneyland.com/AudioFiles/Holiday/03 Main Street_ Area Loop (Remastered).mp3",
+        mainStHalloween: "http://soundsofdisneyland.com/AudioFiles/Halloweentime/03 Mickey_s Not So Scary Halloween Party_ Area Loop (2015-2018).mp3",
+        jingleCruise: "https://disneychris.com/images/Audio/CH23/TRK57_The_Jingle_Cruise_Queue_Area_Background_Music.mp3",
+        traderSamsChristmas: "https://disneychris.com/images/Audio/CH23/TRK56_Trader_Sams_Enchanted_Tiki_Bar_-_Holiday.mp3"
     };
 
     if (currentAudio) {
@@ -567,7 +581,7 @@ document.addEventListener('keydown', function(event) {
 
 document.addEventListener('keydown', function(event) {
     if (event.key === 'C' || event.key === 'c') {   
-        cycleInfo()
+        cycleWaitInfo()
     }
 });
 
