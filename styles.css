@@ -435,31 +435,3 @@ label{
     margin-bottom: 20px;
     border-color: #99b8df;;
   }
-
-/* Styles for screens less than 1278px wide and 864px tall */
-@media screen and (max-width: 1278p), (max-height: 864px) {
-.responsive-screen {
-    display: flex;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgb(99, 99, 99); /* Semi-transparent black background */
-    color: white;
-    font-size: 24px;
-    text-align: center;
-    padding: 20px;
-    box-sizing: border-box;
-    z-index: 9999; /* Place above all other elements */
-    align-items: center;
-    justify-content: center;
-}
-}
-
-/* Hide the screen when not matching the criteria */
-@media screen and (min-width: 1279px), (min-height: 865px) {
-.responsive-screen {
-    display: none;
-}
-}
