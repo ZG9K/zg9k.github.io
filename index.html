@@ -40,7 +40,7 @@
         </div>
       </div>
 
-      <div class="middle" style="display:flex">
+      <div class="middle fade-in-out-text" style="display:flex">
         <div class="infoElement">
         <titleBlock>Welcome to Disneyland Resort!</titleBlock>
         <p id="tipInfo">This is a replica page designed to reproduce and enhance the dashboard found on the TVs in the Disneyland Resort. Future plans for this page include:
@@ -56,12 +56,13 @@
     </div>
   </div>
      
-      <div class="right" id="parkInfo">
+  <div class="right" id="parkInfo">
         <day>Thursday<br></day>
         <date>March 17<br></date>
         <time>12:57 AM<br></time>
         <br>
 
+        <p style="margin:0px; color:#99b8df">Weather in Anaheim, CA.</p>
         <div class="weatherContainer">
           <div class="weatherElem">
             <span class="defGrey">
@@ -78,12 +79,39 @@
                 ??°
               </span>
           </div>
+        </div><br><br>
+
+        <head3 style="font-size: 35px;">Park Hours</head3>
+        <div class="openingContainer">
+          <img class="parkIcon" src="assets/exit-64.png">
+          <div class="openingInfo">
+          <head3>Disneyland</head3>
+          <p class="openingTimes">8:00 AM - 12:00 AM</p>
         </div>
+        </div>
+        <hr>
+        <div class="openingContainer">
+          <img class="parkIcon" src="assets/music-record-64.png">
+          <div class="openingInfo">
+          <head3>Disney California Adventure</head3>
+          <p class="openingTimes">8:00 AM - 10:00 PM</p>
+        </div>
+        </div>
+        <hr>
+        <div class="openingContainer">
+          <img class="parkIcon" src="assets/settings-5-64.png">
+          <div class="openingInfo">
+          <head3>Downtown Disney District</head3>
+          <p class="openingTimes">8:00 AM - 1:00 AM</p>
+        </div>
+        </div>
+        <hr>
 
   </div>
   <div class="right" id="settings" style="display:none">
     <h1>Settings</h1>
-    <head3>Shown Locations</head3>
+    <head3>Location Cycle</head3>
+    <head4>Shown Locations</head4>
       <label class="checkboxContainer">Disneyland
         <input type="checkbox" checked="checked" id="disneylandActive">
         <span class="checkmark"></span>
@@ -115,6 +143,12 @@
       </label>
 
       <head3>Fucntionality</head3>
+      <head4>Wait Time Display</head4>
+      <label class="checkboxContainer">Enable Wait Time Display
+        <input type="checkbox" checked="checked" id="waitTimeEnabled">
+        <span class="checkmark"></span>
+      </label>
+
       <label class="checkboxContainer">Wait Time Scrolling
         <input type="checkbox" checked="checked" id="isScrolling">
         <span class="checkmark"></span>
@@ -125,6 +159,12 @@
         <span class="checkmark"></span>
       </label>
 
+      <label class="checkboxContainer">Display Non-Wait Attractions
+        <input type="checkbox" checked="checked" id="displayClosed">
+        <span class="checkmark"></span>
+      </label>
+
+      <head4>Location Settings</head4>
       <label class="checkboxContainer">Display Anaheim Time
         <input type="checkbox" checked="checked" id="anaheimTime">
         <span class="checkmark"></span>
@@ -135,16 +175,56 @@
         <span class="checkmark"></span>
       </label>
 
-      <label class="checkboxContainer">Display Non-Wait Attractions
-        <input type="checkbox" checked="checked" id="displayClosed">
-        <span class="checkmark"></span>
-      </label>
 
+  </div>
+  <div class="right" id="audio" style="display:none">
+    <h1>Music Options</h1>
+    <head3>Background Music</head3>
+      <p>Disneyland on TV Music</p>
+      <input type="radio" id="splash" name="musicOption" value="splash">
+      <label for="splash">Splash Screen</label><br>
+      <input type="radio" id="dt2019" name="musicOption" value="dt2019" checked>
+      <label for="dt2019">Disneyland Today - 2019</label><br>
+      <input type="radio" id="dt2015" name="musicOption" value="dt2015">
+      <label for="dt2015">Disneyland Today - 2015</label><br>
+      <input type="radio" id="dt2011" name="musicOption" value="dt2011">
+      <label for="dt2011">Disneyland Today - 2011</label><br><br>
+      <p>Hotel Music</p>
+      <input type="radio" id="fantasyTower" name="musicOption" value="fantasyTower">
+      <label for="fantasyTower">Fantasy Tower</label><br>
+      <input type="radio" id="adventureTower" name="musicOption" value="adventureTower">
+      <label for="adventureTower">Adventure Tower</label><br>
+      <input type="radio" id="frontierTower" name="musicOption" value="frontierTower">
+      <label for="frontierTower">Frontier Tower</label><br>
+      <input type="radio" id="grandCalifornian" name="musicOption" value="grandCalifornian">
+      <label for="grandCalifornian">Grand Californian Hotel</label><br>
+      <input type="radio" id="pixarPlace" name="musicOption" value="pixarPlace">
+      <label for="pixarPlace">Pixar Pier - Area Music</label><br><br>
+      <p>Area Music</p>
+      <input type="radio" id="mainSt" name="musicOption" value="mainSt">
+      <label for="mainSt">Main St. U.S.A.</label><br>
+      <input type="radio" id="esplanade" name="musicOption" value="esplanade">
+      <label for="esplanade">Esplanade Loop</label><br>
+      <input type="radio" id="jungleCruise" name="musicOption" value="jungleCruise">
+      <label for="jungleCruise">Jungle Cruise Radio</label><br>
+      <input type="radio" id="steakhouse55" name="musicOption" value="steakhouse55">
+      <label for="steakhouse55">Steakhouse 55</label><br>
+      <input type="radio" id="traderSams" name="musicOption" value="traderSams">
+      <label for="traderSams">Trader Sam's</label><br><br>
+      <p>Holiday</p>
+      <input type="radio" id="mainStHoliday" name="musicOption" value="mainStHoliday">
+      <label for="mainStHoliday">Main St. Holiday</label><br>
+      <input type="radio" id="mainStHalloween" name="musicOption" value="mainStHalloween">
+      <label for="mainStHalloween">Main St. Halloween</label><br>
+      <input type="radio" id="jingleCruise" name="musicOption" value="jingleCruise">
+      <label for="jingleCruise">Jingle Cruise Radio</label><br>
+      <input type="radio" id="traderSamsChristmas" name="musicOption" value="traderSamsChristmas">
+      <label for="traderSamsChristmas">Trader Sam's Christmas</label><br>
 
   </div>
   <div class="footer-container">
     <div class="footer">
-        <button class="footer-button" id="musicButton">
+        <button class="footer-button" id="audioButton">
             <img src="assets/music-record-64.png" alt="Music">
         </button>
         <button class="footer-button" id="settingsButton">

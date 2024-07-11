@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var checkboxes = document.querySelectorAll('#settings input[type="checkbox"]');
     
     // Function to update variables and save to localStorage
-    function updateVariables() {
+    function updateSettings() {
         checkboxes.forEach(function(checkbox) {
             // Use the checkbox id directly as the variable name
             window[checkbox.id] = checkbox.checked;
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add event listeners to checkboxes to update variables on change
     checkboxes.forEach(function(checkbox) {
         checkbox.addEventListener('change', function() {
-            updateVariables();
+            updateSettings();
         });
     });
 });
@@ -104,23 +104,23 @@ const disneylandTips = [
 const californiaAdventureTips = [
     {
       title: "<titleBlock>Experience Buena Vista Street</titleBlock>",
-      body: "<p>Buena Vista Street is the welcoming entrance to California Adventure Park, echoing 1920s Los Angeles.<br>Shops: Visit Elias & Co. for a wide range of Disney merchandise.<br>Dining: Enjoy a nostalgic snack at Fiddler, Fifer & Practical Café.<br>Entertainment: Catch a performance by the Red Car Trolley News Boys.<br>Trivia: Buena Vista Street is named after the street where the Walt Disney Studios is located in Burbank.</p>"
+      body: "<p>Buena Vista Street is the welcoming entrance to California Adventure Park, echoing 1920s Los Angeles.<br> - Visit Elias & Co. for a wide range of Disney merchandise.<br> - Enjoy a nostalgic snack at Fiddler, Fifer & Practical Café.<br>Entertainment: Catch a performance by the Red Car Trolley News Boys.<br> - Buena Vista Street is named after the street where the Walt Disney Studios is located in Burbank.</p>"
     },
     {
       title: "<titleBlock>Explore Cars Land</titleBlock>",
-      body: "<p>Cars Land brings the world of Radiator Springs to life with detailed theming and exciting attractions.<br>Attractions: Race through Radiator Springs on Radiator Springs Racers and take a spin on Mater's Junkyard Jamboree.<br>Dining: Grab a meal at Flo's V8 Café or a snack at the Cozy Cone Motel.<br>Shops: Browse Sarge's Surplus Hut for Cars-themed merchandise.<br>Trivia: Cars Land features over 300,000 square feet of rockwork, making it one of the largest rockwork projects in the country.</p>"
+      body: "<p>Cars Land brings the world of Radiator Springs to life with detailed theming and exciting attractions.<br> - Race through Radiator Springs on Radiator Springs Racers and take a spin on Mater's Junkyard Jamboree.<br> - Grab a meal at Flo's V8 Café or a snack at the Cozy Cone Motel.<br> - Browse Sarge's Surplus Hut for Cars-themed merchandise.<br> - Cars Land features over 300,000 square feet of rockwork, making it one of the largest rockwork projects in the country.</p>"
     },
     {
       title: "<titleBlock>Soar Over Grizzly Peak</titleBlock>",
-      body: "<p>Grizzly Peak recreates the majestic landscapes of California's wilderness with its rugged terrain and adventurous attractions.<br>Attractions: Experience breathtaking views on Soarin' Around the World and brave the rapids on Grizzly River Run.<br>Dining: Enjoy a meal at Smokejumpers Grill or a snack at Redwood Creek Challenge Trail.<br>Shops: Visit Rushin' River Outfitters for outdoor-themed merchandise.<br>Trivia: The peak of Grizzly Peak is designed to resemble a grizzly bear roaring into the sky.</p>"
+      body: "<p>Grizzly Peak recreates the majestic landscapes of California's wilderness with its rugged terrain and adventurous attractions.<br> - Experience breathtaking views on Soarin' Around the World and brave the rapids on Grizzly River Run.<br> - Enjoy a meal at Smokejumpers Grill or a snack at Redwood Creek Challenge Trail.<br> - Visit Rushin' River Outfitters for outdoor-themed merchandise.<br> - The peak of Grizzly Peak is designed to resemble a grizzly bear roaring into the sky.</p>"
     },
     {
       title: "<titleBlock>Delight in Pixar Pier</titleBlock>",
-      body: "<p>Pixar Pier celebrates the beloved characters and stories from Pixar Animation Studios with colorful attractions and experiences.<br>Attractions: Ride the Incredicoaster and play games along the Pixar Promenade.<br>Dining: Satisfy your sweet tooth at Bing Bong's Sweet Stuff or grab a bite at Lamplight Lounge.<br>Shops: Shop for Pixar-themed gifts at Knick's Knacks.<br>Trivia: Pixar Pier was reimagined from the original Paradise Pier and reopened in 2018.</p>"
+      body: "<p>Pixar Pier celebrates the beloved characters and stories from Pixar Animation Studios with colorful attractions and experiences.<br> - Ride the Incredicoaster and play games along the Pixar Promenade.<br> - Satisfy your sweet tooth at Bing Bong's Sweet Stuff or grab a bite at Lamplight Lounge.<br> - Shop for Pixar-themed gifts at Knick's Knacks.<br> - Pixar Pier was reimagined from the original Paradise Pier and reopened in 2018.</p>"
     },
     {
       title: "<titleBlock>Immerse in Hollywood Land</titleBlock>",
-      body: "<p>Hollywood Land transports you to the golden age of Hollywood with its glitz, glamour, and exciting attractions.<br>Attractions: Experience the Guardians of the Galaxy – Mission: BREAKOUT! and enjoy the Disney Animation building.<br>Dining: Grab a meal at Award Wieners or a snack at Schmoozies!<br>Shops: Browse Off the Page for unique Disney art and collectibles.<br>Trivia: Hollywood Land's design is inspired by the real-life streets of Hollywood and Los Angeles in the 1930s.</p>"
+      body: "<p>Hollywood Land transports you to the golden age of Hollywood with its glitz, glamour, and exciting attractions.<br> - Experience the Guardians of the Galaxy – Mission: BREAKOUT! and enjoy the Disney Animation building.<br> - Grab a meal at Award Wieners or a snack at Schmoozies!<br> - Browse Off the Page for unique Disney art and collectibles.<br> - Hollywood Land's design is inspired by the real-life streets of Hollywood and Los Angeles in the 1930s.</p>"
     }
   ];
   
@@ -153,31 +153,41 @@ setInterval(updateTip, 20000);
 
 // Function to update the heading, image, and tips, based on the current location
 function updateLocationLabel(location) {
+    var theme = "defaultTheme"
+
+    const imagesArray = {
+        Disneyland: "disneyland.png",
+        DCA: "californiaAdventure.png",
+        Downtown: "Downtown.png",
+        Hotel: "disneyHotel.png",
+        Grand: "GrandCali.png",
+        Pixar: "GrandCali.png" } 
+
     const locationLabel = document.getElementById("Location");
     switch (location) {
         case 'Disneyland':
             locationLabel.innerHTML = 'Disneyland Park';
-            infoContainer.style.backgroundImage = "url('assets/backgrounds/disneyland.png')"
+            setBackgroundImage(theme, location)
             updateTip()
             break;
         case 'DCA':
             locationLabel.innerHTML = 'Disney California Adventure Park';
-            infoContainer.style.backgroundImage = "url('assets/backgrounds/californiaAdventure.png')"
+            setBackgroundImage(theme, location)
             updateTip()
             break;
         case 'Downtown':
             locationLabel.innerHTML = 'Downtown Disney District';
-            infoContainer.style.backgroundImage = "url('assets/backgrounds/Downtown.png')"
+            setBackgroundImage(theme, location)
             updateTip()
             break;
         case 'Hotel':
             locationLabel.innerHTML = 'Disneyland Hotel';
-            infoContainer.style.backgroundImage = "url('assets/backgrounds/disneyHotel.png')"
+            setBackgroundImage(theme, location)
             updateTip()
             break;
         case 'Grand':
             locationLabel.innerHTML = "Disney's Grand Californian Hotel & Spa";
-            infoContainer.style.backgroundImage = "url('assets/backgrounds/GrandCali.png')"
+            setBackgroundImage(theme, location)
             updateTip()
             break;
         case 'Pixar': 
@@ -187,6 +197,11 @@ function updateLocationLabel(location) {
         default:
             console.log('Unknown location');
             return;
+    }
+
+    function setBackgroundImage(theme, location) {
+        const imagePath = `assets/backgrounds//${imagesArray[location]}`;   
+        infoContainer.style.backgroundImage = `url('${imagePath}')`;
     }
 }
 
@@ -240,7 +255,7 @@ async function getWeather() {
         document.getElementById("currentWeather").textContent = currentTemp+"°"
 
     } catch (error) {
-        console.error('Error fetching weather data:', error);
+        console.log('Error fetching weather data:', error);
     }
 }
 
@@ -270,10 +285,64 @@ function getWeatherDescription(wmoCode) {
 
 getWeather();
 
+
+//musiccccccccccccccccccccccccccccccccccccccccccccccccccccc
+let currentAudio = null;
+
+function getSelectedRadioValue() {
+    const radios = document.getElementsByName('musicOption');
+    let selectedValue = '';
+    for (const radio of radios) {
+        if (radio.checked) {
+            selectedValue = radio.id;
+            break;
+        }
+    }
+    return selectedValue;
+}
+
+function startMusic() {
+    const selectedMusic = getSelectedRadioValue();
+    console.log("Now Playing "+ selectedMusic)
+    const radioArray = {
+        splash: "url",
+        dt2019: "https://disneychris.com/images/Audio/CH20/TRK66_Disneyland_Today_In-Room_Music_2019.mp3",
+        dt2015: "https://disneychris.com/images/Audio/CH20/TRK65_Disneyland_Today_In-Room_Music_2015.mp3",
+        dt2011: "https://disneychris.com/images/Audio/CH20/TRK57_Disneyland_Today_In-Room_Music_2011.mp3",
+        fantasyTower: "https://disneychris.com/images/Audio/MULT/The_Fantasy_Tower.mp3",
+        adventureTower: "https://disneychris.com/images/Audio/MULT/The_Frontier_Tower.mp3",
+        frontierTower: "https://disneychris.com/images/Audio/MULT/The_Adventure_Tower.mp3",
+        grandCalifornian: "https://soundsofdisneyland.com/AudioFiles/Grizzly%20Peak/02%20Grand%20Californian%20Hotel_%20Entrance%20Path_%20Area%20Loop.mp3",
+        pixarPlace: "https://disneychris.com/images/Audio/MULT/Pixar_Fest_Area_Background_Music.mp3",
+        mainSt: "https://soundsofdisneyland.com/AudioFiles/Main%20Street%20U.S.A.%20(2013)/02%20Area%20Loop.m4a",
+        esplanade: "https://soundsofdisneyland.com/AudioFiles/Disneyland%20Esplanade/31%20Area%20Loop%20(2006).mp3",
+        jungleCruise: "url",
+        steakhouse55: "url",
+        traderSams: "https://disneychris.com/images/Audio/MULT/Trader_Sams_Enchanted_Tiki_Bar_Part_1.mp3",
+        mainStHoliday: "url",
+        mainStHalloween: "url",
+        jingleCruise: "url",
+        traderSamsChristmas: "url"
+    };
+
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+    }
+
+    const audioUrl = radioArray[selectedMusic];
+    if (audioUrl && audioUrl !== "url") {
+        currentAudio = new Audio(audioUrl);
+        currentAudio.loop = true;
+        currentAudio.play();
+    }
+}
+////////////////////////////////////
+
 // Function to check screen size and display the overlay if necessary
 function checkScreenSize() {
     if (window.innerWidth < 1920 || window.innerHeight < 1080) {
-        document.getElementById('screenWarning').style.display = 'flex';
+        document.getElementById('screenWarning').style.display = 'block`';
     }
     else{
         document.getElementById('screenWarning').style.display = 'none';
@@ -295,27 +364,56 @@ document.getElementById('dismiss-btn').addEventListener('click', function() {
             // Exit fullscreen mode
             document.exitFullscreen();
         }
-    var audio = document.getElementById('background-music');
-    audio.loop = true;
-    //audio.play();
-});
 
+    startMusic()
+
+    const radios = document.getElementsByName('musicOption');
+    for (const radio of radios) {
+        radio.addEventListener('change', startMusic);
+    }
+
+    //stuff for scrolling
+    const scrollBox = document.getElementById('waitContainer');
+    // Function to start scrolling
+    function startScrolling() {
+        scrollInterval = setInterval(() => {
+            if (window.isScrolling) {
+                scrollBox.scrollTop += 1;
+                if (scrollBox.scrollTop + scrollBox.clientHeight >= scrollBox.scrollHeight) {
+                    scrollBox.scrollTop = 0; // Reset to top when bottom is reached
+                }
+            }
+        }, 50); // Adjust the speed by changing the interval (in ms)
+    }
+
+    // Start the scrolling after a 2-second delay
+    setTimeout(startScrolling, 2000);
+});
 
 // Check screen size on page load
 window.onload = checkScreenSize;
 window.onresize = checkScreenSize;
 
+function toggleRight(panel) {
+    var togglePanel = document.getElementById(panel);
+    
+    if (togglePanel.style.display == 'block') {
+        document.getElementById('parkInfo').style.display = 'block';
+        togglePanel.style.display = 'none';
+    } else {
+        document.getElementById('settings').style.display = 'none';
+        document.getElementById('audio').style.display = 'none';
+        document.getElementById('parkInfo').style.display = 'none';
+        togglePanel.style.display = 'block';
+    }
+}
 
 //Stuff for footer buttons
 document.getElementById("settingsButton").addEventListener('click', function(){
-
-    if(document.getElementById('settings').style.display == 'block'){
-        document.getElementById('parkInfo').style.display = 'block'
-        document.getElementById('settings').style.display = 'none'
-    }else{
-    document.getElementById('parkInfo').style.display = 'none'
-    document.getElementById('settings').style.display = 'block'
-    }
+    toggleRight("settings")
+})
+document.getElementById("audioButton").addEventListener('click', function(){
+    toggleRight("audio")
 })
 
 function populateWaitTimes(park) {
@@ -398,9 +496,14 @@ function populateWaitTimes(park) {
                 waitContainer.appendChild(attractionElement);
             }
         });
+        document.getElementById('waitContainer').scrollTop=0;
+        checkNone = document.getElementsByClassName('waitName')
+        if(checkNone.length == 0){
+            waitContainer.innerHTML = '<h1>Park is Closed</h1 style="padding-left:40px;">';
+        }
     })
     .catch(error => {
-        console.error('Error fetching wait times:', error);
+        waitContainer.innerHTML = '<h1>Wait times could not be retreived.</h1 style="padding-left:40px;">';
     });
         document.getElementById('waitContainer').scrollTop=0;
 }
@@ -443,26 +546,6 @@ document.addEventListener('DOMContentLoaded', function (){
     setInterval(populateWaitTimes, 5 * 60 * 1000); // 5 minutes in milliseconds
     }
 )
-
-
-document.addEventListener('DOMContentLoaded', function () {
-    const scrollBox = document.getElementById('waitContainer');
-
-    // Function to start scrolling
-    function startScrolling() {
-        scrollInterval = setInterval(() => {
-            if (window.isScrolling) {
-                scrollBox.scrollTop += 1;
-                if (scrollBox.scrollTop + scrollBox.clientHeight >= scrollBox.scrollHeight) {
-                    scrollBox.scrollTop = 0; // Reset to top when bottom is reached
-                }
-            }
-        }, 50); // Adjust the speed by changing the interval (in ms)
-    }
-
-    // Start the scrolling after a 2-second delay
-    setTimeout(startScrolling, 2000);
-});
 
 
 
