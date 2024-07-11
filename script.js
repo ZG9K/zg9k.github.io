@@ -93,60 +93,249 @@ function isActive(location) {
 }
 
 // Array of Disneyland tips
+
+const generalTips = [
+    {
+      "title": "<titleBlock>Early Morning Rides</titleBlock>",
+      "body": "<p>Start your day by heading to the most popular attractions.<br> - Lines are shorter in the morning.<br> - You'll have more time for other activities later.<br> - Use the Disneyland app to check wait times.</p>"
+    },
+    {
+      "title": "<titleBlock>Hidden Mickeys</titleBlock>",
+      "body": "<p>Keep an eye out for Hidden Mickeys throughout the park.<br> - They are hidden in attractions, shops, and restaurants.<br> - There are over 1,000 Hidden Mickeys to find.<br> - Challenge your family and friends to find the most!</p>"
+    },
+    {
+      "title": "<titleBlock>Maximize Genie+ Usage</titleBlock>",
+      "body": "<p>Strategize your Genie+ selections for the best experience.<br> - Reserve Lightning Lane passes for high-demand attractions.<br> - Use the app to plan out your day and avoid long waits.<br> - Don't forget to check return times frequently.</p>"
+    },
+    {
+      "title": "<titleBlock>Explore Downtown Disney</titleBlock>",
+      "body": "<p>Take a break from the parks and explore Downtown Disney.<br> - Enjoy unique shops and dining options.<br> - Experience live entertainment and special events.<br> - No park ticket is required to visit.</p>"
+    },
+    {
+      "title": "<titleBlock>Character Meet-and-Greets</titleBlock>",
+      "body": "<p>Plan your day to meet your favorite Disney characters.<br> - Use the app to find character locations and times.<br> - Arrive early to avoid long lines.<br> - Have your camera and autograph book ready!</p>"
+    },
+    {
+      "title": "<titleBlock>Disneyland App Benefits</titleBlock>",
+      "body": "<p>Download and use the Disneyland app for a smoother visit.<br> - Check wait times for attractions and dining.<br> - Make dining reservations and mobile orders.<br> - Access park maps and showtimes easily.</p>"
+    },
+    {
+      "title": "<titleBlock>Take Advantage of Single Rider Lines</titleBlock>",
+      "body": "<p>Use Single Rider lines to save time on popular rides.<br> - Available on select attractions like Space Mountain and Indiana Jones.<br> - Great for older kids and adults comfortable riding alone.<br> - You can experience more attractions in a shorter time.</p>"
+    },
+    {
+      "title": "<titleBlock>Best Viewing Spots for Parades</titleBlock>",
+      "body": "<p>Find the best spots to watch parades and shows.<br> - Arrive early to secure a good viewing spot.<br> - Consider viewing locations near the start or end of the parade route.<br> - Use the app to check showtimes and plan accordingly.</p>"
+    },
+    {
+      "title": "<titleBlock>Stay Hydrated and Cool</titleBlock>",
+      "body": "<p>Keep yourself refreshed throughout your visit.<br> - Water fountains and bottle refill stations are located around the park.<br> - Take breaks in shaded areas or air-conditioned attractions.<br> - Wear a hat and sunscreen to protect against the sun.</p>"
+    },
+    {
+      "title": "<titleBlock>Efficient Dining Options</titleBlock>",
+      "body": "<p>Plan your meals to avoid long waits and crowded dining areas.<br> - Use mobile ordering through the Disneyland app for quick service.<br> - Eat during off-peak hours for shorter lines.<br> - Explore various dining options, including quick snacks and sit-down restaurants.</p>"
+    }
+  ]
+  
 const disneylandTips = [
     {
-      title: "<titleBlock>Explore Main Street, U.S.A.</titleBlock>",
-      body: "<p>Main Street, U.S.A., is the charming entrance to Disneyland Park, offering a nostalgic look at small-town America.<br> - Visit the Emporium for a wide selection of Disney merchandise and souvenirs.<br> - Enjoy a classic meal at the Plaza Inn, known for its famous fried chicken.<br> - Catch the \"Dapper Dans\" barbershop quartet for some lively music and fun.<br> - Main Street, U.S.A., was inspired by Walt Disney's hometown of Marceline, Missouri!</p>"
+      "title": "<titleBlock>Rope Drop Fantasyland</titleBlock>",
+      "body": "<p>Start your day in Fantasyland to enjoy popular rides with shorter waits.<br> - Head straight to Peter Pan's Flight and Dumbo the Flying Elephant.<br> - Experience classic attractions like It's a Small World early in the day.<br> - Save other areas for later when lines get longer.</p>"
     },
     {
-      title: "<titleBlock>Discover Adventureland</titleBlock>",
-      body: "<p>Adventureland offers an exotic, jungle-like atmosphere filled with thrilling attractions and unique experiences.<br> -  Don't miss the Indiana Jones Adventure and the Jungle Cruise.<br> - Enjoy a tropical treat at the Tiki Juice Bar, home of the famous Dole Whip.<br> - Browse the Adventureland Bazaar for themed souvenirs and gifts.<br> - The Swiss Family Treehouse was the original attraction here, later transformed into Tarzan's Treehouse, which has now become the Swiss Family Treehouse once again!</p>"
+      "title": "<titleBlock>Disneyland Railroad</titleBlock>",
+      "body": "<p>Use the Disneyland Railroad to navigate the park efficiently.<br> - Board at any of the four stations: Main Street, New Orleans Square, Mickey's Toontown, and Tomorrowland.<br> - Enjoy a scenic tour around Disneyland while giving your feet a rest.<br> - Great for getting to different areas of the park quickly.</p>"
     },
     {
-      title: "<titleBlock>Uncover New Orleans Square</titleBlock>",
-      body: "<p>New Orleans Square brings the vibrant culture of New Orleans to life with its architecture, food, and music.<br> -  Experience the spooky fun of the Haunted Mansion and the swashbuckling adventure of Pirates of the Caribbean.<br> - Savor the flavors of the French Quarter at Café Orleans and the Blue Bayou Restaurant.<br> - Enjoy live jazz performances at the Royal Street Veranda.<br> - New Orleans Square was the first new land added to Disneyland after its opening!</p>"
+      "title": "<titleBlock>Hidden Mickey Hunt</titleBlock>",
+      "body": "<p>Engage in a fun Hidden Mickey hunt throughout Disneyland.<br> - Look for Mickey shapes hidden in attractions, queues, and decor.<br> - Keep an eye out in places like Pirates of the Caribbean and Haunted Mansion.<br> - Challenge your group to see who can find the most!</p>"
     },
     {
-      title: "<titleBlock>Journey Through Fantasyland</titleBlock>",
-      body: "<p>Fantasyland is where classic Disney stories come to life with whimsical rides and enchanting experiences.<br> -  Take a spin on the Mad Tea Party teacups and fly over London in Peter Pan's Flight.<br> - Grab a snack at Red Rose Taverne or a sweet treat at Maurice's Treats.<br> - Visit the Bibbidi Bobbidi Boutique for a magical makeover experience.<br> - The original Sleeping Beauty Castle had the fantasyland side facing Main St. U.S.A!</p>"
+      "title": "<titleBlock>Parade Viewing Tips</titleBlock>",
+      "body": "<p>Get the best spots for Disneyland parades.<br> - Arrive 30-45 minutes early to secure a good viewing location.<br> - Consider spots near It's a Small World or Main Street for a great view.<br> - Use the Disneyland app to check parade times and routes.</p>"
     },
     {
-      title: "<titleBlock>Venture into Tomorrowland</titleBlock>",
-      body: "<p>Tomorrowland offers a glimpse into the future with its futuristic attractions and innovative design.<br> -  Enjoy high-speed thrills on Space Mountain and explore the galaxy with Buzz Lightyear Astro Blasters.<br> - Refuel with a meal at Alien Pizza Planet or Galactic Grill.<br> - Check out Star Trader for all your Star Wars merchandise needs.<br> - Tomorrowland was one of the five original lands at Disneyland when it opened in 1955!</p>"
+      "title": "<titleBlock>Mobile Ordering</titleBlock>",
+      "body": "<p>Save time by using mobile ordering for meals and snacks.<br> - Available at many quick service restaurants and snack stands.<br> - Place your order in advance and pick it up at a designated time.<br> - Avoid long lines and enjoy more park time.</p>"
+    },
+    {
+      "title": "<titleBlock>Nighttime Spectaculars</titleBlock>",
+      "body": "<p>Plan ahead for Disneyland's nighttime spectaculars.<br> - Secure a spot early for shows like Fantasmic! and fireworks.<br> - Consider booking a dining package for reserved viewing areas.<br> - Check the app for showtimes and viewing locations.</p>"
+    },
+    {
+      "title": "<titleBlock>Single Rider Lines</titleBlock>",
+      "body": "<p>Utilize Single Rider lines to reduce wait times.<br> - Available for select attractions like Indiana Jones Adventure and Matterhorn Bobsleds.<br> - Perfect for older kids and adults willing to ride alone.<br> - Experience more rides with less waiting.</p>"
+    },
+    {
+      "title": "<titleBlock>Character Dining</titleBlock>",
+      "body": "<p>Enjoy a magical meal with Disney characters.<br> - Book reservations for character dining experiences at Plaza Inn or Goofy's Kitchen.<br> - Meet and greet characters while enjoying delicious food.<br> - Make reservations early to secure your spot.</p>"
+    },
+    {
+      "title": "<titleBlock>Photopass and Memory Maker</titleBlock>",
+      "body": "<p>Capture magical moments with Photopass and Memory Maker.<br> - Use Photopass photographers located throughout the park.<br> - Purchase Memory Maker to download all your photos.<br> - Great for capturing memories without having to carry a camera.</p>"
+    },
+    {
+      "title": "<titleBlock>Maximize Genie+</titleBlock>",
+      "body": "<p>Strategize your Genie+ selections for a seamless experience.<br> - Reserve Lightning Lane passes for high-demand attractions first.<br> - Use the app to monitor return times and availability.<br> - Plan your day around your Genie+ reservations to avoid long waits.</p>"
     }
-  ];
+  ]
 
 const californiaAdventureTips = [
     {
-      title: "<titleBlock>Experience Buena Vista Street</titleBlock>",
-      body: "<p>Buena Vista Street is the welcoming entrance to California Adventure Park, echoing 1920s Los Angeles.<br> - Visit Elias & Co. for a wide range of Disney merchandise.<br> - Enjoy a nostalgic snack at Fiddler, Fifer & Practical Café.<br>Entertainment: Catch a performance by the Red Car Trolley News Boys.<br> - Buena Vista Street is named after the street where the Walt Disney Studios is located in Burbank.</p>"
+      "title": "<titleBlock>Rope Drop Radiator Springs Racers</titleBlock>",
+      "body": "<p>Start your day with Radiator Springs Racers for shorter wait times.<br> - Head straight to Cars Land at park opening.<br> - Enjoy the immersive Cars-themed scenery.<br> - Save Genie+ for later in the day.</p>"
     },
     {
-      title: "<titleBlock>Explore Cars Land</titleBlock>",
-      body: "<p>Cars Land brings the world of Radiator Springs to life with detailed theming and exciting attractions.<br> - Race through Radiator Springs on Radiator Springs Racers and take a spin on Mater's Junkyard Jamboree.<br> - Grab a meal at Flo's V8 Café or a snack at the Cozy Cone Motel.<br> - Browse Sarge's Surplus Hut for Cars-themed merchandise.<br> - Cars Land features over 300,000 square feet of rockwork, making it one of the largest rockwork projects in the country.</p>"
+      "title": "<titleBlock>World of Color Viewing Spots</titleBlock>",
+      "body": "<p>Secure the best spots for World of Color.<br> - Arrive early for prime viewing areas.<br> - Consider getting a dining package for reserved seating.<br> - Use the Disneyland app for showtimes and details.</p>"
     },
     {
-      title: "<titleBlock>Soar Over Grizzly Peak</titleBlock>",
-      body: "<p>Grizzly Peak recreates the majestic landscapes of California's wilderness with its rugged terrain and adventurous attractions.<br> - Experience breathtaking views on Soarin' Around the World and brave the rapids on Grizzly River Run.<br> - Enjoy a meal at Smokejumpers Grill or a snack at Redwood Creek Challenge Trail.<br> - Visit Rushin' River Outfitters for outdoor-themed merchandise.<br> - The peak of Grizzly Peak is designed to resemble a grizzly bear roaring into the sky.</p>"
+      "title": "<titleBlock>Utilize Single Rider Lines</titleBlock>",
+      "body": "<p>Save time by using Single Rider lines.<br> - Available for Radiator Springs Racers, Incredicoaster, and Grizzly River Run.<br> - Ideal for older kids and adults comfortable riding alone.<br> - Experience more attractions with less waiting.</p>"
     },
     {
-      title: "<titleBlock>Delight in Pixar Pier</titleBlock>",
-      body: "<p>Pixar Pier celebrates the beloved characters and stories from Pixar Animation Studios with colorful attractions and experiences.<br> - Ride the Incredicoaster and play games along the Pixar Promenade.<br> - Satisfy your sweet tooth at Bing Bong's Sweet Stuff or grab a bite at Lamplight Lounge.<br> - Shop for Pixar-themed gifts at Knick's Knacks.<br> - Pixar Pier was reimagined from the original Paradise Pier and reopened in 2018.</p>"
+      "title": "<titleBlock>Explore Pixar Pier</titleBlock>",
+      "body": "<p>Spend time exploring the vibrant Pixar Pier.<br> - Ride the Incredicoaster and Toy Story Midway Mania.<br> - Enjoy Pixar-themed treats and snacks.<br> - Take photos with your favorite Pixar characters.</p>"
     },
     {
-      title: "<titleBlock>Immerse in Hollywood Land</titleBlock>",
-      body: "<p>Hollywood Land transports you to the golden age of Hollywood with its glitz, glamour, and exciting attractions.<br> - Experience the Guardians of the Galaxy – Mission: BREAKOUT! and enjoy the Disney Animation building.<br> - Grab a meal at Award Wieners or a snack at Schmoozies!<br> - Browse Off the Page for unique Disney art and collectibles.<br> - Hollywood Land's design is inspired by the real-life streets of Hollywood and Los Angeles in the 1930s.</p>"
+      "title": "<titleBlock>Avengers Campus Strategy</titleBlock>",
+      "body": "<p>Make the most of your time at Avengers Campus.<br> - Meet your favorite Marvel superheroes.<br> - Try the unique food offerings at Pym Test Kitchen.<br> - Check the app for showtimes and character appearances.</p>"
+    },
+    {
+      "title": "<titleBlock> and Genie+ Tips</titleBlock>",
+      "body": "<p>Optimize your Genie+ usage.<br> - Book high-demand attractions first.<br> - Refresh the app frequently for new return times.<br> - Plan your day around reserved times.</p>"
+    },
+    {
+      "title": "<titleBlock>Hidden Gems in Hollywood Land</titleBlock>",
+      "body": "<p>Discover hidden gems and entertainment in Hollywood Land.<br> - Visit the Animation Academy to draw your favorite characters.<br> - Enjoy live shows like Mickey's PhilharMagic.<br> - Check out the Disney Junior Dance Party for younger kids.</p>"
+    },
+    {
+      "title": "<titleBlock>Take a Break at Grizzly Peak</titleBlock>",
+      "body": "<p>Relax and unwind at Grizzly Peak.<br> - Enjoy the scenic Redwood Creek Challenge Trail.<br> - Take a peaceful ride on the Grizzly River Run.<br> - Find shaded areas for a cool break.</p>"
+    },
+    {
+      "title": "<titleBlock>Dining Options at Pacific Wharf</titleBlock>",
+      "body": "<p>Explore diverse dining options at Pacific Wharf.<br> - Enjoy Mexican cuisine at Cocina Cucamonga.<br> - Try the famous clam chowder in a bread bowl at Pacific Wharf Café.<br> - Sample Ghirardelli chocolate treats for dessert.</p>"
+    },
+    {
+      "title": "<titleBlock>Shopping at Buena Vista Street</titleBlock>",
+      "body": "<p>Shop for unique souvenirs on Buena Vista Street.<br> - Visit Elias & Co. for Disney merchandise.<br> - Find unique items at Trolley Treats.<br> - Enjoy the nostalgic atmosphere of 1920s Los Angeles.</p>"
     }
-  ];
+  ]
+
+const disneylandHotelTips = [
+    {
+      "title": "<titleBlock>Relax at the Monorail Pool</titleBlock>",
+      "body": "<p>Enjoy a relaxing day at the Disneyland Hotel's Monorail Pool.<br> - Cool off with a swim or lounge in a private cabana.<br> - Kids will love the two Monorail-themed water slides.<br> - Poolside service is available for drinks and snacks.</p>"
+    },
+    {
+      "title": "<titleBlock>Trader Sam's Enchanted Tiki Bar</titleBlock>",
+      "body": "<p>Experience the fun and quirky atmosphere at Trader Sam's.<br> - Try unique, themed cocktails and appetizers.<br> - Enjoy the interactive elements and surprises.<br> - Perfect for a relaxing evening after a day in the parks.</p>"
+    },
+    {
+      "title": "<titleBlock>Character Breakfast at Goofy's Kitchen</titleBlock>",
+      "body": "<p>Start your day with a character breakfast at Goofy's Kitchen.<br> - Meet Goofy and other Disney characters while you dine.<br> - Enjoy a delicious buffet with a variety of options.<br> - Make reservations in advance to secure your spot.</p>"
+    },
+    {
+      "title": "<titleBlock>Stroll Through the Hotel Grounds</titleBlock>",
+      "body": "<p>Take a leisurely stroll through the beautiful hotel grounds.<br> - Discover the nostalgic touches and Disney-themed decor.<br> - Explore the lush gardens and water features.<br> - Enjoy the serene atmosphere away from the park crowds.</p>"
+    },
+    {
+      "title": "<titleBlock>Special Events and Activities</titleBlock>",
+      "body": "<p>Participate in special events and activities at the hotel.<br> - Check the schedule for daily activities and entertainment.<br> - Enjoy movie nights, pool games, and fitness classes.<br> - Perfect for keeping the family entertained during your stay.</p>"
+    }
+  ]
+
+const grandCalifornianHotelTips = [
+    {
+      "title": "<titleBlock>Exclusive Entrance to Disney California Adventure</titleBlock>",
+      "body": "<p>Take advantage of the exclusive entrance to Disney California Adventure Park.<br> - Save time by entering directly from the hotel.<br> - Perfect for early access to popular attractions.<br> - Convenient for midday breaks and quick returns to the park.</p>"
+    },
+    {
+      "title": "<titleBlock>Relax at the Redwood Pool</titleBlock>",
+      "body": "<p>Unwind at the serene Redwood Pool area.<br> - Enjoy a swim in the themed pool or relax in a private cabana.<br> - Kids will love the Redwood Creek water slide.<br> - Poolside service is available for drinks and snacks.</p>"
+    },
+    {
+      "title": "<titleBlock>Indulge at Napa Rose</titleBlock>",
+      "body": "<p>Dine at the award-winning Napa Rose restaurant.<br> - Savor gourmet dishes and fine wines.<br> - Make reservations for the Chef's Counter for a unique dining experience.<br> - Perfect for a special occasion or romantic evening.</p>"
+    },
+    {
+      "title": "<titleBlock>Storytelling at the Hearthstone Lounge</titleBlock>",
+      "body": "<p>Enjoy a cozy evening with storytelling at the Hearthstone Lounge.<br> - Relax by the fireplace with a drink and listen to Disney stories.<br> - Perfect for families and guests of all ages.<br> - Check the schedule for storytelling times and themes.</p>"
+    },
+    {
+      "title": "<titleBlock>Explore the Hotel's Craftsman Architecture</titleBlock>",
+      "body": "<p>Appreciate the stunning Craftsman-style architecture and decor.<br> - Take a guided tour of the hotel's design and history.<br> - Discover hidden details and artistic touches.<br> - Perfect for architecture and design enthusiasts.</p>"
+    }
+  ]
+
+const pixarPlaceHotelTips = [
+    {
+      "title": "<titleBlock>Pixar-Themed Rooms</titleBlock>",
+      "body": "<p>Enjoy the whimsical Pixar-themed rooms at the Pixar Pier Hotel.<br> - Each room features decor inspired by beloved Pixar films.<br> - Look for hidden details and Easter eggs in the room design.<br> - Perfect for fans of Pixar's iconic characters and stories.</p>"
+    },
+    {
+      "title": "<titleBlock>Rooftop Pool with a View</titleBlock>",
+      "body": "<p>Relax at the rooftop pool with stunning views of the park.<br> - Take a refreshing swim or lounge in a poolside cabana.<br> - Enjoy panoramic views of Disney California Adventure.<br> - Poolside service is available for drinks and snacks.</p>"
+    },
+    {
+      "title": "<titleBlock>Character Encounters</titleBlock>",
+      "body": "<p>Meet your favorite Pixar characters at the hotel.<br> - Look for scheduled character meet-and-greet times.<br> - Perfect for photo opportunities and autographs.<br> - Check the hotel’s activity schedule for more details.</p>"
+    },
+    {
+      "title": "<titleBlock>Dining at the Pixar Pier Hotel</titleBlock>",
+      "body": "<p>Enjoy delicious dining options right at the hotel.<br> - Visit the hotel restaurant for Pixar-themed meals and treats.<br> - Try unique dishes inspired by your favorite Pixar films.<br> - Perfect for a convenient and themed dining experience.</p>"
+    },
+    {
+      "title": "<titleBlock>Exclusive Hotel Activities</titleBlock>",
+      "body": "<p>Participate in exclusive activities and events at the hotel.<br> - Check the schedule for movie nights and craft sessions.<br> - Enjoy themed scavenger hunts and games.<br> - Great for keeping the whole family entertained during your stay.</p>"
+    }
+  ]
+
+const downtownDisneyTips = [
+    {
+      "title": "<titleBlock>Early Morning Shopping</titleBlock>",
+      "body": "<p>Start your day early with shopping at Downtown Disney.<br> - Shops often open before the parks.<br> - Enjoy a quieter shopping experience.<br> - Check out unique Disney merchandise and souvenirs.</p>"
+    },
+    {
+      "title": "<titleBlock>Hidden Dining Gems</titleBlock>",
+      "body": "<p>Discover hidden dining gems in Downtown Disney.<br> - Explore restaurants and cafes off the main promenade.<br> - Find delicious treats and unique cuisine options.<br> - Perfect for a relaxing meal away from the crowds.</p>"
+    },
+    {
+      "title": "<titleBlock>Live Entertainment Schedule</titleBlock>",
+      "body": "<p>Check out the live entertainment schedule at Downtown Disney.<br> - Enjoy performances by local musicians and artists.<br> - Check the app for showtimes and locations.<br> - Perfect for adding a musical touch to your shopping and dining experience.</p>"
+    },
+    {
+      "title": "<titleBlock>Visit the LEGO Store</titleBlock>",
+      "body": "<p>Explore the LEGO Store for interactive fun.<br> - Build your own LEGO creations at the Build-A-Mini station.<br> - Marvel at the LEGO sculptures throughout the store.<br> - Perfect for LEGO enthusiasts of all ages.</p>"
+    },
+    {
+      "title": "<titleBlock>Nighttime Ambiance</titleBlock>",
+      "body": "<p>Experience the vibrant nighttime ambiance of Downtown Disney.<br> - Enjoy the festive atmosphere with lights and music.<br> - Take a leisurely stroll after dark.<br> - Perfect for a relaxing evening after a day at the parks.</p>"
+    }
+  ]
+  
   
   
 // Function to update the tips for the parks
 let tipIndex = 0;
 
 function updateTip() {
-    const titleElement = document.querySelector('titleBlock');
-    const tipInfoElement = document.getElementById('tipInfo');
+    const titleElement = document.querySelector('titleBlock'); // Adjust if 'titleBlock' is a class
+    const tipInfoElement = document.getElementById('tipInfo'); // Assuming 'tipInfo' is the ID of the element to display tips
     let opacity = 1;
+    let tipArrayLength = 5; // Default length for all locations except Disneyland and California Adventure
+
+    // Determine the length of the tips array based on the displayedLocation
+    switch (displayedLocation) {
+        case 'Disneyland':
+        case 'DCA':
+            tipArrayLength = 10;
+            break;
+        default:
+            tipArrayLength = 5;
+            break;
+    }
 
     const fadeInterval = setInterval(() => {
         if (opacity > 0) {
@@ -154,16 +343,36 @@ function updateTip() {
             titleElement.style.opacity = tipInfoElement.style.opacity = opacity;
         } else {
             clearInterval(fadeInterval);
-            
-            if (["DCA", "Grand", "Pixar"].includes(displayedLocation)) {
-                titleElement.innerHTML = californiaAdventureTips[tipIndex].title;
-                tipInfoElement.innerHTML = californiaAdventureTips[tipIndex].body;
-            } else {
-                titleElement.innerHTML = disneylandTips[tipIndex].title;
-                tipInfoElement.innerHTML = disneylandTips[tipIndex].body;
+            console.log(tipIndex)
+            switch (displayedLocation) {
+                case 'Disneyland':
+                    titleElement.innerHTML = disneylandTips[tipIndex].title;
+                    tipInfoElement.innerHTML = disneylandTips[tipIndex].body;
+                    break;
+                case 'DCA':
+                    titleElement.innerHTML = californiaAdventureTips[tipIndex].title;
+                    tipInfoElement.innerHTML = californiaAdventureTips[tipIndex].body;
+                    break;
+                case 'Downtown':
+                    titleElement.innerHTML = downtownDisneyTips[tipIndex].title;
+                    tipInfoElement.innerHTML = downtownDisneyTips[tipIndex].body;
+                    break;
+                case 'Hotel':
+                    titleElement.innerHTML = disneylandHotelTips[tipIndex].title;
+                    tipInfoElement.innerHTML = disneylandHotelTips[tipIndex].body;
+                    break;
+                case 'Grand':
+                    titleElement.innerHTML = grandCalifornianHotelTips[tipIndex].title;
+                    tipInfoElement.innerHTML = grandCalifornianHotelTips[tipIndex].body;
+                    break;
+                case 'Pixar':
+                    titleElement.innerHTML = pixarPlaceHotelTips[tipIndex].title;
+                    tipInfoElement.innerHTML = pixarPlaceHotelTips[tipIndex].body;
+                    break;
+                default:
             }
 
-            tipIndex = (tipIndex + 1) % disneylandTips.length;
+            tipIndex = (tipIndex + 1) % tipArrayLength;
 
             const fadeInInterval = setInterval(() => {
                 if (opacity < 1) {
@@ -176,6 +385,7 @@ function updateTip() {
         }
     }, 50);
 }
+
 
 updateTip()
 
@@ -453,13 +663,78 @@ document.getElementById("audioButton").addEventListener('click', function(){
 function populateWaitTimes(park) {
     let parkId;
     const waitContainer = document.querySelector('.waitContainer');
+    
     if (park === 'Disneyland') {
         parkId = "DisneylandResortMagicKingdom";
+        // Example specific functionality for Disneyland if needed
+        // You can add specific logic here for Disneyland
     } else if (park === 'DCA') {
         parkId = "DisneylandResortCaliforniaAdventure";
+        // Example specific functionality for DCA if needed
+        // You can add specific logic here for California Adventure
     } else {
-        console.warn('Park ' + park + ' does not have wait times.');
-        return; // Exit function if park is not supported 
+        console.warn('Park ' + park + ' does not have wait times. Searching hotels.');
+
+        // Fetch and process data for Hotel or Grand if applicable
+        const url = 'https://api.themeparks.wiki/v1/entity/bfc89fd6-314d-44b4-b89e-df1a89cf991e/live';
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                waitContainer.innerHTML = '<h1>Hotel Resturant Status</h1 style="padding-left:40px;">';
+                let locations = [];
+                console.log(park)
+
+                if (park === "Hotel") {
+                    locations = ["Goofy's Kitchen", "Trader Sam's Enchanted Tiki Bar"];
+                } else if (park === "Grand") {
+                    locations = ["Napa Rose", "Storytellers Cafe", "GCH Craftsman Bar"];
+                } else {
+                    console.error("Invalid park type.");
+                    return;
+                }
+
+                locations.forEach(location => {
+                    const item = data.liveData.find(item => item.name === location);
+
+                    if (item) {
+                        const status = item.status;
+                        const backgroundColor = status === "OPERATING" ? 'rgba(100, 255, 100, 0.3)' :
+                                              status === "Down" ? 'rgba(164, 91, 0, 0.3)' :
+                                              status === "Refurbishment" ? 'rgba(255, 80, 80, 0.3)' :
+                                              'rgba(0, 0, 0, 0.4)';
+                        const waitTime = status;
+                        const attractionElement = document.createElement('div');
+                        attractionElement.classList.add('waitElement');
+                        // Append HTML to waitContainer
+                        attractionElement.innerHTML = `
+                        <div class="waitName">
+                            <span>${item.name}</span>
+                        </div>
+                        <div class="waitTime" style="background-color: ${backgroundColor};">
+                            <span>${waitTime}</span>
+                        </div>
+                    `;
+                    waitContainer.appendChild(attractionElement);
+                        console.log(attractionElement)
+                    } else {
+                        console.error(`Location '${location}' not found.`);
+                    }
+                    
+                    checkNone = document.getElementsByClassName('waitName')
+
+                    if(checkNone.length == 0){
+                        waitContainer.innerHTML = '<h1>Park is Closed</h1 style="padding-left:40px;">';
+                        if(displayWaitParkClosed==false){waitContainer.style.display = "none";}else{waitContainer.style.display = "block";}
+                    }else{waitContainer.style.display = "block";}
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching or processing data:', error);
+            });
+
+        waitContainer.style.display = "none"; // Hide container if park is not supported
+        return; // Exit function if park is not Disneyland or DCA
     }
 
     fetch(`https://cors-anywhere.herokuapp.com/https://api.themeparks.wiki/preview/parks/${parkId}/waittime`)
@@ -587,6 +862,12 @@ document.addEventListener('keydown', function(event) {
 document.addEventListener('keydown', function(event) {
     if (event.key === 'C' || event.key === 'c') {   
         cycleWaitInfo()
+    }
+});
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'T' || event.key === 't') {   
+        updateTip()
     }
 });
 
