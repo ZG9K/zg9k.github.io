@@ -177,12 +177,15 @@ function updateTip() {
     }, 50);
 }
 
+updateTip()
+
 // Set interval to update the tip every 20 seconds
 setInterval(updateTip, 20000);
 
 // Function to update the heading, image, and tips, based on the current location
 function updateLocationLabel(location) {
     var theme = "defaultTheme"
+    updateTip()
 
     const imagesArray = {
         Disneyland: "disneyland.png",
@@ -602,9 +605,10 @@ function getBackgroundColor(waitTime) {
 
 document.addEventListener('DOMContentLoaded', function (){
     setInterval(populateWaitTimes, 5 * 60 * 1000); // 5 minutes in milliseconds
-    }
-)
-
-
-
-  
+    document.getElementById("genieActive").addEventListener("change", function() {
+            populateWaitTimes(displayedLocation)});
+    document.getElementById("displayClosed").addEventListener("change", function() {
+        populateWaitTimes(displayedLocation)})
+    document.getElementById("displayWaitParkClosed").addEventListener("change", function() {
+        populateWaitTimes(displayedLocation)})
+})
