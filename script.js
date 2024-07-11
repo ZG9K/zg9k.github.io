@@ -324,18 +324,8 @@ function updateTip() {
     const titleElement = document.querySelector('titleBlock'); // Adjust if 'titleBlock' is a class
     const tipInfoElement = document.getElementById('tipInfo'); // Assuming 'tipInfo' is the ID of the element to display tips
     let opacity = 1;
-    let tipArrayLength = 5; // Default length for all locations except Disneyland and California Adventure
 
-    // Determine the length of the tips array based on the displayedLocation
-    switch (displayedLocation) {
-        case 'Disneyland':
-        case 'DCA':
-            tipArrayLength = 10;
-            break;
-        default:
-            tipArrayLength = 5;
-            break;
-    }
+    tipArrayLength = 10
 
     const fadeInterval = setInterval(() => {
         if (opacity > 0) {
@@ -343,7 +333,6 @@ function updateTip() {
             titleElement.style.opacity = tipInfoElement.style.opacity = opacity;
         } else {
             clearInterval(fadeInterval);
-            console.log(tipIndex)
             switch (displayedLocation) {
                 case 'Disneyland':
                     titleElement.innerHTML = disneylandTips[tipIndex].title;
@@ -354,20 +343,20 @@ function updateTip() {
                     tipInfoElement.innerHTML = californiaAdventureTips[tipIndex].body;
                     break;
                 case 'Downtown':
-                    titleElement.innerHTML = downtownDisneyTips[tipIndex].title;
-                    tipInfoElement.innerHTML = downtownDisneyTips[tipIndex].body;
+                    titleElement.innerHTML = downtownDisneyTips[(tipIndex >= 5) ? tipIndex - 5 : tipIndex].title;
+                    tipInfoElement.innerHTML = downtownDisneyTips[(tipIndex >= 5) ? tipIndex - 5 : tipIndex].body;
                     break;
                 case 'Hotel':
-                    titleElement.innerHTML = disneylandHotelTips[tipIndex].title;
-                    tipInfoElement.innerHTML = disneylandHotelTips[tipIndex].body;
+                    titleElement.innerHTML = disneylandHotelTips[(tipIndex >= 5) ? tipIndex - 5 : tipIndex].title;
+                    tipInfoElement.innerHTML = disneylandHotelTips[(tipIndex >= 5) ? tipIndex - 5 : tipIndex].body;
                     break;
                 case 'Grand':
-                    titleElement.innerHTML = grandCalifornianHotelTips[tipIndex].title;
-                    tipInfoElement.innerHTML = grandCalifornianHotelTips[tipIndex].body;
+                    titleElement.innerHTML = grandCalifornianHotelTips[(tipIndex >= 5) ? tipIndex - 5 : tipIndex].title;
+                    tipInfoElement.innerHTML = grandCalifornianHotelTips[(tipIndex >= 5) ? tipIndex - 5 : tipIndex].body;
                     break;
                 case 'Pixar':
-                    titleElement.innerHTML = pixarPlaceHotelTips[tipIndex].title;
-                    tipInfoElement.innerHTML = pixarPlaceHotelTips[tipIndex].body;
+                    titleElement.innerHTML = pixarPlaceHotelTips[(tipIndex >= 5) ? tipIndex - 5 : tipIndex].title;
+                    tipInfoElement.innerHTML = pixarPlaceHotelTips[(tipIndex >= 5) ? tipIndex - 5 : tipIndex].body;
                     break;
                 default:
             }
@@ -673,7 +662,7 @@ function populateWaitTimes(park) {
         // Example specific functionality for DCA if needed
         // You can add specific logic here for California Adventure
     } else {
-        console.warn('Park ' + park + ' does not have wait times. Searching hotels.');
+        console.log('Park ' + park + ' does not have wait times. Searching hotels...');
 
         // Fetch and process data for Hotel or Grand if applicable
         const url = 'https://api.themeparks.wiki/v1/entity/bfc89fd6-314d-44b4-b89e-df1a89cf991e/live';
@@ -683,14 +672,13 @@ function populateWaitTimes(park) {
             .then(data => {
                 waitContainer.innerHTML = '<h1>Hotel Resturant Status</h1 style="padding-left:40px;">';
                 let locations = [];
-                console.log(park)
 
                 if (park === "Hotel") {
                     locations = ["Goofy's Kitchen", "Trader Sam's Enchanted Tiki Bar"];
                 } else if (park === "Grand") {
                     locations = ["Napa Rose", "Storytellers Cafe", "GCH Craftsman Bar"];
                 } else {
-                    console.error("Invalid park type.");
+                    console.error("No valid locations found.");
                     return;
                 }
 
@@ -716,7 +704,6 @@ function populateWaitTimes(park) {
                         </div>
                     `;
                     waitContainer.appendChild(attractionElement);
-                        console.log(attractionElement)
                     } else {
                         console.error(`Location '${location}' not found.`);
                     }
