@@ -19,7 +19,7 @@
     <div class="midleftContainer">
       <div class="topTitle"><p id="Location"></p></div>
       <div class="midleftLower">
-      <div class="left" id="main" style="display:flex">
+      <div class="left" id="main" style="display:none">
       
         <div class="waitContainer" id="waitContainer">
           <h1>Fetching Wait Times...</h1>
@@ -40,7 +40,7 @@
         </div>
       </div>
 
-      <div class="middle fade-in-out-text" style="display:flex">
+      <div class="middle fade-in-out-text">
         <div class="infoElement">
         <titleBlock>Welcome to Disneyland Resort!</titleBlock>
         <p id="tipInfo">This is a replica page designed to reproduce and enhance the dashboard found on the TVs in the Disneyland Resort. Future plans for this page include:
@@ -86,7 +86,7 @@
           <img class="parkIcon" src="assets/exit-64.png">
           <div class="openingInfo">
           <head3>Disneyland</head3>
-          <p class="openingTimes">8:00 AM - 12:00 AM</p>
+          <p class="openingTimes" id="disneyOpenTimes">8:00 AM - 12:00 AM</p>
         </div>
         </div>
         <hr>
@@ -94,7 +94,7 @@
           <img class="parkIcon" src="assets/music-record-64.png">
           <div class="openingInfo">
           <head3>Disney California Adventure</head3>
-          <p class="openingTimes">8:00 AM - 10:00 PM</p>
+          <p class="openingTimes" id="californiaOpenTimes">8:00 AM - 10:00 PM</p>
         </div>
         </div>
         <hr>
@@ -145,7 +145,7 @@
       <head3>Fucntionality</head3>
       <head4>Wait Time Display</head4>
       <label class="checkboxContainer">Enable Wait Time Display
-        <input type="checkbox" checked="checked" id="waitTimeEnabled">
+        <input type="checkbox" id="waitTimeEnabled">
         <span class="checkmark"></span>
       </label>
 
@@ -180,6 +180,10 @@
   <div class="right" id="audio" style="display:none">
     <h1>Music Options</h1>
     <head3>Background Music</head3>
+
+      <input type="radio" id="disable" name="musicOption" value="disable">
+      <label for="disable">Disable Music</label><br>
+
       <p>Disneyland on TV Music</p>
       <input type="radio" id="splash" name="musicOption" value="splash">
       <label for="splash">Splash Screen</label><br>

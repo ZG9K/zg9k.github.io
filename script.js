@@ -34,14 +34,20 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-//enable + disable wait time display area
-document.getElementById("waitTimeEnabled").addEventListener('change', function() {
-    if(document.getElementById("waitTimeEnabled").checked===true){
-        document.getElementById("main").style.display="flex";
-    }else{
-        document.getElementById("main").style.display="none"
+// Function to update the display based on the checkbox state
+function updateWaitTimeDisplay() {
+    if (document.getElementById("waitTimeEnabled").checked === true) {
+        document.getElementById("main").style.display = "flex";
+    } else {
+        document.getElementById("main").style.display = "none";
     }
-})
+}
+
+// Add event listener for the checkbox change event
+document.getElementById("waitTimeEnabled").addEventListener('change', updateWaitTimeDisplay);
+
+// Check the state of the checkbox when the page loads
+window.addEventListener('load', updateWaitTimeDisplay);
 
 const locations = ['Disneyland', 'DCA', 'Downtown', 'Hotel', 'Grand', 'Pixar'];
 let currentIndex = 0;
@@ -513,9 +519,43 @@ function populateWaitTimes(park) {
     })
     .catch(error => {
         waitContainer.innerHTML = '<h1>Wait times could not be retreived.</h1 style="padding-left:40px;">';
-    });
+    })
         document.getElementById('waitContainer').scrollTop=0;
 }
+
+async function fetchParkOpenTimes() {
+    const disneylandAPI = 'https://cors-anywhere.herokuapp.com/https://api.themeparks.wiki/preview/parks/DisneylandResortMagicKingdom/calendar';
+    const californiaAdventureAPI = 'https://cors-anywhere.herokuapp.com/https://api.themeparks.wiki/preview/parks/DisneylandResortCaliforniaAdventure/calendar';
+
+    const [disneylandResponse, californiaResponse] = await Promise.all([
+      fetch(disneylandAPI),
+      fetch(californiaAdventureAPI)
+    ]);
+
+    const disneylandData = await disneylandResponse.json();
+    const californiaData = await californiaResponse.json();
+
+    const today = new Date().toISOString().split('T')[0];
+
+    const disneylandToday = disneylandData.find(day => day.date === today);
+    const californiaToday = californiaData.find(day => day.date === today);
+
+    if (disneylandToday) {
+      document.getElementById('disneyOpenTimes').textContent = formatTime(disneylandToday.openingTime) + ' - ' + formatTime(disneylandToday.closingTime);
+    }
+
+    if (californiaToday) {
+      document.getElementById('californiaOpenTimes').textContent = formatTime(californiaToday.openingTime) + ' - ' + formatTime(californiaToday.closingTime);
+    }
+  }
+
+  function formatTime(dateTimeString) {
+    const options = { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'America/Los_Angeles' };
+    const time = new Intl.DateTimeFormat('en-US', options).format(new Date(dateTimeString));
+    return time;
+  }
+
+  window.addEventListener('load', fetchParkOpenTimes);
 
 // Event listener for keydown event
 document.addEventListener('keydown', function(event) {

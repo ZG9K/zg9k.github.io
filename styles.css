@@ -40,7 +40,7 @@ body, html {
 
 /* Centered box */
 .overlay-content {
-    background-color: white;
+    background-color: rgba(255,255,255,1);
     padding: 20px;
     border-radius: 8px;
     text-align: center;
@@ -115,11 +115,11 @@ body, html {
     justify-content: flex-end;
 }
 .left{
-    width: 40%;
     background-color: rgba(240, 128, 128,0.0);
     padding:20px 20px 40px 80px;
     height:100%;
-    max-width: 560px;
+    max-width: 100%;
+    justify-content: left;
 }
 
 .topTitle p{
@@ -131,6 +131,7 @@ body, html {
 
 .waitContainer{
     max-width: 560px;
+    min-width: 560px;
     background-color: rgba(0, 0, 0, 0.4);
     height:100%;
     overflow-y: scroll;
@@ -139,6 +140,7 @@ body, html {
     scrollbar-width: none;  /* Firefox */
     padding: 0px 20px 0px 20px;
 }
+
 
 .waitElement{
     width: calc(100%-12px);
@@ -184,7 +186,6 @@ body, html {
 .waitContainer::-webkit-scrollbar {
     display: none;
   }
-  
 
 .middle {
     width: 65%;
@@ -196,6 +197,12 @@ body, html {
     display: flex;
     align-items: center;
 }
+
+@media screen and (max-width: 1500px) {
+    .middle {
+      display: none;
+    }
+  }
 
 .middle titleBlock{
     font-size: 60px;
