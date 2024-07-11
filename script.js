@@ -447,20 +447,16 @@ function populateWaitTimes(park) {
     const waitContainer = document.querySelector('.waitContainer');
     if (park === 'Disneyland') {
         parkId = "DisneylandResortMagicKingdom";
-        waitContainer.style.display = "block"
     } else if (park === 'DCA') {
         parkId = "DisneylandResortCaliforniaAdventure";
-        waitContainer.style.display = "block"
     } else {
         console.warn('Park ' + park + ' does not have wait times.');
-        waitContainer.style.display = "none"; 
         return; // Exit function if park is not supported 
     }
 
     fetch(`https://cors-anywhere.herokuapp.com/https://api.themeparks.wiki/preview/parks/${parkId}/waittime`)
     .then(response => response.json())
     .then(data => {
-        waitContainer.style.display = "block";
         waitContainer.innerHTML = '<h1>Live Wait Times</h1 style="padding-left:40px;">';
 
         let attractions = data;
@@ -524,14 +520,17 @@ function populateWaitTimes(park) {
         });
         document.getElementById('waitContainer').scrollTop=0;
         checkNone = document.getElementsByClassName('waitName')
+
         if(checkNone.length == 0){
             waitContainer.innerHTML = '<h1>Park is Closed</h1 style="padding-left:40px;">';
-            if(displayWaitParkClosed==false){waitContainer.style.display = "none";}
-        }
+            if(displayWaitParkClosed==false){waitContainer.style.display = "none";}else{waitContainer.style.display = "block";}
+        }else{waitContainer.style.display = "block";}
     })
     .catch(error => {
+        waitContainer.style.display = "block";
         waitContainer.innerHTML = '<h1>Wait times could not be retreived.</h1 style="padding-left:40px;">';
     })
+    
         document.getElementById('waitContainer').scrollTop=0;
 }
 
