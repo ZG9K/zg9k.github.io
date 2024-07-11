@@ -34,6 +34,15 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+//enable + disable wait time display area
+document.getElementById("waitTimeEnabled").addEventListener('change', function() {
+    if(document.getElementById("waitTimeEnabled").checked===true){
+        document.getElementById("main").style.display="flex";
+    }else{
+        document.getElementById("main").style.display="none"
+    }
+})
+
 const locations = ['Disneyland', 'DCA', 'Downtown', 'Hotel', 'Grand', 'Pixar'];
 let currentIndex = 0;
 infoContainer = document.getElementById('infoContainer')
@@ -451,8 +460,8 @@ function populateWaitTimes(park) {
         
             // If waitTime is null for both, sort by status
             const statusOrder = {
-                "Operating": 1,
-                "Down": 2,
+                "Down": 1,
+                "Operating": 2,
                 "Refurbishment": 3,
                 "Closed": 4,
                 "null": 5  // null status comes last
@@ -463,7 +472,7 @@ function populateWaitTimes(park) {
 
         attractions.forEach(attraction => {
             const waitTime = attraction.waitTime === null ? (attraction.status === null ? "Unknown" : attraction.status) : `${attraction.waitTime} Minutes`;
-            const backgroundColor = attraction.waitTime === null ? (attraction.status === "Operating" ? 'rgba(100, 255, 100, 0.3)' : (attraction.status === "Down" ? 'rgba(240,180,100,0.3)' : (attraction.status === "Refurbishment" ? 'rgba(255, 80, 80, 0.3)' : 'rgba(0, 0, 0, 0.4)'))) : getBackgroundColor(attraction.waitTime);
+            const backgroundColor = attraction.waitTime === null ? (attraction.status === "Operating" ? 'rgba(100, 255, 100, 0.3)' : (attraction.status === "Down" ? 'rgba(164,91,0,0.3)' : (attraction.status === "Refurbishment" ? 'rgba(255, 80, 80, 0.3)' : 'rgba(0, 0, 0, 0.4)'))) : getBackgroundColor(attraction.waitTime);
             const attractionElement = document.createElement('div');
             let lightningLaneTime = '';
 
