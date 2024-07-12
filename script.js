@@ -202,7 +202,7 @@ const californiaAdventureTips = [
       "body": "<p>Make the most of your time at Avengers Campus.<br> - Meet your favorite Marvel superheroes.<br> - Try the unique food offerings at Pym Test Kitchen.<br> - Check the app for showtimes and character appearances.</p>"
     },
     {
-      "title": "<titleBlock> and Genie+ Tips</titleBlock>",
+      "title": "<titleBlock>Genie+ Tips</titleBlock>",
       "body": "<p>Optimize your Genie+ usage.<br> - Book high-demand attractions first.<br> - Refresh the app frequently for new return times.<br> - Plan your day around reserved times.</p>"
     },
     {
@@ -678,7 +678,9 @@ function populateWaitTimes(park) {
                 } else if (park === "Grand") {
                     locations = ["Napa Rose", "Storytellers Cafe", "GCH Craftsman Bar"];
                 } else {
-                    console.error("No valid locations found.");
+                    console.error("No valid locations found. Trying again.");
+                    populateWaitTimes(displayedLocation);
+                    
                     return;
                 }
 
@@ -771,7 +773,7 @@ function populateWaitTimes(park) {
                 }
             }
 
-            if (waitTime.includes("Minutes") || displayClosed == true) {
+            if (waitTime.includes("Minutes") || displayClosed == true || waitTime.includes("Down")) {
                 attractionElement.classList.add('waitElement');
 
                 attractionElement.innerHTML = `
