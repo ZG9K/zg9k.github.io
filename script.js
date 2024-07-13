@@ -628,35 +628,42 @@ document.getElementById('dismiss-btn').addEventListener('click', function() {
 window.onload = checkScreenSize;
 window.onresize = checkScreenSize;
 
-function toggleRight(panel) {
-    var togglePanel = document.getElementById(panel);
-    
-    if (togglePanel.style.display == 'block') {
-        document.getElementById('parkInfo').style.display = 'block';
-        togglePanel.style.display = 'none';
+const parkInfo = document.getElementById('parkInfo');
+const settings = document.getElementById('settings');
+const audio = document.getElementById('audio');
+
+function togglePanel(panelId) {
+    const panel = document.getElementById(panelId);
+    if (panel.style.display === 'block') {
+        parkInfo.style.display = 'block';
+        panel.style.display = 'none';
     } else {
-        document.getElementById('settings').style.display = 'none';
-        document.getElementById('audio').style.display = 'none';
-        document.getElementById('parkInfo').style.display = 'none';
-        togglePanel.style.display = 'block';
+        settings.style.display = 'none';
+        audio.style.display = 'none';
+        parkInfo.style.display = 'none';
+        panel.style.display = 'block';
     }
 }
 
-document.addEventListener('visibilitychange', function() {
-    if (document.hidden) {
+
+// Event listeners for footer buttons
+document.getElementById("settingsButton").addEventListener('click', function() {
+    togglePanel("settings");
+});
+document.getElementById("audioButton").addEventListener('click', function() {
+    togglePanel("audio");
+});
+document.getElementById("exitButton").addEventListener('click', function() {
+    if(document.getElementById('parkInfo').style.display == 'none'){
         document.getElementById('settings').style.display = 'none';
         document.getElementById('audio').style.display = 'none';
-        document.getElementById('parkInfo').style.display = 'block' 
+        document.getElementById('parkInfo').style.display = 'block';
+    }else{
+        document.getElementById('parkInfo').style.display = 'none';
     }
+
 });
 
-//Stuff for footer buttons
-document.getElementById("settingsButton").addEventListener('click', function(){
-    toggleRight("settings")
-})
-document.getElementById("audioButton").addEventListener('click', function(){
-    toggleRight("audio")
-})
 
 function populateWaitTimes(park) {
     let parkId;
