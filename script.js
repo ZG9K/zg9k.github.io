@@ -474,7 +474,8 @@ async function getWeather() {
         const currentWeatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weathercode&timezone=America/Los_Angeles&lang=en`;
         const currentResponse = await fetch(currentWeatherUrl);
         const currentData = await currentResponse.json();
-        const currentWeather = getWeatherDescription(currentData.current.weathercode);
+        getWeatherDescription(currentData.current.weathercode);
+        console.log(currentData.current.weathercode)
         const currentTemp = Math.ceil(currentData.current.temperature_2m);
 
         document.getElementById("currentWeather").textContent = currentTemp+"°"
@@ -488,21 +489,29 @@ async function getWeather() {
 //TODO: add lil icons to show the weather state
 //TODO: add a "later" forecast section
 function getWeatherDescription(wmoCode) {
+    weatherIconCurrent = document.getElementById("weatherIconCurrent");
     switch (wmoCode) {
         case 1:
-            return 'Clear sky';
+            weatherIconCurrent.src = "assets/weather/sun.svg";
+            break;
         case 2:
-            return 'Nearly clear sky';
+            weatherIconCurrent.src = "assets/weather/suncloud.svg";
+            break;
         case 3:
-            return 'Partly cloudy';
+            weatherIconCurrent.src = "assets/weather/suncloud.svg";
+            break;
         case 4:
-            return 'Cloudy sky';
+            weatherIconCurrent.src = "assets/weather/cloud.svg";
+            break;
         case 5:
-            return 'Fog';
+            weatherIconCurrent.src = "assets/weather/cloud.svg";
+            break;
         case 10:
-            return 'Rain showers';
+            weatherIconCurrent.src = "assets/weather/rain.svg";
+            break;
         case 21:
-            return 'Thunderstorm';
+            weatherIconCurrent.src = "assets/weather/storm.svg";
+            break;
         default:
             return 'Unknown';
     }
@@ -665,8 +674,9 @@ function populateWaitTimes(park) {
         console.log('Park ' + park + ' does not have wait times. Searching hotels...');
 
         // Fetch and process data for Hotel or Grand if applicable
-        const url = 'https://api.themeparks.wiki/v1/entity/bfc89fd6-314d-44b4-b89e-df1a89cf991e/live';
+        const url = 'https://corsproxy.io/?https://api.themeparks.wiki/v1/entity/bfc89fd6-314d-44b4-b89e-df1a89cf991e/live';
 
+        // hotel info fetch
         fetch(url)
             .then(response => response.json())
             .then(data => {
@@ -726,7 +736,8 @@ function populateWaitTimes(park) {
         return; // Exit function if park is not Disneyland or DCA
     }
 
-    fetch(`https://cors-anywhere.herokuapp.com/https://api.themeparks.wiki/preview/parks/${parkId}/waittime`)
+    //park info fetch
+    fetch(`https://corsproxy.io/?https://api.themeparks.wiki/preview/parks/${parkId}/waittime`)
     .then(response => response.json())
     .then(data => {
         waitContainer.innerHTML = '<h1>Live Wait Times</h1 style="padding-left:40px;">';
@@ -807,8 +818,8 @@ function populateWaitTimes(park) {
 }
 
 async function fetchParkOpenTimes() {
-    const disneylandAPI = 'https://cors-anywhere.herokuapp.com/https://api.themeparks.wiki/preview/parks/DisneylandResortMagicKingdom/calendar';
-    const californiaAdventureAPI = 'https://cors-anywhere.herokuapp.com/https://api.themeparks.wiki/preview/parks/DisneylandResortCaliforniaAdventure/calendar';
+    const disneylandAPI = 'https://corsproxy.io/?https://api.themeparks.wiki/preview/parks/DisneylandResortMagicKingdom/calendar';
+    const californiaAdventureAPI = 'https://corsproxy.io/?https://api.themeparks.wiki/preview/parks/DisneylandResortCaliforniaAdventure/calendar';
 
     const [disneylandResponse, californiaResponse] = await Promise.all([
       fetch(disneylandAPI),

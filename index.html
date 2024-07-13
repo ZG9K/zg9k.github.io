@@ -1,7 +1,7 @@
 <head>
   <title>Disneyland Today</title>
   <link href="styles.css" rel="stylesheet">
-  <link rel="icon" type="image/png" href="assets/favicon.ico">
+  <link rel="icon" type="image/png" href="assets/icons/favicon.ico">
 </head>
 
 <body>
@@ -69,6 +69,7 @@
             <span class="defGrey">
               Current
             </span>
+            <img class="weatherIcon" id="weatherIconCurrent" src="assets/weather/sun.svg">
             <span id="currentWeather">
             </span>
           </div>
@@ -76,6 +77,7 @@
               <span class="defGrey">
                 Later
               </span>
+              <img class="weatherIcon" src="assets/weather/moon.svg" style="display:none">
               <span id="laterWeather">
                 ??°
               </span>
@@ -84,7 +86,7 @@
 
         <head3 style="font-size: 35px;">Park Hours</head3>
         <div class="openingContainer">
-          <img class="parkIcon" src="assets/disneyland.png">
+          <img class="parkIcon" src="assets/icons/disneylandIcon.png">
           <div class="openingInfo">
           <head3>Disneyland</head3>
           <p class="openingTimes" id="disneyOpenTimes">8:00 AM - 12:00 AM</p>
@@ -92,7 +94,7 @@
         </div>
         <hr>
         <div class="openingContainer">
-          <img class="parkIcon" src="assets/californiaAdventure.png">
+          <img class="parkIcon" src="assets/icons/californiaAdventureIcon.png">
           <div class="openingInfo">
           <head3>Disney California Adventure</head3>
           <p class="openingTimes" id="californiaOpenTimes">8:00 AM - 10:00 PM</p>
@@ -100,7 +102,7 @@
         </div>
         <hr>
         <div class="openingContainer">
-          <img class="parkIcon" src="assets/downtownDisney.png">
+          <img class="parkIcon" src="assets/icons/downtownDisneyIcon.png">
           <div class="openingInfo">
           <head3>Downtown Disney District</head3>
           <p class="openingTimes">8:00 AM - 1:00 AM</p>
@@ -165,7 +167,7 @@
         <span class="checkmark"></span>
       </label>
 
-      <label class="checkboxContainer">Auto-Hide when Empty
+      <label class="checkboxContainer">Show Waits when Empty
         <input type="checkbox" checked="checked" id="displayWaitParkClosed">
         <span class="checkmark"></span>
       </label><br>
@@ -235,13 +237,13 @@
   <div class="footer-container">
     <div class="footer">
         <button class="footer-button" id="audioButton">
-            <img src="assets/music-record-64.png" alt="Music">
+            <img src="assets/icons/musicIcon.png" alt="Music">
         </button>
         <button class="footer-button" id="settingsButton">
-            <img src="assets/settings-5-64.png" alt="Settings">
+            <img src="assets/icons/settingsIcon.png" alt="Settings">
         </button>
         <button class="footer-button" id="exitButton">
-          <img src="assets/exit-64.png" alt="Exit">
+          <img src="assets/icons/exitIcon.png" alt="Exit">
       </button>
     </div>
 </div>

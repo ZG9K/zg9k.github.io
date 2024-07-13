@@ -112,12 +112,11 @@ body, html {
 .midleftLower{
     display:flex;
     flex-direction: row;
-    height: 848px;
+    height: calc(100% - 172px);
     justify-content: flex-end;
 }
 .left{
     background-color: rgba(240, 128, 128,0.0);
-    padding:20px 20px 40px 80px;
     height:100%;
     max-width: 100%;
     justify-content: left;
@@ -135,7 +134,7 @@ body, html {
     max-width: 560px;
     min-width: 560px;
     background-color: rgba(0, 0, 0, 0.2);
-    height:100%;
+    margin:20px 20px 40px 80px;
     overflow-y: scroll;
     border-radius: 40px;
     -ms-overflow-style: none;  /* IE and Edge */
@@ -144,7 +143,7 @@ body, html {
 }
 
 .waitElement{
-    width: calc(100%-12px);
+    width: calc(100% - 12px);
     background-color: rgba(0, 0, 0, 0.4);
     margin-top:12px;
     height:auto;
@@ -191,18 +190,18 @@ body, html {
 .middle {
     width: 65%;
     background-color: rgba(173, 216, 230,0.0);
-    padding-right: 120px;
-    padding: 20px;
     box-sizing: border-box;
     margin: 0;
     display: flex;
-    max-height: 848px;
+    height: 100%;
     padding-top: 0px;
     align-items: center;
 }
 .infoElement{
-    max-height: 848px;
+    max-height: calc(100% - 172px);
     overflow-y: hidden;
+    margin-right: 120px;
+    margin: 20px;
 }
 .middle titleBlock{
     font-size: 60px;
@@ -268,6 +267,8 @@ body, html {
     flex-basis: 0;
     color:white;
     font-size: 40;
+    max-height: 80px;
+    align-items: center;
 }
 
 .footer-container {
@@ -441,4 +442,10 @@ label{
 
 input{
     cursor:pointer;
+}
+
+.weatherIcon{
+    height: 40%;
+    filter: invert(1);
+    transform: translateY(5px);
 }
