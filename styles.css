@@ -459,50 +459,7 @@ input{
     filter: invert(1);
     transform: translateY(5px);
 }
-
-@media screen and (max-width: 1289px) {
-    .midleftLower {
-        width: auto;
-        background-color: rgba(0, 0, 0, 0.3);
-    }
-    .middle{
-        width: auto;
-    }
-    .topTitle {
-        background-color: rgba(0, 0, 0, 0.3);
-    }
-    .right {
-        position: absolute;
-        background-color: rgba(8, 39, 80, 0.8);
-        justify-self: flex-end;
-        right: 0px;
-        display: none;
-        padding-bottom: 75px;
-        overflow-y: scroll;
-        scrollbar-width: 28px;
-    }
-    #exitButton {
-        display: flex;
-    }
-    .left{
-        width: auto;
-    }
-    .waitContainer{
-        width: auto;
-        margin: 12px;
-        height: 100%;
-        max-width: none;
-        min-width: none;
-
-    }
-    .footer-container{
-        background-color: rgba(0, 0, 0, 0.6);
-        border-radius: 30px 0px 0px 0px;
-        border: 3px solid black;
-    }
-}
-
-@media screen and (max-width: 970px){
+@media screen and (max-width: 1289px){
     .right {
         position: absolute;
         background-color: rgba(8, 39, 80, 0.8);
@@ -561,5 +518,47 @@ input{
     .waitElement{
         font-size: 16px;
         width: 100%;
+    }
+}
+
+@media screen and (max-width: 1289px) {
+    .midleftLower {
+        width: auto;
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+    .middle{
+        width: auto;
+    }
+    .topTitle {
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+    .right {
+        position: absolute;
+        background-color: rgba(8, 39, 80, 0.8);
+        justify-self: flex-end;
+        right: 0px;
+        display: none;
+        padding-bottom: 75px;
+        overflow-y: scroll;
+        scrollbar-width: 28px;
+    }
+    #exitButton {
+        display: flex;
+    }
+    .left{
+        width: auto;
+    }
+    .waitContainer{
+        width: auto;
+        margin: 12px;
+        height: 100%;
+        max-width: none;
+        min-width: none;
+
+    }
+    .footer-container{
+        background-color: rgba(0, 0, 0, 0.6);
+        border-radius: 30px 0px 0px 0px;
+        border: 3px solid black;
     }
 }
