@@ -81,6 +81,7 @@ body, html {
     transition: background 1.5s linear; /* Smooth transition for background */
     overflow: hidden;
     cursor:default;
+    scrollbar-width: none;
 }
 
 .container::before {
@@ -314,7 +315,6 @@ body, html {
 
 .credits{
     position: absolute;
-    width: 100%;
     justify-content: center;
     display: flex;
     color: rgba(0, 0, 0, 1);
