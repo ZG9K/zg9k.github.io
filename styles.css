@@ -326,6 +326,7 @@ body, html {
     border-color: rgba(0, 0, 0, 0.0);
     max-width: fit-content;
     bottom: 0;
+    width: 80%;
 }
 
 .credits a{
