@@ -166,7 +166,7 @@ body, html {
     backdrop-filter: blur(3px);
     border-width: 7px;
     border-style: solid;
-    border-color: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.2)
 }
 
 .waitElement{

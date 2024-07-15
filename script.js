@@ -453,23 +453,34 @@ function updateLocationDisplay(location) {
                 tab.style.backgroundColor = "rgba(8, 39, 80, 0.55)";
             });
         } else {
+            const locations = ['Disneyland', 'DCA', 'Downtown', 'Hotel', 'Grand', 'Pixar'];
             const backgroundArrays = {
                 'Disneyland': DisneylandBackgrounds,
-                'DCA': DCABackgrounds
+                'Downtown': DisneylandBackgrounds,
+                'Hotel': DisneylandBackgrounds,
+                'DCA': DCABackgrounds,
+                'Grand': DCABackgrounds,
+                'Pixar': DCABackgrounds
             };
+            
             const selectedArray = backgroundArrays[location];
-            const randomIndex = Math.floor(Math.random() * selectedArray.length);
-            const randomImagePath = selectedArray[randomIndex];
-            infoContainer.style.backgroundImage = `url('${randomImagePath}')`;
-
-            infoContainer.style.setProperty('--accentColor', '#dedede');
-            infoContainer.style.setProperty('--accentLighter', '#ffffff');
-            infoContainer.style.setProperty('--accentOneofThem', '#f2f2f2');
-            infoContainer.style.setProperty('--overlay-opacity', '0.5');
-
-            rightTabs.forEach(tab => {
-                tab.style.backgroundColor = "rgba(0, 0, 0, 0.55)";
-            });
+            
+            if (selectedArray && selectedArray.length > 0) {
+                const randomIndex = Math.floor(Math.random() * selectedArray.length);
+                const randomImagePath = selectedArray[randomIndex];
+                infoContainer.style.backgroundImage = `url('${randomImagePath}')`;
+            
+                infoContainer.style.setProperty('--accentColor', '#dedede');
+                infoContainer.style.setProperty('--accentLighter', '#ffffff');
+                infoContainer.style.setProperty('--accentOneofThem', '#f2f2f2');
+                infoContainer.style.setProperty('--overlay-opacity', '0.5');
+            
+                rightTabs.forEach(tab => {
+                    tab.style.backgroundColor = "rgba(0, 0, 0, 0.55)";
+                });
+            } else {
+                console.error("Image array not found or is empty for the given location:", location);
+            }
         }
     }
 }
