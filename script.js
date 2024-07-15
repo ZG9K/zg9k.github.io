@@ -64,7 +64,7 @@ function cycleWaitInfo() {
         if (isActive(currentLocation)) {
             populateWaitTimes(currentLocation);
             currentIndex = nextIndex;
-            updateLocationLabel(currentLocation);
+            updateLocationDisplay(currentLocation);
             break;
         }
         nextIndex = (nextIndex + 1) % locations.length;
@@ -314,8 +314,8 @@ const downtownDisneyTips = [
       "body": "<p>Experience the vibrant nighttime ambiance of Downtown Disney.<br> - Enjoy the festive atmosphere with lights and music.<br> - Take a leisurely stroll after dark.<br> - Perfect for a relaxing evening after a day at the parks.</p>"
     }
   ]
-  
-  
+
+
   
 // Function to update the tips for the parks
 let tipIndex = 0;
@@ -382,9 +382,23 @@ updateTip()
 setInterval(updateTip, 20000);
 
 // Function to update the heading, image, and tips, based on the current location
-function updateLocationLabel(location) {
+function updateLocationDisplay(location) {
     var theme = "defaultTheme"
     updateTip()
+
+    const DisneylandBackgrounds = [
+        "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1280/720/81/media/disneyparksjapan-prod/disneyparksjapan_v0001/1/media/dlr/videos/disneyland/gallery/disneyland-gallery02.jpg",
+        "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1280/720/81/media/disneyparksjapan-prod/disneyparksjapan_v0001/1/media/dlr/videos/disneyland/gallery/disneyland-gallery10.jpg",
+        "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1280/720/81/media/disneyparksjapan-prod/disneyparksjapan_v0001/1/media/dlr/videos/disneyland/gallery/disneyland-gallery11.jpg",
+        "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1280/720/81/media/disneyparksjapan-prod/disneyparksjapan_v0001/1/media/dlr/videos/disneyland/gallery/disneyland-gallery20.jpg"
+    ];
+    
+    const DCABackgrounds = [
+        "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1280/720/81/media/disneyparksjapan-prod/disneyparksjapan_v0001/1/media/dlr/videos/disney-california-adventure/gallery/disney-california-adventure-gallery20.jpg",
+        "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1280/720/81/media/disneyparksjapan-prod/disneyparksjapan_v0001/1/media/dlr/videos/disney-california-adventure/gallery/disney-california-adventure-gallery21.jpg",
+        "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1280/720/81/media/disneyparksjapan-prod/disneyparksjapan_v0001/1/media/dlr/videos/disney-california-adventure/gallery/disney-california-adventure-gallery26.jpg",
+        "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1280/720/81/media/disneyparksjapan-prod/disneyparksjapan_v0001/1/media/dlr/videos/disney-california-adventure/gallery/disney-california-adventure-gallery00.jpg"
+    ];
 
     const imagesArray = {
         Disneyland: "disneyland.png",
@@ -425,11 +439,45 @@ function updateLocationLabel(location) {
     }
 
     function setBackgroundImage(theme, location) {
-        const imagePath = `assets/backgrounds//${imagesArray[location]}`;   
-        infoContainer.style.backgroundImage = `url('${imagePath}')`;
+
+        rightTabs = document.querySelectorAll('.right');
+        
+        if (document.getElementById("randomBackground").checked == false) {
+            const imagePath = `assets/backgrounds/${imagesArray[location]}`;
+            infoContainer.style.backgroundImage = `url('${imagePath}')`;
+            infoContainer.style.setProperty('--overlay-opacity', '0.0');
+            infoContainer.style.setProperty('--accentColor', '#99b8df');
+            infoContainer.style.setProperty('--accentLighter', '#dfeeff');
+            infoContainer.style.setProperty('--accentOneofThem', '#cee4ff ');
+            rightTabs.forEach(tab => {
+                tab.style.backgroundColor = "rgba(8, 39, 80, 0.55)";
+            });
+        } else {
+            const backgroundArrays = {
+                'Disneyland': DisneylandBackgrounds,
+                'DCA': DCABackgrounds
+            };
+            const selectedArray = backgroundArrays[location];
+            const randomIndex = Math.floor(Math.random() * selectedArray.length);
+            const randomImagePath = selectedArray[randomIndex];
+            infoContainer.style.backgroundImage = `url('${randomImagePath}')`;
+
+            infoContainer.style.setProperty('--accentColor', '#dedede');
+            infoContainer.style.setProperty('--accentLighter', '#ffffff');
+            infoContainer.style.setProperty('--accentOneofThem', '#f2f2f2');
+            infoContainer.style.setProperty('--overlay-opacity', '0.5');
+
+            rightTabs.forEach(tab => {
+                tab.style.backgroundColor = "rgba(0, 0, 0, 0.55)";
+            });
+        }
     }
 }
 
+document.getElementById("randomBackground").addEventListener('change', function() {
+    updateLocationDisplay(displayedLocation);
+});
+    
 cycleWaitInfo()
 setInterval(cycleWaitInfo,1000*90)
 
@@ -475,10 +523,9 @@ async function getWeather() {
         const currentResponse = await fetch(currentWeatherUrl);
         const currentData = await currentResponse.json();
         getWeatherDescription(currentData.current.weathercode);
-        console.log(currentData.current.weathercode)
         const currentTemp = Math.ceil(currentData.current.temperature_2m);
 
-        document.getElementById("currentWeather").textContent = currentTemp+"°"
+        document.getElementById("currentWeather").textContent = useCelcius ? currentTemp + "°" : Math.round(currentTemp * 9 / 5 + 32) + "°";
 
     } catch (error) {
         console.log('Error fetching weather data:', error);
@@ -518,6 +565,11 @@ function getWeatherDescription(wmoCode) {
 }
 
 getWeather();
+
+setInterval(getWeather(), 1000*60*10)
+
+document.getElementById("useCelcius").addEventListener('change', getWeather);
+
 
 
 //musiccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -653,16 +705,6 @@ document.getElementById("settingsButton").addEventListener('click', function() {
 document.getElementById("audioButton").addEventListener('click', function() {
     togglePanel("audio");
 });
-document.getElementById("exitButton").addEventListener('click', function() {
-    if(document.getElementById('parkInfo').style.display == 'none'){
-        document.getElementById('settings').style.display = 'none';
-        document.getElementById('audio').style.display = 'none';
-        document.getElementById('parkInfo').style.display = 'block';
-    }else{
-        document.getElementById('parkInfo').style.display = 'none';
-    }
-
-});
 
 
 function populateWaitTimes(park) {
@@ -791,7 +833,7 @@ function populateWaitTimes(park) {
                 }
             }
 
-            if (waitTime.includes("Minutes") || displayClosed == true || waitTime.includes("Down")) {
+            if (waitTime.includes("Minutes") || displayClosed == true || waitTime.includes("Down") ) {
                 attractionElement.classList.add('waitElement');
 
                 attractionElement.innerHTML = `
@@ -819,6 +861,7 @@ function populateWaitTimes(park) {
     .catch(error => {
         waitContainer.style.display = "block";
         waitContainer.innerHTML = '<h1>Wait times could not be retreived.</h1 style="padding-left:40px;">';
+        console.error(error)
     })
     
         document.getElementById('waitContainer').scrollTop=0;

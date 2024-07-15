@@ -63,7 +63,7 @@
         <time>12:57 AM<br></time>
         <br>
 
-        <p style="margin:0px; color:#99b8df">Weather in Anaheim, CA.</p>
+        <p style="margin:0px; color:var(--accentColor)">Weather in Anaheim, CA.</p>
         <div class="weatherContainer">
           <div class="weatherElem">
             <span class="defGrey">
@@ -172,7 +172,7 @@
         <span class="checkmark"></span>
       </label><br>
 
-      <head4>Location Settings</head4>
+      <head4>Misc Settings</head4>
       <label class="checkboxContainer">Display Anaheim Time
         <input type="checkbox" checked="checked" id="anaheimTime">
         <span class="checkmark"></span>
@@ -180,6 +180,16 @@
 
       <label class="checkboxContainer">Display Anaheim Weather
         <input type="checkbox" checked="checked" id="anaheimWeather">
+        <span class="checkmark"></span>
+      </label>
+
+      <label class="checkboxContainer">Use Celcius
+        <input type="checkbox" checked="checked" id="useCelcius">
+        <span class="checkmark"></span>
+      </label>
+
+      <label class="checkboxContainer">Dark Mode
+        <input type="checkbox" id="randomBackground">
         <span class="checkmark"></span>
       </label>
 
@@ -243,7 +253,7 @@
             <img src="assets/icons/settingsIcon.png" alt="Settings">
         </button>
         <button class="footer-button" id="exitButton">
-          <img src="assets/icons/exitIcon.png" alt="Exit">
+          <a href=../index.html><img src="assets/icons/exitIcon.png" alt="Exit"></a>
       </button>
     </div>
 </div>
