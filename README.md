@@ -1,6 +1,6 @@
 # DisneylandToday
 A faithful web recreation of the **Disneyland Today Broadcast Channel**, providing all you need to know on the Disney Parks right in your browser.
-The site utilises the **{Theme Park API}(https://api.themeparks.wiki/)** to fetch and display the **live status** of every attraction in Disneyland Resort. Put it on your TV*, in the parks, or at home, and have the magic feeling of the Disneyland Resort wherever you wish.
+The site utilises the **[Theme Park API](https://api.themeparks.wiki/)** to fetch and display the **live status** of every attraction in Disneyland Resort. Put it on your TV*, in the parks, or at home, and have the magic feeling of the Disneyland Resort wherever you wish.
 
 ## Features!
 - Accurate weather, time, and park opening information.
