@@ -1,3 +1,7 @@
+// disneyland id 7340550b-c14d-4def-80bb-acdb51d49a66
+// dca id 832fcd51-ea19-4e77-85c7-75d5843b127c
+
+
 document.addEventListener('DOMContentLoaded', function() {
     // Get all checkboxes inside the div with id "settings"
     var checkboxes = document.querySelectorAll('#settings input[type="checkbox"]');
@@ -136,7 +140,6 @@ const generalTips = [
       "body": "<p>Plan your meals to avoid long waits and crowded dining areas.<br> - Use mobile ordering through the Disneyland app for quick service.<br> - Eat during off-peak hours for shorter lines.<br> - Explore various dining options, including quick snacks and sit-down restaurants.</p>"
     }
   ]
-  
 const disneylandTips = [
     {
       "title": "<titleBlock>Rope Drop Fantasyland</titleBlock>",
@@ -179,7 +182,6 @@ const disneylandTips = [
       "body": "<p>Strategize your Genie+ selections for a seamless experience.<br> - Reserve Lightning Lane passes for high-demand attractions first.<br> - Use the app to monitor return times and availability.<br> - Plan your day around your Genie+ reservations to avoid long waits.</p>"
     }
   ]
-
 const californiaAdventureTips = [
     {
       "title": "<titleBlock>Rope Drop Radiator Springs Racers</titleBlock>",
@@ -222,7 +224,6 @@ const californiaAdventureTips = [
       "body": "<p>Shop for unique souvenirs on Buena Vista Street.<br> - Visit Elias & Co. for Disney merchandise.<br> - Find unique items at Trolley Treats.<br> - Enjoy the nostalgic atmosphere of 1920s Los Angeles.</p>"
     }
   ]
-
 const disneylandHotelTips = [
     {
       "title": "<titleBlock>Relax at the Monorail Pool</titleBlock>",
@@ -245,7 +246,6 @@ const disneylandHotelTips = [
       "body": "<p>Participate in special events and activities at the hotel.<br> - Check the schedule for daily activities and entertainment.<br> - Enjoy movie nights, pool games, and fitness classes.<br> - Perfect for keeping the family entertained during your stay.</p>"
     }
   ]
-
 const grandCalifornianHotelTips = [
     {
       "title": "<titleBlock>Exclusive Entrance to Disney California Adventure</titleBlock>",
@@ -268,7 +268,6 @@ const grandCalifornianHotelTips = [
       "body": "<p>Appreciate the stunning Craftsman-style architecture and decor.<br> - Take a guided tour of the hotel's design and history.<br> - Discover hidden details and artistic touches.<br> - Perfect for architecture and design enthusiasts.</p>"
     }
   ]
-
 const pixarPlaceHotelTips = [
     {
       "title": "<titleBlock>Pixar-Themed Rooms</titleBlock>",
@@ -291,7 +290,6 @@ const pixarPlaceHotelTips = [
       "body": "<p>Participate in exclusive activities and events at the hotel.<br> - Check the schedule for movie nights and craft sessions.<br> - Enjoy themed scavenger hunts and games.<br> - Great for keeping the whole family entertained during your stay.</p>"
     }
   ]
-
 const downtownDisneyTips = [
     {
       "title": "<titleBlock>Early Morning Shopping</titleBlock>",
@@ -314,8 +312,6 @@ const downtownDisneyTips = [
       "body": "<p>Experience the vibrant nighttime ambiance of Downtown Disney.<br> - Enjoy the festive atmosphere with lights and music.<br> - Take a leisurely stroll after dark.<br> - Perfect for a relaxing evening after a day at the parks.</p>"
     }
   ]
-
-
   
 // Function to update the tips for the parks
 let tipIndex = 0;
@@ -375,10 +371,7 @@ function updateTip() {
     }, 50);
 }
 
-
 updateTip()
-
-// Set interval to update the tip every 20 seconds
 setInterval(updateTip, 20000);
 
 // Function to update the heading, image, and tips, based on the current location
@@ -724,10 +717,12 @@ function populateWaitTimes(park) {
     
     if (park === 'Disneyland') {
         parkId = "DisneylandResortMagicKingdom";
+        parkEntityId = '7340550b-c14d-4def-80bb-acdb51d49a66'
         // Example specific functionality for Disneyland if needed
         // You can add specific logic here for Disneyland
     } else if (park === 'DCA') {
         parkId = "DisneylandResortCaliforniaAdventure";
+        parkEntityId = '832fcd51-ea19-4e77-85c7-75d5843b127c'
         // Example specific functionality for DCA if needed
         // You can add specific logic here for California Adventure
     } else {
@@ -797,46 +792,63 @@ function populateWaitTimes(park) {
     }
 
     //park info fetch
-    fetch(`https://corsproxy.io/?https://api.themeparks.wiki/preview/parks/${parkId}/waittime`)
+    fetch(`https://corsproxy.io/?https://api.themeparks.wiki/v1/entity/${parkEntityId}/live`)
     .then(response => response.json())
     .then(data => {
         waitContainer.innerHTML = '<h1>Live Wait Times</h1 style="padding-left:40px;">';
 
-        let attractions = data;
+        let attractions = data.liveData;
+        console.log(attractions)
 
         attractions.sort((a, b) => {
+            // Function to get the wait time safely
+            const getWaitTime = (attraction) => {
+                return attraction.queue?.STANDBY?.waitTime ?? null;
+            };
+        
+            const waitTimeA = getWaitTime(a);
+            const waitTimeB = getWaitTime(b);
+        
             // Sort by waitTime descending (highest to lowest)
-            if (a.waitTime !== null && b.waitTime !== null) {
-                return b.waitTime - a.waitTime;
-            } else if (a.waitTime !== null) {
+            if (waitTimeA !== null && waitTimeB !== null) {
+                return waitTimeB - waitTimeA;
+            } else if (waitTimeA !== null) {
                 return -1; // a has waitTime, b does not, so a comes before b
-            } else if (b.waitTime !== null) {
+            } else if (waitTimeB !== null) {
                 return 1; // b has waitTime, a does not, so b comes before a
             }
         
             // If waitTime is null for both, sort by status
             const statusOrder = {
-                "Down": 1,
-                "Operating": 2,
-                "Refurbishment": 3,
-                "Closed": 4,
+                "DOWN": 1,
+                "OPERATING": 2,
+                "REFURBISHMENT": 3,
+                "CLOSED": 4,
                 "null": 5  // null status comes last
             };
         
-            return statusOrder[a.status] - statusOrder[b.status];
+            const statusA = a.status ?? "null";
+            const statusB = b.status ?? "null";
+        
+            return statusOrder[statusA] - statusOrder[statusB];
         });
+        
 
         attractions.forEach(attraction => {
-            const waitTime = attraction.waitTime === null ? (attraction.status === null ? "Unknown" : attraction.status) : `${attraction.waitTime} Minutes`;
-            const backgroundColor = attraction.waitTime === null ? (attraction.status === "Operating" ? 'rgba(100, 255, 100, 0.3)' : (attraction.status === "Down" ? 'rgba(164,91,0,0.3)' : (attraction.status === "Refurbishment" ? 'rgba(255, 80, 80, 0.3)' : 'rgba(0, 0, 0, 0.4)'))) : getBackgroundColor(attraction.waitTime);
+
+            console.log(attraction)
+            const  waitTime = attraction.queue?.STANDBY?.waitTime === null || attraction.queue?.STANDBY?.waitTime === undefined
+            ? (attraction.status === null || attraction.status === undefined ? "Unknown" : attraction.status)
+            : `${attraction.queue.STANDBY.waitTime} Minutes`;
+            const backgroundColor = attraction.queue.STANDBY.waitTime === null ? (attraction.status === "Operating" ? 'rgba(100, 255, 100, 0.3)' : (attraction.status === "Down" ? 'rgba(164,91,0,0.3)' : (attraction.status === "Refurbishment" ? 'rgba(255, 80, 80, 0.3)' : 'rgba(0, 0, 0, 0.4)'))) : getBackgroundColor(attraction.queue.STANDBY.waitTime);
             const attractionElement = document.createElement('div');
             let lightningLaneTime = '';
 
-            if (attraction.meta.returnTime && attraction.meta.returnTime.returnStart !== undefined) {
-                if (attraction.meta.returnTime.returnStart === null) {
+            if (attraction.queue.RETURN_TIME && attraction.queue.RETURN_TIME.returnStart !== undefined) {
+                if (attraction.queue.RETURN_TIME.returnStart === null) {
                     lightningLaneTime = 'Sold Out';
                 } else {
-                    const returnTime = new Date(attraction.meta.returnTime.returnStart);
+                    const returnTime = new Date(attraction.queue.RETURN_TIME.returnStart);
                     const options = { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Los_Angeles' };
                     const formattedTime = returnTime.toLocaleString('en-US', options);
 
@@ -871,7 +883,7 @@ function populateWaitTimes(park) {
     })
     .catch(error => {
         waitContainer.style.display = "block";
-        waitContainer.innerHTML = '<h1>Wait times could not be retreived.</h1 style="padding-left:40px;">';
+        //waitContainer.innerHTML = '<h1>Wait times could not be retreived.</h1 style="padding-left:40px;">';
         console.error(error)
     })
     
@@ -879,12 +891,12 @@ function populateWaitTimes(park) {
 }
 
 async function fetchParkOpenTimes() {
-    const disneylandAPI = 'https://corsproxy.io/?https://api.themeparks.wiki/preview/parks/DisneylandResortMagicKingdom/calendar';
-    const californiaAdventureAPI = 'https://corsproxy.io/?https://api.themeparks.wiki/preview/parks/DisneylandResortCaliforniaAdventure/calendar';
+    const disneylandAPI = 'https://corsproxy.io/?https://api.themeparks.wiki/v1/entity/7340550b-c14d-4def-80bb-acdb51d49a66/schedule';
+    const californiaAdventureAPI = 'https://corsproxy.io/?https://api.themeparks.wiki/v1/entity/832fcd51-ea19-4e77-85c7-75d5843b127c/schedule';
 
     const [disneylandResponse, californiaResponse] = await Promise.all([
-      fetch(disneylandAPI),
-      fetch(californiaAdventureAPI)
+        fetch(disneylandAPI),
+        fetch(californiaAdventureAPI)
     ]);
 
     const disneylandData = await disneylandResponse.json();
@@ -892,25 +904,34 @@ async function fetchParkOpenTimes() {
 
     const today = new Date().toISOString().split('T')[0];
 
-    const disneylandToday = disneylandData.find(day => day.date === today);
-    const californiaToday = californiaData.find(day => day.date === today);
+    // Extract today's schedule for Disneyland
+    const disneylandTodaySchedule = disneylandData.schedule.find(day => day.date === today);
+    // Extract today's schedule for California Adventure
+    const californiaTodaySchedule = californiaData.schedule.find(day => day.date === today);
 
-    if (disneylandToday) {
-      document.getElementById('disneyOpenTimes').textContent = formatTime(disneylandToday.openingTime) + ' - ' + formatTime(disneylandToday.closingTime);
+    if (disneylandTodaySchedule) {
+        document.getElementById('disneyOpenTimes').textContent = 
+            formatTime(disneylandTodaySchedule.openingTime) + ' - ' + 
+            formatTime(disneylandTodaySchedule.closingTime);
     }
 
-    if (californiaToday) {
-      document.getElementById('californiaOpenTimes').textContent = formatTime(californiaToday.openingTime) + ' - ' + formatTime(californiaToday.closingTime);
+    if (californiaTodaySchedule) {
+        document.getElementById('californiaOpenTimes').textContent = 
+            formatTime(californiaTodaySchedule.openingTime) + ' - ' + 
+            formatTime(californiaTodaySchedule.closingTime);
     }
-  }
+}
+
+// Assuming formatTime function is defined somewhere in your code
+
 
   function formatTime(dateTimeString) {
     const options = { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'America/Los_Angeles' };
     const time = new Intl.DateTimeFormat('en-US', options).format(new Date(dateTimeString));
     return time;
-  }
+}
 
-  window.addEventListener('load', fetchParkOpenTimes);
+window.addEventListener('load', fetchParkOpenTimes);
 
 // Event listener for keydown event
 document.addEventListener('keydown', function(event) {
@@ -950,7 +971,6 @@ function getBackgroundColor(waitTime) {
 
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
-
 
 document.addEventListener('DOMContentLoaded', function (){
     setInterval(populateWaitTimes, 5 * 60 * 1000); // 5 minutes in milliseconds
