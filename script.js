@@ -1,3 +1,7 @@
+// disneyland id 7340550b-c14d-4def-80bb-acdb51d49a66
+// dca id 832fcd51-ea19-4e77-85c7-75d5843b127c
+
+
 document.addEventListener('DOMContentLoaded', function() {
     // Get all checkboxes inside the div with id "settings"
     var checkboxes = document.querySelectorAll('#settings input[type="checkbox"]');
@@ -64,7 +68,7 @@ function cycleWaitInfo() {
         if (isActive(currentLocation)) {
             populateWaitTimes(currentLocation);
             currentIndex = nextIndex;
-            updateLocationLabel(currentLocation);
+            updateLocationDisplay(currentLocation);
             break;
         }
         nextIndex = (nextIndex + 1) % locations.length;
@@ -136,7 +140,6 @@ const generalTips = [
       "body": "<p>Plan your meals to avoid long waits and crowded dining areas.<br> - Use mobile ordering through the Disneyland app for quick service.<br> - Eat during off-peak hours for shorter lines.<br> - Explore various dining options, including quick snacks and sit-down restaurants.</p>"
     }
   ]
-  
 const disneylandTips = [
     {
       "title": "<titleBlock>Rope Drop Fantasyland</titleBlock>",
@@ -179,7 +182,6 @@ const disneylandTips = [
       "body": "<p>Strategize your Genie+ selections for a seamless experience.<br> - Reserve Lightning Lane passes for high-demand attractions first.<br> - Use the app to monitor return times and availability.<br> - Plan your day around your Genie+ reservations to avoid long waits.</p>"
     }
   ]
-
 const californiaAdventureTips = [
     {
       "title": "<titleBlock>Rope Drop Radiator Springs Racers</titleBlock>",
@@ -222,7 +224,6 @@ const californiaAdventureTips = [
       "body": "<p>Shop for unique souvenirs on Buena Vista Street.<br> - Visit Elias & Co. for Disney merchandise.<br> - Find unique items at Trolley Treats.<br> - Enjoy the nostalgic atmosphere of 1920s Los Angeles.</p>"
     }
   ]
-
 const disneylandHotelTips = [
     {
       "title": "<titleBlock>Relax at the Monorail Pool</titleBlock>",
@@ -245,7 +246,6 @@ const disneylandHotelTips = [
       "body": "<p>Participate in special events and activities at the hotel.<br> - Check the schedule for daily activities and entertainment.<br> - Enjoy movie nights, pool games, and fitness classes.<br> - Perfect for keeping the family entertained during your stay.</p>"
     }
   ]
-
 const grandCalifornianHotelTips = [
     {
       "title": "<titleBlock>Exclusive Entrance to Disney California Adventure</titleBlock>",
@@ -268,7 +268,6 @@ const grandCalifornianHotelTips = [
       "body": "<p>Appreciate the stunning Craftsman-style architecture and decor.<br> - Take a guided tour of the hotel's design and history.<br> - Discover hidden details and artistic touches.<br> - Perfect for architecture and design enthusiasts.</p>"
     }
   ]
-
 const pixarPlaceHotelTips = [
     {
       "title": "<titleBlock>Pixar-Themed Rooms</titleBlock>",
@@ -291,7 +290,6 @@ const pixarPlaceHotelTips = [
       "body": "<p>Participate in exclusive activities and events at the hotel.<br> - Check the schedule for movie nights and craft sessions.<br> - Enjoy themed scavenger hunts and games.<br> - Great for keeping the whole family entertained during your stay.</p>"
     }
   ]
-
 const downtownDisneyTips = [
     {
       "title": "<titleBlock>Early Morning Shopping</titleBlock>",
@@ -314,8 +312,6 @@ const downtownDisneyTips = [
       "body": "<p>Experience the vibrant nighttime ambiance of Downtown Disney.<br> - Enjoy the festive atmosphere with lights and music.<br> - Take a leisurely stroll after dark.<br> - Perfect for a relaxing evening after a day at the parks.</p>"
     }
   ]
-  
-  
   
 // Function to update the tips for the parks
 let tipIndex = 0;
@@ -375,16 +371,27 @@ function updateTip() {
     }, 50);
 }
 
-
 updateTip()
-
-// Set interval to update the tip every 20 seconds
 setInterval(updateTip, 20000);
 
 // Function to update the heading, image, and tips, based on the current location
-function updateLocationLabel(location) {
+function updateLocationDisplay(location) {
     var theme = "defaultTheme"
     updateTip()
+
+    const DisneylandBackgrounds = [
+        "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1280/720/81/media/disneyparksjapan-prod/disneyparksjapan_v0001/1/media/dlr/videos/disneyland/gallery/disneyland-gallery02.jpg",
+        "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1280/720/81/media/disneyparksjapan-prod/disneyparksjapan_v0001/1/media/dlr/videos/disneyland/gallery/disneyland-gallery10.jpg",
+        "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1280/720/81/media/disneyparksjapan-prod/disneyparksjapan_v0001/1/media/dlr/videos/disneyland/gallery/disneyland-gallery11.jpg",
+        "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1280/720/81/media/disneyparksjapan-prod/disneyparksjapan_v0001/1/media/dlr/videos/disneyland/gallery/disneyland-gallery20.jpg"
+    ];
+    
+    const DCABackgrounds = [
+        "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1280/720/81/media/disneyparksjapan-prod/disneyparksjapan_v0001/1/media/dlr/videos/disney-california-adventure/gallery/disney-california-adventure-gallery20.jpg",
+        "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1280/720/81/media/disneyparksjapan-prod/disneyparksjapan_v0001/1/media/dlr/videos/disney-california-adventure/gallery/disney-california-adventure-gallery21.jpg",
+        "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1280/720/81/media/disneyparksjapan-prod/disneyparksjapan_v0001/1/media/dlr/videos/disney-california-adventure/gallery/disney-california-adventure-gallery26.jpg",
+        "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1280/720/81/media/disneyparksjapan-prod/disneyparksjapan_v0001/1/media/dlr/videos/disney-california-adventure/gallery/disney-california-adventure-gallery00.jpg"
+    ];
 
     const imagesArray = {
         Disneyland: "disneyland.png",
@@ -425,11 +432,56 @@ function updateLocationLabel(location) {
     }
 
     function setBackgroundImage(theme, location) {
-        const imagePath = `assets/backgrounds//${imagesArray[location]}`;   
-        infoContainer.style.backgroundImage = `url('${imagePath}')`;
+
+        rightTabs = document.querySelectorAll('.right');
+        
+        if (document.getElementById("randomBackground").checked == false) {
+            const imagePath = `assets/backgrounds/${imagesArray[location]}`;
+            infoContainer.style.backgroundImage = `url('${imagePath}')`;
+            infoContainer.style.setProperty('--overlay-opacity', '0.0');
+            infoContainer.style.setProperty('--accentColor', '#99b8df');
+            infoContainer.style.setProperty('--accentLighter', '#dfeeff');
+            infoContainer.style.setProperty('--accentOneofThem', '#cee4ff ');
+            rightTabs.forEach(tab => {
+                tab.style.backgroundColor = "rgba(8, 39, 80, 0.55)";
+            });
+        } else {
+            const locations = ['Disneyland', 'DCA', 'Downtown', 'Hotel', 'Grand', 'Pixar'];
+            const backgroundArrays = {
+                'Disneyland': DisneylandBackgrounds,
+                'Downtown': DisneylandBackgrounds,
+                'Hotel': DisneylandBackgrounds,
+                'DCA': DCABackgrounds,
+                'Grand': DCABackgrounds,
+                'Pixar': DCABackgrounds
+            };
+            
+            const selectedArray = backgroundArrays[location];
+            
+            if (selectedArray && selectedArray.length > 0) {
+                const randomIndex = Math.floor(Math.random() * selectedArray.length);
+                const randomImagePath = selectedArray[randomIndex];
+                infoContainer.style.backgroundImage = `url('${randomImagePath}')`;
+            
+                infoContainer.style.setProperty('--accentColor', '#dedede');
+                infoContainer.style.setProperty('--accentLighter', '#ffffff');
+                infoContainer.style.setProperty('--accentOneofThem', '#f2f2f2');
+                infoContainer.style.setProperty('--overlay-opacity', '0.5');
+            
+                rightTabs.forEach(tab => {
+                    tab.style.backgroundColor = "rgba(0, 0, 0, 0.55)";
+                });
+            } else {
+                console.error("Image array not found or is empty for the given location:", location);
+            }
+        }
     }
 }
 
+document.getElementById("randomBackground").addEventListener('change', function() {
+    updateLocationDisplay(displayedLocation);
+});
+    
 cycleWaitInfo()
 setInterval(cycleWaitInfo,1000*90)
 
@@ -474,10 +526,10 @@ async function getWeather() {
         const currentWeatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weathercode&timezone=America/Los_Angeles&lang=en`;
         const currentResponse = await fetch(currentWeatherUrl);
         const currentData = await currentResponse.json();
-        const currentWeather = getWeatherDescription(currentData.current.weathercode);
+        getWeatherDescription(currentData.current.weathercode);
         const currentTemp = Math.ceil(currentData.current.temperature_2m);
 
-        document.getElementById("currentWeather").textContent = currentTemp+"°"
+        document.getElementById("currentWeather").textContent = useCelcius ? currentTemp + "°" : Math.round(currentTemp * 9 / 5 + 32) + "°";
 
     } catch (error) {
         console.log('Error fetching weather data:', error);
@@ -488,27 +540,40 @@ async function getWeather() {
 //TODO: add lil icons to show the weather state
 //TODO: add a "later" forecast section
 function getWeatherDescription(wmoCode) {
+    weatherIconCurrent = document.getElementById("weatherIconCurrent");
     switch (wmoCode) {
         case 1:
-            return 'Clear sky';
+            weatherIconCurrent.src = "assets/weather/sun.svg";
+            break;
         case 2:
-            return 'Nearly clear sky';
+            weatherIconCurrent.src = "assets/weather/suncloud.svg";
+            break;
         case 3:
-            return 'Partly cloudy';
+            weatherIconCurrent.src = "assets/weather/suncloud.svg";
+            break;
         case 4:
-            return 'Cloudy sky';
+            weatherIconCurrent.src = "assets/weather/cloud.svg";
+            break;
         case 5:
-            return 'Fog';
+            weatherIconCurrent.src = "assets/weather/cloud.svg";
+            break;
         case 10:
-            return 'Rain showers';
+            weatherIconCurrent.src = "assets/weather/rain.svg";
+            break;
         case 21:
-            return 'Thunderstorm';
+            weatherIconCurrent.src = "assets/weather/storm.svg";
+            break;
         default:
             return 'Unknown';
     }
 }
 
 getWeather();
+
+setInterval(getWeather(), 1000*60*10)
+
+document.getElementById("useCelcius").addEventListener('change', getWeather);
+
 
 
 //musiccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -619,35 +684,32 @@ document.getElementById('dismiss-btn').addEventListener('click', function() {
 window.onload = checkScreenSize;
 window.onresize = checkScreenSize;
 
-function toggleRight(panel) {
-    var togglePanel = document.getElementById(panel);
-    
-    if (togglePanel.style.display == 'block') {
-        document.getElementById('parkInfo').style.display = 'block';
-        togglePanel.style.display = 'none';
+const parkInfo = document.getElementById('parkInfo');
+const settings = document.getElementById('settings');
+const audio = document.getElementById('audio');
+
+function togglePanel(panelId) {
+    const panel = document.getElementById(panelId);
+    if (panel.style.display === 'block') {
+        parkInfo.style.display = 'block';
+        panel.style.display = 'none';
     } else {
-        document.getElementById('settings').style.display = 'none';
-        document.getElementById('audio').style.display = 'none';
-        document.getElementById('parkInfo').style.display = 'none';
-        togglePanel.style.display = 'block';
+        settings.style.display = 'none';
+        audio.style.display = 'none';
+        parkInfo.style.display = 'none';
+        panel.style.display = 'block';
     }
 }
 
-document.addEventListener('visibilitychange', function() {
-    if (document.hidden) {
-        document.getElementById('settings').style.display = 'none';
-        document.getElementById('audio').style.display = 'none';
-        document.getElementById('parkInfo').style.display = 'block' 
-    }
+
+// Event listeners for footer buttons
+document.getElementById("settingsButton").addEventListener('click', function() {
+    togglePanel("settings");
+});
+document.getElementById("audioButton").addEventListener('click', function() {
+    togglePanel("audio");
 });
 
-//Stuff for footer buttons
-document.getElementById("settingsButton").addEventListener('click', function(){
-    toggleRight("settings")
-})
-document.getElementById("audioButton").addEventListener('click', function(){
-    toggleRight("audio")
-})
 
 function populateWaitTimes(park) {
     let parkId;
@@ -655,18 +717,21 @@ function populateWaitTimes(park) {
     
     if (park === 'Disneyland') {
         parkId = "DisneylandResortMagicKingdom";
+        parkEntityId = '7340550b-c14d-4def-80bb-acdb51d49a66'
         // Example specific functionality for Disneyland if needed
         // You can add specific logic here for Disneyland
     } else if (park === 'DCA') {
         parkId = "DisneylandResortCaliforniaAdventure";
+        parkEntityId = '832fcd51-ea19-4e77-85c7-75d5843b127c'
         // Example specific functionality for DCA if needed
         // You can add specific logic here for California Adventure
     } else {
         console.log('Park ' + park + ' does not have wait times. Searching hotels...');
 
         // Fetch and process data for Hotel or Grand if applicable
-        const url = 'https://api.themeparks.wiki/v1/entity/bfc89fd6-314d-44b4-b89e-df1a89cf991e/live';
+        const url = 'https://corsproxy.io/?https://api.themeparks.wiki/v1/entity/bfc89fd6-314d-44b4-b89e-df1a89cf991e/live';
 
+        // hotel info fetch
         fetch(url)
             .then(response => response.json())
             .then(data => {
@@ -726,46 +791,64 @@ function populateWaitTimes(park) {
         return; // Exit function if park is not Disneyland or DCA
     }
 
-    fetch(`https://cors-anywhere.herokuapp.com/https://api.themeparks.wiki/preview/parks/${parkId}/waittime`)
+    //park info fetch
+    fetch(`https://corsproxy.io/?https://api.themeparks.wiki/v1/entity/${parkEntityId}/live`)
     .then(response => response.json())
     .then(data => {
         waitContainer.innerHTML = '<h1>Live Wait Times</h1 style="padding-left:40px;">';
 
-        let attractions = data;
+        let attractions = data.liveData;
+        console.log(attractions)
 
         attractions.sort((a, b) => {
+            // Function to get the wait time safely
+            const getWaitTime = (attraction) => {
+                return attraction.queue?.STANDBY?.waitTime ?? null;
+            };
+        
+            const waitTimeA = getWaitTime(a);
+            const waitTimeB = getWaitTime(b);
+        
             // Sort by waitTime descending (highest to lowest)
-            if (a.waitTime !== null && b.waitTime !== null) {
-                return b.waitTime - a.waitTime;
-            } else if (a.waitTime !== null) {
+            if (waitTimeA !== null && waitTimeB !== null) {
+                return waitTimeB - waitTimeA;
+            } else if (waitTimeA !== null) {
                 return -1; // a has waitTime, b does not, so a comes before b
-            } else if (b.waitTime !== null) {
+            } else if (waitTimeB !== null) {
                 return 1; // b has waitTime, a does not, so b comes before a
             }
         
             // If waitTime is null for both, sort by status
             const statusOrder = {
-                "Down": 1,
-                "Operating": 2,
-                "Refurbishment": 3,
-                "Closed": 4,
+                "DOWN": 1,
+                "OPERATING": 2,
+                "REFURBISHMENT": 3,
+                "CLOSED": 4,
                 "null": 5  // null status comes last
             };
         
-            return statusOrder[a.status] - statusOrder[b.status];
+            const statusA = a.status ?? "null";
+            const statusB = b.status ?? "null";
+        
+            return statusOrder[statusA] - statusOrder[statusB];
         });
+        
 
         attractions.forEach(attraction => {
-            const waitTime = attraction.waitTime === null ? (attraction.status === null ? "Unknown" : attraction.status) : `${attraction.waitTime} Minutes`;
-            const backgroundColor = attraction.waitTime === null ? (attraction.status === "Operating" ? 'rgba(100, 255, 100, 0.3)' : (attraction.status === "Down" ? 'rgba(164,91,0,0.3)' : (attraction.status === "Refurbishment" ? 'rgba(255, 80, 80, 0.3)' : 'rgba(0, 0, 0, 0.4)'))) : getBackgroundColor(attraction.waitTime);
+
+            console.log(attraction)
+            const  waitTime = attraction.queue?.STANDBY?.waitTime === null || attraction.queue?.STANDBY?.waitTime === undefined
+            ? (attraction.status === null || attraction.status === undefined ? "Unknown" : attraction.status)
+            : `${attraction.queue.STANDBY.waitTime} Minutes`;
+            const backgroundColor = attraction.queue.STANDBY.waitTime === null ? (attraction.status === "Operating" ? 'rgba(100, 255, 100, 0.3)' : (attraction.status === "Down" ? 'rgba(164,91,0,0.3)' : (attraction.status === "Refurbishment" ? 'rgba(255, 80, 80, 0.3)' : 'rgba(0, 0, 0, 0.4)'))) : getBackgroundColor(attraction.queue.STANDBY.waitTime);
             const attractionElement = document.createElement('div');
             let lightningLaneTime = '';
 
-            if (attraction.meta.returnTime && attraction.meta.returnTime.returnStart !== undefined) {
-                if (attraction.meta.returnTime.returnStart === null) {
+            if (attraction.queue.RETURN_TIME && attraction.queue.RETURN_TIME.returnStart !== undefined) {
+                if (attraction.queue.RETURN_TIME.returnStart === null) {
                     lightningLaneTime = 'Sold Out';
                 } else {
-                    const returnTime = new Date(attraction.meta.returnTime.returnStart);
+                    const returnTime = new Date(attraction.queue.RETURN_TIME.returnStart);
                     const options = { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Los_Angeles' };
                     const formattedTime = returnTime.toLocaleString('en-US', options);
 
@@ -773,7 +856,7 @@ function populateWaitTimes(park) {
                 }
             }
 
-            if (waitTime.includes("Minutes") || displayClosed == true || waitTime.includes("Down")) {
+            if (waitTime.includes("Minutes") || displayClosed == true || waitTime.includes("Down") ) {
                 attractionElement.classList.add('waitElement');
 
                 attractionElement.innerHTML = `
@@ -800,19 +883,20 @@ function populateWaitTimes(park) {
     })
     .catch(error => {
         waitContainer.style.display = "block";
-        waitContainer.innerHTML = '<h1>Wait times could not be retreived.</h1 style="padding-left:40px;">';
+        //waitContainer.innerHTML = '<h1>Wait times could not be retreived.</h1 style="padding-left:40px;">';
+        console.error(error)
     })
     
         document.getElementById('waitContainer').scrollTop=0;
 }
 
 async function fetchParkOpenTimes() {
-    const disneylandAPI = 'https://cors-anywhere.herokuapp.com/https://api.themeparks.wiki/preview/parks/DisneylandResortMagicKingdom/calendar';
-    const californiaAdventureAPI = 'https://cors-anywhere.herokuapp.com/https://api.themeparks.wiki/preview/parks/DisneylandResortCaliforniaAdventure/calendar';
+    const disneylandAPI = 'https://corsproxy.io/?https://api.themeparks.wiki/v1/entity/7340550b-c14d-4def-80bb-acdb51d49a66/schedule';
+    const californiaAdventureAPI = 'https://corsproxy.io/?https://api.themeparks.wiki/v1/entity/832fcd51-ea19-4e77-85c7-75d5843b127c/schedule';
 
     const [disneylandResponse, californiaResponse] = await Promise.all([
-      fetch(disneylandAPI),
-      fetch(californiaAdventureAPI)
+        fetch(disneylandAPI),
+        fetch(californiaAdventureAPI)
     ]);
 
     const disneylandData = await disneylandResponse.json();
@@ -820,25 +904,34 @@ async function fetchParkOpenTimes() {
 
     const today = new Date().toISOString().split('T')[0];
 
-    const disneylandToday = disneylandData.find(day => day.date === today);
-    const californiaToday = californiaData.find(day => day.date === today);
+    // Extract today's schedule for Disneyland
+    const disneylandTodaySchedule = disneylandData.schedule.find(day => day.date === today);
+    // Extract today's schedule for California Adventure
+    const californiaTodaySchedule = californiaData.schedule.find(day => day.date === today);
 
-    if (disneylandToday) {
-      document.getElementById('disneyOpenTimes').textContent = formatTime(disneylandToday.openingTime) + ' - ' + formatTime(disneylandToday.closingTime);
+    if (disneylandTodaySchedule) {
+        document.getElementById('disneyOpenTimes').textContent = 
+            formatTime(disneylandTodaySchedule.openingTime) + ' - ' + 
+            formatTime(disneylandTodaySchedule.closingTime);
     }
 
-    if (californiaToday) {
-      document.getElementById('californiaOpenTimes').textContent = formatTime(californiaToday.openingTime) + ' - ' + formatTime(californiaToday.closingTime);
+    if (californiaTodaySchedule) {
+        document.getElementById('californiaOpenTimes').textContent = 
+            formatTime(californiaTodaySchedule.openingTime) + ' - ' + 
+            formatTime(californiaTodaySchedule.closingTime);
     }
-  }
+}
+
+// Assuming formatTime function is defined somewhere in your code
+
 
   function formatTime(dateTimeString) {
     const options = { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'America/Los_Angeles' };
     const time = new Intl.DateTimeFormat('en-US', options).format(new Date(dateTimeString));
     return time;
-  }
+}
 
-  window.addEventListener('load', fetchParkOpenTimes);
+window.addEventListener('load', fetchParkOpenTimes);
 
 // Event listener for keydown event
 document.addEventListener('keydown', function(event) {
@@ -878,7 +971,6 @@ function getBackgroundColor(waitTime) {
 
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
-
 
 document.addEventListener('DOMContentLoaded', function (){
     setInterval(populateWaitTimes, 5 * 60 * 1000); // 5 minutes in milliseconds
