@@ -10,6 +10,7 @@ body, html {
     display: flex;
     font-family: 'DisneyFont', sans-serif;
     letter-spacing: 0.03em; /* 3% kerning */
+    background-color: black;
 }
 
 /* Fullscreen overlay */
