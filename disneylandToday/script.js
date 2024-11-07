@@ -393,6 +393,19 @@ function updateLocationDisplay(location) {
         "https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1280/720/81/media/disneyparksjapan-prod/disneyparksjapan_v0001/1/media/dlr/videos/disney-california-adventure/gallery/disney-california-adventure-gallery00.jpg"
     ];
 
+    // Preload images for both Disneyland and DCA backgrounds
+    function preloadImages(imageArray) {
+        return imageArray.map((url) => {
+            const img = new Image();
+            img.src = url;
+            return img;
+        });
+    }
+
+    // Preload images for each specific array
+    const preloadedDisneylandBackgrounds = preloadImages(DisneylandBackgrounds);
+    const preloadedDCABackgrounds = preloadImages(DCABackgrounds);
+
     const imagesArray = {
         Disneyland: "disneyland.png",
         DCA: "californiaAdventure.png",
@@ -458,10 +471,10 @@ function updateLocationDisplay(location) {
             
             const selectedArray = backgroundArrays[location];
             
-            if (selectedArray && selectedArray.length > 0) {
-                const randomIndex = Math.floor(Math.random() * selectedArray.length);
-                const randomImagePath = selectedArray[randomIndex];
-                infoContainer.style.backgroundImage = `url('${randomImagePath}')`;
+     if (selectedArray && selectedArray.length > 0) {
+        const randomIndex = Math.floor(Math.random() * selectedArray.length);
+        const randomImagePath = selectedArray[randomIndex];
+        infoContainer.style.backgroundImage = `url('${randomImagePath}')`;
             
                 infoContainer.style.setProperty('--accentColor', '#dedede');
                 infoContainer.style.setProperty('--accentLighter', '#ffffff');
@@ -471,6 +484,7 @@ function updateLocationDisplay(location) {
                 rightTabs.forEach(tab => {
                     tab.style.backgroundColor = "rgba(0, 0, 0, 0.55)";
                 });
+
             } else {
                 console.error("Image array not found or is empty for the given location:", location);
             }
@@ -670,14 +684,18 @@ document.getElementById('dismiss-btn').addEventListener('click', function() {
             if (window.isScrolling) {
                 scrollBox.scrollTop += 1;
                 if (scrollBox.scrollTop + scrollBox.clientHeight >= scrollBox.scrollHeight) {
-                    scrollBox.scrollTop = 0; // Reset to top when bottom is reached
+                    clearInterval(scrollInterval); // Stop the scrolling temporarily
+                    setTimeout(() => {
+                        scrollBox.scrollTop = 0; // Reset to top after delay
+                        startScrolling(); // Restart scrolling
+                    }, 2000); // Delay in milliseconds
                 }
             }
         }, 50); // Adjust the speed by changing the interval (in ms)
-    }
-
+    }    
+    
     // Start the scrolling after a 2-second delay
-    setTimeout(startScrolling, 2000);
+    startScrolling();
 });
 
 // Check screen size on page load
@@ -701,8 +719,6 @@ function togglePanel(panelId) {
     }
 }
 
-
-// Event listeners for footer buttons
 document.getElementById("settingsButton").addEventListener('click', function() {
     togglePanel("settings");
 });
@@ -710,9 +726,7 @@ document.getElementById("audioButton").addEventListener('click', function() {
     togglePanel("audio");
 });
 
-
 function populateWaitTimes(park) {
-    let parkId;
     const waitContainer = document.querySelector('.waitContainer');
     
     if (park === 'Disneyland') {
@@ -755,8 +769,8 @@ function populateWaitTimes(park) {
                     if (item) {
                         const status = item.status;
                         const backgroundColor = status === "OPERATING" ? 'rgba(100, 255, 100, 0.3)' :
-                                              status === "Down" ? 'rgba(164, 91, 0, 0.3)' :
-                                              status === "Refurbishment" ? 'rgba(255, 80, 80, 0.3)' :
+                                              status === "DOWN" ? 'rgba(164, 91, 0, 0.3)' :
+                                              status === "REFURBISHMENT" ? 'rgba(255, 80, 80, 0.3)' :
                                               'rgba(0, 0, 0, 0.4)';
                         const waitTime = status;
                         const attractionElement = document.createElement('div');
@@ -798,7 +812,6 @@ function populateWaitTimes(park) {
         waitContainer.innerHTML = '<h1>Live Wait Times</h1 style="padding-left:40px;">';
 
         let attractions = data.liveData;
-        console.log(attractions)
 
         attractions.sort((a, b) => {
             // Function to get the wait time safely
@@ -820,8 +833,8 @@ function populateWaitTimes(park) {
         
             // If waitTime is null for both, sort by status
             const statusOrder = {
-                "DOWN": 1,
-                "OPERATING": 2,
+                "DOWN": 2,
+                "OPERATING": 1,
                 "REFURBISHMENT": 3,
                 "CLOSED": 4,
                 "null": 5  // null status comes last
@@ -833,30 +846,60 @@ function populateWaitTimes(park) {
             return statusOrder[statusA] - statusOrder[statusB];
         });
         
+        console.log(attractions)
 
         attractions.forEach(attraction => {
+            var waitTime = (attraction.queue?.STANDBY?.waitTime === null || attraction.queue?.STANDBY?.waitTime === undefined)
+                ? (attraction.status === null || attraction.status === undefined ? "Unknown" : attraction.status)
+                : `${attraction.queue.STANDBY.waitTime} Minutes`;
+    
+            var backgroundColor = (attraction.queue?.BOARDING_GROUP && attraction.status === "OPERATING")
+            ? 'rgba(192, 121, 199, 0.3)'  // Purple background for boarding group only if operating
+            : (attraction.queue?.STANDBY?.waitTime === null || 
+                typeof attraction.queue?.STANDBY?.waitTime !== 'number' || 
+                isNaN(attraction.queue.STANDBY.waitTime))
+                ? (attraction.status === "OPERATING" ? 'rgba(100, 255, 100, 0.3)' 
+                : (attraction.status === "DOWN" ? 'rgba(164,91,0,0.3)' 
+                : (attraction.status === "REFURBISHMENT" ? 'rgba(255, 80, 80, 0.3)' 
+                : 'rgba(0, 0, 0, 0.4)'))) 
+                : getBackgroundColor(attraction.queue.STANDBY.waitTime);
 
-            console.log(attraction)
-            const  waitTime = attraction.queue?.STANDBY?.waitTime === null || attraction.queue?.STANDBY?.waitTime === undefined
-            ? (attraction.status === null || attraction.status === undefined ? "Unknown" : attraction.status)
-            : `${attraction.queue.STANDBY.waitTime} Minutes`;
-            const backgroundColor = attraction.queue.STANDBY.waitTime === null ? (attraction.status === "Operating" ? 'rgba(100, 255, 100, 0.3)' : (attraction.status === "Down" ? 'rgba(164,91,0,0.3)' : (attraction.status === "Refurbishment" ? 'rgba(255, 80, 80, 0.3)' : 'rgba(0, 0, 0, 0.4)'))) : getBackgroundColor(attraction.queue.STANDBY.waitTime);
             const attractionElement = document.createElement('div');
             let lightningLaneTime = '';
 
-            if (attraction.queue.RETURN_TIME && attraction.queue.RETURN_TIME.returnStart !== undefined) {
+            if (attraction.queue?.RETURN_TIME?.returnStart !== undefined) {
                 if (attraction.queue.RETURN_TIME.returnStart === null) {
                     lightningLaneTime = 'Sold Out';
                 } else {
                     const returnTime = new Date(attraction.queue.RETURN_TIME.returnStart);
                     const options = { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Los_Angeles' };
                     const formattedTime = returnTime.toLocaleString('en-US', options);
-
+            
                     lightningLaneTime = `${formattedTime}`;
                 }
             }
 
-            if (waitTime.includes("Minutes") || displayClosed == true || waitTime.includes("Down") ) {
+            if (attraction.queue?.BOARDING_GROUP) {
+                const startGroup = attraction.queue.BOARDING_GROUP.currentGroupStart;
+                const endGroup = attraction.queue.BOARDING_GROUP.currentGroupEnd;
+
+                waitTime = `Boarding ${startGroup} to ${endGroup}`;
+            
+                if (attraction.status === 'DOWN') {
+                    backgroundColor = 'rgba(164,91,0,0.3)';
+                    waitTime = 'DOWN';
+                } else if (attraction.status === 'CLOSED') {
+                    backgroundColor = 'rgba(0, 0, 0, 0.4)';
+                    waitTime = 'CLOSED';
+                }
+                else if (attraction.queue.BOARDING_GROUP.currentGroupStart == undefined){
+                    backgroundColor = 'rgba(82, 59, 84,0.3)';
+                    waitTime = 'Virtual Queue Closed';
+                }
+            }
+
+           if (waitTime.includes("Minutes") || displayClosed == true || waitTime.includes("DOWN") || waitTime.includes("Boarding")) {
+           //if(true){
                 attractionElement.classList.add('waitElement');
 
                 attractionElement.innerHTML = `
@@ -873,6 +916,7 @@ function populateWaitTimes(park) {
                 waitContainer.appendChild(attractionElement);
             }
         });
+
         document.getElementById('waitContainer').scrollTop=0;
         checkNone = document.getElementsByClassName('waitName')
 
@@ -922,9 +966,6 @@ async function fetchParkOpenTimes() {
     }
 }
 
-// Assuming formatTime function is defined somewhere in your code
-
-
   function formatTime(dateTimeString) {
     const options = { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'America/Los_Angeles' };
     const time = new Intl.DateTimeFormat('en-US', options).format(new Date(dateTimeString));
@@ -933,7 +974,6 @@ async function fetchParkOpenTimes() {
 
 window.addEventListener('load', fetchParkOpenTimes);
 
-// Event listener for keydown event
 document.addEventListener('keydown', function(event) {
     if (event.key === 'R' || event.key === 'r') {
         // Assuming displayedLocation is defined elsewhere in your code
