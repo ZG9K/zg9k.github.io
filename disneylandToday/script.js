@@ -972,7 +972,8 @@ function populateWaitTimes(park) {
 
         if(checkNone.length == 0){
             waitContainer.innerHTML = '<h1>Park is Closed</h1 style="padding-left:40px;">';
-            if(displayWaitParkClosed==false){waitContainer.style.display = "none";}else{waitContainer.style.display = "block";}
+            waitBox = document.getElementsByClassName("waitContainer")
+            if(displayWaitParkClosed==false){waitBox.style.display = "none";}else{waitBox.style.display = "block";}
         }else{waitContainer.style.display = "block";}
     })
     .catch(error => {
