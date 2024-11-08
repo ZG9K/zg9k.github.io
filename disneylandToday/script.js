@@ -59,7 +59,7 @@ infoContainer = document.getElementById('infoContainer')
 var displayedLocation
 
 function cycleWaitInfo() {
-    const waitContainer = document.querySelector('.waitContainer');
+    const waitContainer = document.getElementById('waitContainer');
     waitContainer.innerHTML = '<h1>Loading Wait Times...</h1 style="padding-left:40px;>'
     let nextIndex = currentIndex;
     do {
@@ -726,8 +726,10 @@ document.getElementById("audioButton").addEventListener('click', function() {
     togglePanel("audio");
 });
 
+pinnedAttractions = []
 function populateWaitTimes(park) {
-    const waitContainer = document.querySelector('.waitContainer');
+    const waitContainer = document.getElementById('waitContainer');
+    const waitContainerPinned = document.getElementById('pinnedWaits');
     
     if (park === 'Disneyland') {
         parkId = "DisneylandResortMagicKingdom";
@@ -810,6 +812,8 @@ function populateWaitTimes(park) {
     .then(response => response.json())
     .then(data => {
         waitContainer.innerHTML = '<h1>Live Wait Times</h1 style="padding-left:40px;">';
+        waitContainerPinned.innerHTML= '<h3 class="pinnedTitle">Pinned Wait Times</h3 style="padding-left:40px;">'
+        const pinnedTitle = document.querySelector('.pinnedTitle');
 
         let attractions = data.liveData;
 
@@ -845,8 +849,6 @@ function populateWaitTimes(park) {
         
             return statusOrder[statusA] - statusOrder[statusB];
         });
-        
-        console.log(attractions)
 
         attractions.forEach(attraction => {
             var waitTime = (attraction.queue?.STANDBY?.waitTime === null || attraction.queue?.STANDBY?.waitTime === undefined)
@@ -867,6 +869,7 @@ function populateWaitTimes(park) {
             const attractionElement = document.createElement('div');
             let lightningLaneTime = '';
 
+            //lightning lane logic
             if (attraction.queue?.RETURN_TIME?.returnStart !== undefined) {
                 if (attraction.queue.RETURN_TIME.returnStart === null) {
                     lightningLaneTime = 'Sold Out';
@@ -879,6 +882,7 @@ function populateWaitTimes(park) {
                 }
             }
 
+            //boarding group logic
             if (attraction.queue?.BOARDING_GROUP) {
                 const startGroup = attraction.queue.BOARDING_GROUP.currentGroupStart;
                 const endGroup = attraction.queue.BOARDING_GROUP.currentGroupEnd;
@@ -897,12 +901,14 @@ function populateWaitTimes(park) {
                     waitTime = 'Virtual Queue Closed';
                 }
             }
-
+            
            if (waitTime.includes("Minutes") || displayClosed == true || waitTime.includes("DOWN") || waitTime.includes("Boarding")) {
            //if(true){
                 attractionElement.classList.add('waitElement');
 
+                pinText="Toggle Pin"
                 attractionElement.innerHTML = `
+                    <div class=pinText>${pinText}</div>
                     <div class="waitName">
                         <span>${attraction.name}</span>
                     </div>
@@ -913,7 +919,51 @@ function populateWaitTimes(park) {
                         <span>${waitTime}</span>
                     </div>
                 `;
-                waitContainer.appendChild(attractionElement);
+                                // Function to add/remove pin
+                function togglePin() {
+                    const isPinned = pinnedAttractions.some(pinned => pinned.name === attraction.name);
+
+                    if (isPinned) {
+                        // Remove attraction from pinned array
+                        console.log("returned false ispinned")
+                        pinnedAttractions.splice(pinnedAttractions.findIndex(pinned => pinned.name === attraction.name), 1);
+                        // Move the element back to the main container
+                        waitContainerPinned.removeChild(attractionElement);
+                        waitContainer.appendChild(attractionElement);
+
+                        if (waitContainerPinned.children.length > 0) {
+                            waitContainerPinned.style.display = 'block';
+                        } else {
+                            pinnedTitle.style.display = 'none';
+                        }
+
+                    } else {
+                        // Add attraction to pinned array
+                        pinnedAttractions.push(attraction);
+                        // Move the element to the pinned container
+                        waitContainer.removeChild(attractionElement);
+                        waitContainerPinned.appendChild(attractionElement);
+
+                        if (waitContainerPinned.children.length > 0) {
+                            pinnedTitle.style.display = 'block';
+                        } else {
+                            pinnedTitle.style.display = 'none';
+                        }
+                    }
+                }
+
+                // Add click event to the pinText element
+                const pinTextElement = attractionElement.querySelector('.pinText');
+                pinTextElement.addEventListener('click', togglePin);
+
+                // Add the element to the appropriate container based on pinned status
+                if (pinnedAttractions.some(pinned => pinned.name === attraction.name)) {
+                    waitContainerPinned.appendChild(attractionElement);
+
+                    pinnedTitle.style.display = 'block';
+                } else {
+                    waitContainer.appendChild(attractionElement);
+                }
             }
         });
 

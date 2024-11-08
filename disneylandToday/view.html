@@ -22,7 +22,24 @@
       <div class="midleftLower">
       <div class="left" id="main" style="display:none">
       
-        <div class="waitContainer" id="waitContainer">
+        <div class="waitContainer">
+          <div class="waitContainerPinned" id="pinnedWaits">
+            <div class="waitElement" style="display: none;">
+              <div class="waitName">
+                <!--Attraction Name-->
+                <span>Matterhorn Mountain</span>
+              </div>
+              <div class="lightningLane" style="display:flex">
+                <!--Next Lightning Lane Reservation Time-->
+                <span>14:55</span>
+              </div>
+              <div class="waitTime">
+                <!--Current Attraction Wait Time-->
+                <span>25 Minutes</span>
+              </div>
+            </div>
+          </div>
+          <div class="waitContainerContent" id="waitContainer">
           <h1>Fetching Wait Times...</h1>
           <div class="waitElement" style="display: none;">
             <div class="waitName">
@@ -39,6 +56,9 @@
             </div>
           </div>
         </div>
+
+      </div>
+
       </div>
 
       <div class="middle">
@@ -162,7 +182,7 @@
         <span class="checkmark"></span>
       </label>
 
-      <label class="checkboxContainer">Display Non-Wait Attractions
+      <label class="checkboxContainer">Show All Attractions
         <input type="checkbox" id="displayClosed">
         <span class="checkmark"></span>
       </label>
