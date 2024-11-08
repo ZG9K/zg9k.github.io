@@ -957,7 +957,7 @@ function populateWaitTimes(park) {
                 pinTextElement.addEventListener('click', togglePin);
 
                 // Add the element to the appropriate container based on pinned status
-                if (pinnedAttractions.some(pinned => pinned.name === attraction.name)) {
+                if (pinnedAttractions.some(pinned => pinned.name === attraction.name) || (attraction.status === 'DOWN' && pinDownAttractions == true)) {
                     waitContainerPinned.appendChild(attractionElement);
 
                     pinnedTitle.style.display = 'block';
@@ -1069,5 +1069,7 @@ document.addEventListener('DOMContentLoaded', function (){
     document.getElementById("displayClosed").addEventListener("change", function() {
         populateWaitTimes(displayedLocation)})
     document.getElementById("displayWaitParkClosed").addEventListener("change", function() {
+        populateWaitTimes(displayedLocation)})
+    document.getElementById("pinDownAttractions").addEventListener("change", function() {
         populateWaitTimes(displayedLocation)})
 })
