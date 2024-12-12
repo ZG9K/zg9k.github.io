@@ -745,7 +745,7 @@ function populateWaitTimes(park) {
         console.log('Park ' + park + ' does not have wait times. Searching hotels...');
 
         // Fetch and process data for Hotel or Grand if applicable
-        const url = 'https://corsproxy.io/?https://api.themeparks.wiki/v1/entity/bfc89fd6-314d-44b4-b89e-df1a89cf991e/live';
+        const url = 'https://proxy.cors.sh/https://api.themeparks.wiki/v1/entity/bfc89fd6-314d-44b4-b89e-df1a89cf991e/live';
 
         // hotel info fetch
         fetch(url)
@@ -808,7 +808,7 @@ function populateWaitTimes(park) {
     }
 
     //park info fetch
-    fetch(`https://corsproxy.io/?https://api.themeparks.wiki/v1/entity/${parkEntityId}/live`)
+    fetch(`https://proxy.cors.sh/https://api.themeparks.wiki/v1/entity/${parkEntityId}/live`)
     .then(response => response.json())
     .then(data => {
         waitContainer.innerHTML = '<h1>Live Wait Times</h1 style="padding-left:40px;">';
@@ -959,7 +959,6 @@ function populateWaitTimes(park) {
                 // Add the element to the appropriate container based on pinned status
                 if (pinnedAttractions.some(pinned => pinned.name === attraction.name) || (attraction.status === 'DOWN' && pinDownAttractions == true)) {
                     waitContainerPinned.appendChild(attractionElement);
-
                     pinnedTitle.style.display = 'block';
                 } else {
                     waitContainer.appendChild(attractionElement);
@@ -986,8 +985,8 @@ function populateWaitTimes(park) {
 }
 
 async function fetchParkOpenTimes() {
-    const disneylandAPI = 'https://corsproxy.io/?https://api.themeparks.wiki/v1/entity/7340550b-c14d-4def-80bb-acdb51d49a66/schedule';
-    const californiaAdventureAPI = 'https://corsproxy.io/?https://api.themeparks.wiki/v1/entity/832fcd51-ea19-4e77-85c7-75d5843b127c/schedule';
+    const disneylandAPI = 'https://proxy.cors.sh/https://api.themeparks.wiki/v1/entity/7340550b-c14d-4def-80bb-acdb51d49a66/schedule';
+    const californiaAdventureAPI = 'https://proxy.cors.sh/https://api.themeparks.wiki/v1/entity/832fcd51-ea19-4e77-85c7-75d5843b127c/schedule';
 
     const [disneylandResponse, californiaResponse] = await Promise.all([
         fetch(disneylandAPI),
