@@ -38,6 +38,41 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+//wakelock
+let wakeLock = null;
+
+async function requestWakeLock() {
+    try {
+        wakeLock = await navigator.wakeLock.request('screen');
+        console.log('Wake lock is active.');
+        
+        // Handle release of the wake lock
+        wakeLock.addEventListener('release', () => {
+            console.log('Wake lock was released.');
+        });
+    } catch (err) {
+        console.error(`Wake lock request failed: ${err.name}, ${err.message}`);
+    }
+}
+
+// Request wake lock when the page is loaded
+window.addEventListener('load', () => {
+    if ('wakeLock' in navigator) {
+        requestWakeLock();
+
+        // Optionally, renew wake lock when the visibility state changes
+        document.addEventListener('visibilitychange', () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                requestWakeLock();
+            }
+        });
+    } else {
+        console.warn('Wake Lock API not supported in this browser.');
+    }
+});
+
+//end wakelock
+
 // Function to update the display based on the checkbox state
 function updateWaitTimeDisplay() {
     if (document.getElementById("waitTimeEnabled").checked === true) {
