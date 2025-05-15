@@ -1,629 +1,261 @@
-@font-face {
-    font-family: 'DisneyFont';
-    src: url('fonts/disneyFont.ttf') format('truetype');
-}
-
-body, html {
-    height: 100%;
-    margin: 0;
-    width: 100%;
-    display: flex;
-    font-family: 'DisneyFont', sans-serif;
-    letter-spacing: 0.03em; /* 3% kerning */
-    background-color: black;
-}
-
-/* Fullscreen overlay */
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 1); /* 50% translucent black */
-    display: none; /* Hidden by default */
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* Ensure it covers all other elements */
-    background-image: url(assets/backgrounds/openBackground.jpg);
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-}
-
-#screenWarning{
-    color: rgb(0, 95, 139);
-    background-color: rgba(0, 225, 255, 0.158);
-    border-radius: 5px;
-    padding: 5px;
-}
-
-
-/* Centered box */
-.overlay-content {
-    background-color: rgba(255,255,255,1);
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    font-size: 20px;
-    filter: none;
-}
-
-/* Button to dismiss the overlay */
-#dismiss-btn {
-    margin-top: 20px;
-    padding: 10px 20px;
-    border: none;
-    background-color: #007BFF;
-    color: white;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 20px;
-}
-
 :root {
-    --accentColor: #99b8df
-    --accentLighter: #dfeeff
-    --accentOneofThem: #cee4ff  
-  }
-
-.container {
-    display: flex;
-    flex-direction: row;
-    height: 100%;
-    width: 100%;
-    background-image: url(assets/backgrounds/openBackground.jpg);
-    height: 100%;
-    background-position: bottom left;
-    background-repeat: no-repeat;
-    background-size: cover;
-    color: white;
-    opacity: 1.0;
-    transition: background 1.5s linear; /* Smooth transition for background */
-    overflow: hidden;
-    cursor:default;
-    scrollbar-width: none;
+    /* Soft whites / creams for a warm minimal look */
+    --bg: #fffdf7;
+    --text: #1e1e1e;
+    --accent: #000000;
+    --header-height: 64px;
+    --border-light: #e6e2da;
 }
 
-.container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, var(--overlay-opacity, 0.5));
-    z-index: 1;
+@media (prefers-color-scheme: light) {
+    :root {
+    --bg: #121212;
+    --text: #e0e0e0;
+    --accent: #f5f5f5;
+    --border-light: #2a2a2a;
+    }
 }
 
-.container > * {
-    position: relative;
-    z-index: 5;
+@font-face {
+    font-family: 'Gill Sans';
+    src: url('./fonts/Gill Sans.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gill Sans';
+    src: url('./fonts/Gill Sans Bold.otf') format('opentype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gill Sans';
+    src: url('./fonts/Gill Sans Italic.otf') format('opentype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Gill Sans';
+    src: url('./fonts/Gill Sans Bold Italic.otf') format('opentype');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Gill Sans';
+    src: url('./fonts/Gill Sans Light.otf') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gill Sans';
+    src: url('./fonts/Gill Sans Light Italic.otf') format('opentype');
+    font-weight: 300;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Gill Sans';
+    src: url('./fonts/Gill Sans Medium.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gill Sans';
+    src: url('./fonts/Gill Sans Medium Italic.otf') format('opentype');
+    font-weight: 500;
+    font-style: italic;
+}
+
+/* Condensed versions can be treated as a separate font family */
+@font-face {
+    font-family: 'Gill Sans Condensed';
+    src: url('./fonts/GillSans Condensed.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gill Sans Condensed';
+    src: url('./fonts/GillSans Condensed Bold.otf') format('opentype');
+    font-weight: bold;
+    font-style: normal;
 }
 
 
-.fade-in-out-text {
-    animation: fadeInOut 20s infinite; /* Animation for fading */
-}
-
-.fade-in-out-parkswitch {
-    animation: fadeInOut 180s infinite; /* Animation for fading */
-}
-
-@keyframes fadeInOut {
-    0% { opacity: 0; } 
-    5% { opacity: 1}
-    95% {opacity: 1;}
-    100% { opacity:0 }
-}
-
-.midleftContainer{
-    height: 100%;
-    display: flex;
-    width: 100%;
-    flex-direction: column;
+* {
+    box-sizing: border-box;
+    margin: 0;
     padding: 0;
-    margin: 0;
 }
 
-.topTitle{
-    background-color: none;
-    width: calc(100% - 80px);
-    padding-top: 100px;
-    margin: 0px;
-    padding-left:80px
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    line-height: 1.6;
 }
 
-.midleftLower{
-    display:flex;
-    flex-direction: row;
-    height: calc(100% - 172px);
-    justify-content: flex-end;
-}
-.left{
-    background-color: rgba(240, 128, 128,0.0);
-    height:100%;
-    max-width: 100%;
-    justify-content: left;
-}
-
-
-.topTitle p{
-    width:100%;
-    box-sizing: border-box;
-    margin: 0;
-    font-size: 60px;
-}
-
-.waitContainer{
-    max-width: 560px;
-    min-width: 560px;
-    background-color: rgba(0, 0, 0, 0.2);
-    margin:20px 20px 40px 80px;
-    overflow-y: scroll;
-    border-radius: 40px;
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-    padding: 0px 20px 0px 20px;
-}
-
-.waitElement{
-    width: 100%;
-    background-color: rgba(0, 0, 0, 0.4);
-    margin-top:12px;
-    height:auto;
-    padding:8px;
-    box-sizing: border-box;
+/* ---------- Header ---------- */
+header {
+    height: var(--header-height);
     display: flex;
     align-items: center;
-    border-radius: 80px;
-    padding-left: 20px;
-    font-size: 18px;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    border-bottom: 1px solid var(--border-light);
 }
 
-.waitName{
-    flex-grow: 1;
-}
-
-.waitTime{
-    width: auto;
-    margin-: 20px;
-    padding:7px;
-    background-color: rgba(255, 0, 0, 0.6);
-    border-style: solid;
-    border-color: rgba(0, 0, 0, 0.2);
-    border-radius: 20px;
-}
-
-.lightningLane{
-    height: 16px;
-    margin-right: 3px;
-    padding:7px;
-    background-color: rgba(0, 204, 255, 0.4);
-    border-style: solid;
-    border-color: rgba(0, 0, 0, 0.4);
-    border-radius: 20px;
-    align-items: center;
-    min-width: fit-content;
-}
-/* Hide scrollbar for Chrome, Safari and Opera */
-.waitContainer::-webkit-scrollbar {
-    display: none;
-  }
-
-.middle {
-    width: 65%;
-    background-color: rgba(173, 216, 230,0.0);
-    box-sizing: border-box;
-    margin: 0;
-    display: flex;
-    height: 100%;
-    padding-top: 0px;
-    align-items: center;
-    padding-bottom: 80px;
-    margin-bottom: 180px;
-}
-
-.infoElement{
-    max-height: calc(100% - 172px);
-    overflow-y: hidden;
-    margin-right: 120px;
-    margin: 20px;
-}
-.middle titleBlock{
-    font-size: 60px;
-    font-weight: 0.01px;
-}
-.middle p{
-    margin: 0;
-    font-size: 38px;
-    line-height: 140%;
-}
-
-
-.right {
-    width: 15%;
-    background-color: rgba(8, 39, 80, 0.55);
-    padding: 24px;
-    padding-right: 0px;
-    box-sizing: border-box;
-    margin: 0;
-    height: 100%;
-    min-width: 320px;
-    overflow-y: scroll;
-    scrollbar-width: none;
-    display: block;
-} 
-
-#settings{
-    height: calc(auto + 1000px);
-}
-
-.right p{
-    margin: 0px;
-    font-size: 20px;
-}
-
-#audio p{
+.logo {
+    font-size: 1.25rem;
+    text-decoration: none;
+    color: var(--text);
+    font-family: 'Gill Sans', sans-serif;
     font-weight: bold;
 }
 
-.right day{
-    font-size: 30px;
-    color: var(--accentColor);
-    display: block;
+h1{
+    font-family: 'Gill Sans', sans-serif;
+    font-weight: bold;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.subheading{
+    font-family: 'Gill Sans', sans-serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+p{
+    font-family: 'Gill Sans', sans-serif;
+    font-weight: 300;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+h3{
+    font-family: 'Gill Sans', sans-serif;
+    font-weight: 300;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Social / nav icons */
+.nav-icons {
+    display: flex;
+    gap: 1rem;
+}
+
+.nav-icons a {
+    color: var(--text);
+    font-size: 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    transition: color 0.2s ease;
+}
+
+.nav-icons a:hover {
+    color: var(--accent);
+}
+
+main {
+    flex: 1;
+    padding: 2rem 1.5rem 3rem;
+}
+
+/* ---------- Project Grid ---------- */
+.grid {
+    display: grid;
+    gap: 1.5rem;
+    width: 100%;
+    justify-content: center;
+    grid-template-columns: repeat(3, 260px); /* exactly 3 columns with fixed width */
+}
+
+.project {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    width: 260px; /* ensure consistent tile width */
+    aspect-ratio: 2 / 3; /* vertical portrait */
+}
+
+.project img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.9;
+    transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(0px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 1rem;
+    opacity: 0;
+    transition: opacity 0.4s ease, backdrop-filter 0.4s ease;
+}
+
+.title {
+    color: #ffffff;
+    font-size: 1.15rem;
+    font-weight: 600;
+    src: url('/assets/fonts/GillSans\ Condensed\ Bold.otf') format('opentype');
     margin: 0;
 }
-.right date{
-    font-size: 40px;
-    color:var(--accentColor);
-    display: block;
-    margin-top: -2;
+
+.subtitle {
+    color: #e0e0e0;
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
 }
 
-.right time{
-    font-size: 48px;
-    display: block;
-    margin-top: -7;
+.yearInfo{
+    font-family: 'Gill Sans', sans-serif;
+    font-weight: 300;
+    color: #e0e0e0;
+    font-size: 0.7rem;
+    font-style: italic;
+    margin: 0;
 }
 
-.defGrey{
-    font-size: 28px;
-    color: var(--accentColor);
-    display: block;
+/* Hover effects */
+.project:hover img {
+    transform: scale(1.05);
+    filter: brightness(0.9) blur(2px);
+    opacity: 1;
 }
 
-.weatherContainer{
-    display:flex;
-    flex-direction: row;
-    flex:auto;
-}
-.weatherElem{
-    flex-grow: 1;
-    flex-basis: 0;
-    color:white;
-    font-size: 40;
-    max-height: 80px;
-    align-items: center;
+.project:hover .overlay {
+    opacity: 1;
+    backdrop-filter: blur(2px);
 }
 
-.footer-container {
-    display: flex;
-    position:fixed;
-    flex-direction: column;
-    justify-content: flex-end; /* Aligns the footer to the bottom */
-    right: 0;
-    bottom: 0;
-    width: 15%;
-    min-width: 320px;
+hr{
+    margin: 16px;
+    margin-bottom: 32px;
+}
+/* ---------- Footer ---------- */
+footer {
+    text-align: center;
+    padding: 1rem 0;
+    border-top: 1px solid var(--border-light);
+    font-size: 0.875rem;
 }
 
-.credits{
-    position: absolute;
-    justify-content: center;
-    display: flex;
-    color: rgba(0, 0, 0, 1);
-    text-shadow: 0px 0px 5px #000000;
-    font-size: 12px;
-    padding: 2px;
-    transition: 0.5s ease-in-out;
-    height: auto;
-    border-color: rgba(0, 0, 0, 0.0);
-    max-width: fit-content;
-    bottom: 0;
-    width: 80%;
-}
-
-.credits a{
-    color: rgba(0, 0, 0, 1);;
-}
-
-.credits:hover{
-    font-size: 20px;
-    z-index: 100;
-    color: white;
-    text-shadow: 0px 0px 12px #000000;
-    background-color: rgba(0, 0, 0, 0.5);
-    height: fit-content;
-    border-style: solid;
-    border-width: 3px;
-    border-radius: 0px 200px 0px 0px;
-    padding: 4px;
-    padding-right: 18px;
-}
-
-.credits a:hover{
-    color: white;
-}
-
-/* Footer styling */
-.footer {
-    display: flex;
-    justify-content: space-around;
-    padding: 10px 0;
-    width: 100%;
-}
-
-/* Button styling */
-.footer-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 10px;
-}
-
-.footer-button:hover{
-    background: none;
-    filter:brightness(50%);
-    border: none;
-    cursor: pointer;
-    padding: 10px;
-}
-
-/* Icon styling */
-.footer-button img {
-    width: 35px; /* Adjust size as needed */
-    height: 35px; /* Adjust size as needed */
-}
-
-head4{
-    font-size: 24px;
-    color: var(--accentLighter);
-    display: block;
-    margin-bottom: 8px;
-    margin-top:8px;
-}
-
-head3{
-    font-size: 32px;
-    color: var(--accentColor);
-    display: block;
-}
-head2{
-    font-size: 42px;
-    color:var(--accentColor);
-    display: block;
-}
-
-head1{
-    font-size: 50px;
-    display: block;
-}
-
-label{
-    font-size: 22px;
-}
-/* Customize the label (the container) */
-.checkboxContainer {
-    display: block;
-    position: relative;
-    padding-left: 35px;
-    margin-bottom: 12px;
-    cursor: pointer;
-    font-size: 22px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-  }
-  
-  /* Hide the browser's default checkbox */
-  .checkboxContainer input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    height: 0;
-    width: 0;
-  }
-  
-  /* Create a custom checkbox */
-  .checkmark {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 25px;
-    width: 25px;
-    background-color: #eee;
-  }
-  
-  /* On mouse-over, add a grey background color */
-  .checkboxContainer:hover input ~ .checkmark {
-    background-color: #ccc;
-  }
-  
-  /* When the checkbox is checked, add a blue background */
-  .checkboxContainer input:checked ~ .checkmark {
-    background-color: #2196F3;
-  }
-  
-  /* Create the checkmark/indicator (hidden when not checked) */
-  .checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
-  }
-  
-  /* Show the checkmark when checked */
-  .checkboxContainer input:checked ~ .checkmark:after {
-    display: block;
-  }
-  
-  /* Style the checkmark/indicator */
-  .container .checkmark:after {
-    left: 9px;
-    top: 5px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 3px 3px 0;
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-    transform: rotate(45deg);
-  }
-
-  .openingContainer{
-    display:flex;
-    flex-direction: row;
-    align-items: center;
-    margin: 0px 0px 10px 0px;
-    font-size: 30px;
-  }
-  .openingContainer img{
-    width: 24px;
-    height: 24px;
-  }
-
-  .openingInfo{
-    flex-direction: column;
-    margin-left:15px;
-  }
-
-  .openingTimes{
-    width: 100%;
-  }
-  .openingContainer head3{
-    font-kerning: 3%;
-    font-size: 25px;
-    color: var(--accentOneofThem);;
-  }
-
-  hr{
-    border-style: dotted;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    border-color: var(--accentColor);;
-    padding-left: 20px;
-  }
-
-input{
-    cursor:pointer;
-}
-
-.weatherIcon{
-    height: 40%;
-    filter: invert(1);
-    transform: translateY(5px);
-}
-@media screen and (max-width: 1289px){
-    .right {
-        position: absolute;
-        background-color: rgba(8, 39, 80, 0.8);
-        justify-self: flex-end;
-        right: 0px;
-        display: none;
-        padding-bottom: 75px;
-        overflow-y: scroll;
-        scrollbar-width: 28px;
-        width: 100%;
-        height: 100%;
-    }
-    .footer-container{
-        width: 100%;
-        background-color: rgba(0, 0, 0, 0.8);
-        border-radius: 30px 30px 0px 0px;
-    }
-    .topTitle{
-        position: absolute;
-        margin: 12px;
-        padding: 2px;
-        padding-left: 20px;
-        padding-right: 20px;
-        align-items: center;
-        justify-content: center;
-        background-color: rgba(0,0,0,0.6);
-        border-width: 3px;
-        border-style: solid;
-        border-color: rgba(0, 0, 0, 0.6);
-        border-radius: 30px;
-        width: fit-content;
-    }
-    .topTitle p{
-        font-size: 24px;
-    }
-    .waitContainer{
-        display: block;
-        width: 100%;
-        min-width: 20%;
-        max-width: none;
-        padding: 8px;
-    }
-
-    .left{
-        width: 100%;
-        background-color: rgba(0,0,0,0);
-    }
-    .middle{
-        display: none;
-    }
-    .midleftLower{
-        margin:12px;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0);
-    }
-    .waitElement{
-        font-size: 16px;
-        width: 100%;
-    }
-}
-
-@media screen and (max-width: 1289px) {
-    .midleftLower {
-        width: auto;
-        background-color: rgba(0, 0, 0, 0.3);
-    }
-    .middle{
-        width: auto;
-    }
-    .topTitle {
-        background-color: rgba(0, 0, 0, 0.3);
-    }
-    .right {
-        position: absolute;
-        background-color: rgba(8, 39, 80, 0.8);
-        justify-self: flex-end;
-        right: 0px;
-        display: none;
-        padding-bottom: 75px;
-        overflow-y: scroll;
-        scrollbar-width: 28px;
-    }
-    
-    .left{
-        width: auto;
-    }
-    .waitContainer{
-        width: auto;
-        margin: 12px;
-        height: 100%;
-        max-width: none;
-        min-width: none;
-
-    }
-    .footer-container{
-        background-color: rgba(0, 0, 0, 0.6);
-        border-radius: 30px 0px 0px 0px;
-        border: 3px solid black;
-    }
-}
