@@ -780,7 +780,7 @@ function populateWaitTimes(park) {
         console.log('Park ' + park + ' does not have wait times. Searching hotels...');
 
         // Fetch and process data for Hotel or Grand if applicable
-        const url = 'https://proxy.cors.sh/https://api.themeparks.wiki/v1/entity/bfc89fd6-314d-44b4-b89e-df1a89cf991e/live';
+        const url = 'https://api.themeparks.wiki/v1/entity/bfc89fd6-314d-44b4-b89e-df1a89cf991e/live';
 
         // hotel info fetch
         fetch(url)
@@ -843,7 +843,7 @@ function populateWaitTimes(park) {
     }
 
     //park info fetch
-    fetch(`https://proxy.cors.sh/https://api.themeparks.wiki/v1/entity/${parkEntityId}/live`)
+    fetch(`https://api.themeparks.wiki/v1/entity/${parkEntityId}/live`)
     .then(response => response.json())
     .then(data => {
         waitContainer.innerHTML = '<h1>Live Wait Times</h1 style="padding-left:40px;">';
@@ -1014,14 +1014,15 @@ function populateWaitTimes(park) {
         waitContainer.style.display = "block";
         //waitContainer.innerHTML = '<h1>Wait times could not be retreived.</h1 style="padding-left:40px;">';
         console.error(error)
+        waitContainer.innerHTML = '<h1>Wait time fetch failed!</h1 style="padding-left:40px;>'
     })
     
         document.getElementById('waitContainer').scrollTop=0;
 }
 
 async function fetchParkOpenTimes() {
-    const disneylandAPI = 'https://proxy.cors.sh/https://api.themeparks.wiki/v1/entity/7340550b-c14d-4def-80bb-acdb51d49a66/schedule';
-    const californiaAdventureAPI = 'https://proxy.cors.sh/https://api.themeparks.wiki/v1/entity/832fcd51-ea19-4e77-85c7-75d5843b127c/schedule';
+    const disneylandAPI = 'https://api.themeparks.wiki/v1/entity/7340550b-c14d-4def-80bb-acdb51d49a66/schedule';
+    const californiaAdventureAPI = 'https://api.themeparks.wiki/v1/entity/832fcd51-ea19-4e77-85c7-75d5843b127c/schedule';
 
     const [disneylandResponse, californiaResponse] = await Promise.all([
         fetch(disneylandAPI),

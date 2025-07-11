@@ -268,12 +268,12 @@ body, html {
     margin: 20px;
 }
 .middle titleBlock{
-    font-size: 60px;
+    font-size: 3.8cqw;
     font-weight: 0.01px;
 }
 .middle p{
     margin: 0;
-    font-size: 38px;
+    font-size: 1.8cqw;
     line-height: 140%;
 }
 
@@ -445,6 +445,11 @@ head1{
 label{
     font-size: 22px;
 }
+
+.scrollable{
+    overflow-y: scroll;
+    scrollbar-width: none;  /* Firefox */
+}
 /* Customize the label (the container) */
 .checkboxContainer {
     display: block;
@@ -452,7 +457,7 @@ label{
     padding-left: 35px;
     margin-bottom: 12px;
     cursor: pointer;
-    font-size: 22px;
+    font-size: 2cqh;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
