@@ -5,8 +5,6 @@ from PIL import Image, ImageTk
 import tkinter as tk
 import io
 
-# Set up the OpenAI client with your API key
-client = OpenAI(api_key="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")
 
 # --- Function to generate a description using GPT ---
 def chatGPTResponse(prompt_text):

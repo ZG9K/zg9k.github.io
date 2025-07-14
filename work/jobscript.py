@@ -2,9 +2,6 @@ import os
 import openai
 from openai import OpenAI
 
-# Initialize OpenAI client
-client = OpenAI(api_key="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")  # or replace with your actual key: OpenAI(api_key="sk-...")
-
 print("Welcome to JobBot 3000!")
 name = input("What is your name? ")
 hobby = input("What do you like to do in your free time? ")
