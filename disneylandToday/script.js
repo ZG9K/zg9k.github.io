@@ -95,21 +95,26 @@ var displayedLocation
 
 function cycleWaitInfo() {
     const waitContainer = document.getElementById('waitContainer');
-    waitContainer.innerHTML = '<h1>Loading Wait Times...</h1 style="padding-left:40px;>'
+    waitContainer.innerHTML = '<h1>Loading Wait Times...</h1 style="padding-left:40px;">';
     let nextIndex = currentIndex;
-    do {
+    let foundActive = false;
+    let checked = 0;
+    while (checked < locations.length) {
         const currentLocation = locations[nextIndex];
-        displayedLocation = currentLocation
-        console.log(currentLocation)
         if (isActive(currentLocation)) {
+            displayedLocation = currentLocation;
             populateWaitTimes(currentLocation);
-            currentIndex = nextIndex;
             updateLocationDisplay(currentLocation);
+            currentIndex = (nextIndex + 1) % locations.length;
+            foundActive = true;
             break;
         }
         nextIndex = (nextIndex + 1) % locations.length;
-    } while (nextIndex !== currentIndex);
-    currentIndex = (currentIndex + 1) % locations.length;
+        checked++;
+    }
+    if (!foundActive) {
+        waitContainer.innerHTML = '<h1>No active locations available.</h1>';
+    }
 }
 
 // Function to check if a location is active
@@ -216,8 +221,68 @@ const disneylandTips = [
     {
       "title": "<titleBlock>Maximize Genie+</titleBlock>",
       "body": "<p>Strategize your Genie+ selections for a seamless experience.<br> - Reserve Lightning Lane passes for high-demand attractions first.<br> - Use the app to monitor return times and availability.<br> - Plan your day around your Genie+ reservations to avoid long waits.</p>"
-    }
-  ]
+    },
+    {
+    "title": "<titleBlock>Pack a Portable Charger</titleBlock>",
+    "body": "<p>Keep phones and cameras powered all day.<br> - Download-heavy features like Genie+ drain batteries fast.<br> - FuelRod kiosks let you swap spent chargers for full ones.<br> - Bring an extra cable so friends can share the juice.</p>"
+  },
+  {
+    "title": "<titleBlock>Use Rider Switch for Little Ones</titleBlock>",
+    "body": "<p>Parents can still enjoy thrill rides without double‑waiting.<br> - Ask the Cast Member at the queue entrance to set it up.<br> - One adult rides while the other waits with the child, then swap.<br> - The second group usually boards through Lightning Lane or a shortened line.</p>"
+  },
+  {
+    "title": "<titleBlock>Grab a Free Celebration Button</titleBlock>",
+    "body": "<p>Mark birthdays, graduations, or “I’m Here!” with style.<br> - Pick one up at City Hall or most shop counters.<br> - Characters and Cast often give extra attention to button‑wearers.<br> - They make a fun, cost‑free souvenir.</p>"
+  },
+  {
+    "title": "<titleBlock>Midday Chill in the Animation Building</titleBlock>",
+    "body": "<p>DCA’s Animation Academy is AC heaven.<br> - Watch looping Disney clips on gigantic screens.<br> - Re‑energise while sketching a character in free art classes.<br> - Great place to escape heat or rain without leaving the park.</p>"
+  },
+  {
+    "title": "<titleBlock>Visit Galaxy’s Edge After Dark</titleBlock>",
+    "body": "<p>Batuu transforms once the suns set.<br> - Lightsabers and neon translate into incredible photos.<br> - Millennium Falcon: Smugglers Run often posts shorter waits.<br> - Nighttime atmosphere feels straight out of the movies.</p>"
+  },
+  {
+    "title": "<titleBlock>Repeat Fantasyland Classics at Closing</titleBlock>",
+    "body": "<p>Many families leave after fireworks.<br> - Lines for Alice in Wonderland, Mr. Toad, etc. shrink dramatically.<br> - If you’re in line one minute before official close, you ride.<br> - Perfect nostalgia‑filled finale to the day.</p>"
+  },
+  {
+    "title": "<titleBlock>Swap FuelRods, Don’t Buy Twice</titleBlock>",
+    "body": "<p>Already have a FuelRod from another trip?<br> - Kiosks in both parks exchange depleted rods for fresh ones free of charge.<br> - Saves luggage space and repeat purchases.<br> - Look for machines near locker rentals and large gift shops.</p>"
+  },
+  {
+    "title": "<titleBlock>Rent a Locker Once, Access Anytime</titleBlock>",
+    "body": "<p>Stash hoodies, merch, and snacks without carrying them.<br> - Lockers are inside each park and in the Esplanade (cheapest).<br> - In‑park lockers stay accessible until closing—even after stores shut.<br> - Re‑enter as often as you need.</p>"
+  },
+  {
+    "title": "<titleBlock>Track Seasonal Food & Merch Drops</titleBlock>",
+    "body": "<p>Limited‑time treats appear for almost every holiday.<br> - The Disneyland app and Disney Parks Blog post menus weekly.<br> - Mobile‑order high‑demand items (e.g., beignets) before they sell out.<br> - Great way to collect exclusive popcorn buckets and sippers.</p>"
+  },
+  {
+    "title": "<titleBlock>Have a Rainy‑Day Game Plan</titleBlock>",
+    "body": "<p>Wet forecasts can be a hidden blessing.<br> - Pack disposable ponchos and washable shoes.<br> - Indoor rides (Haunted Mansion, Space Mountain) stay open with short waits.<br> - Watch for rare “Rainy Day Cavalcade” character parade on Main Street.</p>"
+  },
+  {
+    "title": "<titleBlock>Ride the Monorail at Midday</titleBlock>",
+    "body": "<p>Give your legs a break without leaving Disney bubble.<br> - Board near Finding Nemo Submarine Voyage or Downtown Disney.<br> - The loop offers breezy views of Tomorrowland and the resort.<br> - Perfect quick escape when crowds peak after lunch.</p>"
+  },
+  {
+    "title": "<titleBlock>Use Package Pick‑Up or Delivery</titleBlock>",
+    "body": "<p>Don’t haul souvenirs all afternoon.<br> - Ask retail Cast Members to send purchases to the park exit for later pick‑up.<br> - Guests of on‑property hotels can have items delivered to bell services overnight.<br> - Keeps hands free for churros instead of shopping bags.</p>"
+  },
+  {
+    "title": "<titleBlock>Catch the Daily Flag Retreat Ceremony</titleBlock>",
+    "body": "<p>Main Street U.S.A. honours veterans every afternoon.<br> - Exact time posted on entertainment schedule (usually ~4 p.m.).<br> - Live band and color guard lower the American flag.<br> - Moving tradition that many visitors overlook.</p>"
+  },
+  {
+    "title": "<titleBlock>Master Virtual Queues & Boarding Groups</titleBlock>",
+    "body": "<p>New or high‑demand experiences may skip standby entirely.<br> - Join the queue in the app the moment it opens (typically 7 a.m. and/or noon).<br> - Enable push notifications and clock sync on your phone.<br> - Have everyone’s tickets linked in one account for fastest tap.</p>"
+  },
+  {
+    "title": "<titleBlock>Dessert Party = Stress‑Free Fireworks</titleBlock>",
+    "body": "<p>Reserve a Plaza Inn or Tomorrowland Terrace dessert package.<br> - Includes seated viewing and unlimited sweets.<br> - Worth the splurge if you dislike staking curb space hours early.<br> - Book exactly 60 days out—spots vanish quickly.</p>"
+  }
+];
 const californiaAdventureTips = [
     {
       "title": "<titleBlock>Rope Drop Radiator Springs Racers</titleBlock>",
@@ -348,6 +413,133 @@ const downtownDisneyTips = [
       "body": "<p>Experience the vibrant nighttime ambiance of Downtown Disney.<br> - Enjoy the festive atmosphere with lights and music.<br> - Take a leisurely stroll after dark.<br> - Perfect for a relaxing evening after a day at the parks.</p>"
     }
   ]
+
+const advancedDisneylandTips = [
+  {
+    "title": "<titleBlock>Early‑Entry Power Half‑Hour</titleBlock>",
+    "body": "<p>Hotel guests can knock out 5–6 rides before rope‑drop crowds arrive.<br> - Early Entry opens 30 min before the public.<br> - Only Fantasyland & Tomorrowland are accessible—plan a tight loop.<br> - Scan a room key or linked reservation at the Plaza Inn gate.</p>"
+  },
+  {
+    "title": "<titleBlock>Know the Early‑Entry Rotation</titleBlock>",
+    "body": "<p>The eligible park alternates by day—check the pattern to avoid surprises.<br> - DCA on Mon/Wed/Fri/Sun, Disneyland on Tue/Thu/Sat.<br> - Schedule breakfasts or lightning‑lane stacks in the other park.<br> - Update plans if the resort posts a special‑event change.</p>"
+  },
+  {
+    "title": "<titleBlock>Front‑Row Rope‑Drop Tactics</titleBlock>",
+    "body": "<p>Be through security by 6 : 45 a.m. to secure pole‑position.<br> - Gates usually crack open around 7 : 05–7 : 25 a.m.<br> - Line up on the curb nearest your target land to shave minutes.</p>"
+  },
+  {
+    "title": "<titleBlock>Pick the Opposite Park on EE Days</titleBlock>",
+    "body": "<p>If you don’t have Early Entry, rope‑drop the park that **doesn’t** offer it that morning.<br> - You’ll avoid 30 min of head‑starts on key rides.<br> - Lines stay shorter until about 10 a.m.<br> - Great strategy for single‑day tickets.</p>"
+  },
+  {
+    "title": "<titleBlock>Fantasyland Blitz Order</titleBlock>",
+    "body": "<p>Crush seven dark‑rides in one swoop during Early Entry.<br> - Hit Peter Pan → Alice → Dumbo → Mr Toad → Snow White → Pinocchio → Teacups.<br> - Pan builds a 20‑min queue within 5 min; go there first.<br> - Skip if Early Entry isn’t available that day.</p>"
+  },
+  {
+    "title": "<titleBlock>Skip Indy’s Lightning Lane</titleBlock>",
+    "body": "<p>The paid queue only bypasses the outdoor rope maze.<br> - If no crowd outside, standby is 20‑30 min.<br> - Book other attractions with your LL credits.<br> - Watch the exterior loop; if it’s empty, jump in.</p>"
+  },
+  {
+    "title": "<titleBlock>Read the Jungle Cruise Balcony</titleBlock>",
+    "body": "<p>Peek upstairs before committing.<br> - Guests flowing = ≤ 25 min. Posted‑up guests = long slog.<br> - Saves you from a surprise 45‑min wait.<br> - Re‑check later; the upstairs empties in cycles.</p>"
+  },
+  {
+    "title": "<titleBlock>Runaway Railway Prop‑Room Math</titleBlock>",
+    "body": "<p>Each of the four exhibit rooms = ~12 min.<br> - If you enter with only two rooms ahead, expect ~24 min total.<br> - Rarely tops 45 min all day.<br> - Great midday AC break.</p>"
+  },
+  {
+    "title": "<titleBlock>Galaxy’s Edge After 10 p.m.</titleBlock>",
+    "body": "<p>Batuu empties at night—perfect photo ops.<br> - Smugglers Run becomes a walk‑on; often solo cockpits.<br> - Rise typically closes earlier—plan it earlier.<br> - Bring a tripod for neon‑lit shots.</p>"
+  },
+  {
+    "title": "<titleBlock>Single‑Rider Shortcuts</titleBlock>",
+    "body": "<p>Go solo to slash waits on marquee rides.<br> - Offered on Smugglers Run, Space Mountain, Matterhorn & Incredicoaster.<br> - Perfect for repeat thrill seekers.<br> - Parties may reunite within minutes of each other.</p>"
+  },
+  {
+    "title": "<titleBlock>Respect the Two‑Hour Rule</titleBlock>",
+    "body": "<p>You can’t book another Lightning Lane until 2 h after the last reservation—or once you scan in.<br> - The cooldown starts at *park open* for pre‑8 a.m. bookings.<br> - Occasionally drops to 1 h; treat it as pixie‑dust bonus.</p>"
+  },
+  {
+    "title": "<titleBlock>Modify, Don’t Cancel</titleBlock>",
+    "body": "<p>Changing a Lightning Lane keeps your cooldown intact.<br> - Use “Modify” to shift times or swap attractions instead of cancelling.<br> - Great for dodging ride breakdowns.<br> - Refresh often—earlier slots pop up.</p>"
+  },
+  {
+    "title": "<titleBlock>Stack Afternoon LLs</titleBlock>",
+    "body": "<p>Book & bump return times into peak hours while you tour standby in the morning.<br> - By 1 : 30 p.m. you can hold 3‑4 passes for headliners.<br> - Take a hotel break, then burn the stack after 4 p.m.<br> - Works even better on multi‑day trips.</p>"
+  },
+  {
+    "title": "<titleBlock>Watch for Elastic Queues</titleBlock>",
+    "body": "<p>Lines stretch & shrink in predictable cycles.<br> - Demand drops, queue shrinks; posted wait then lures crowds back.<br> - Pirates’ 3,400 pph capacity eats lines fast.<br> - Time your walk‑up during a dip.</p>"
+  },
+  {
+    "title": "<titleBlock>Park‑Hop After 11 a.m.</titleBlock>",
+    "body": "<p>On Park‑Hopper tickets you can bounce once the clock strikes 11.<br> - Choose your “starting” park when you make the reservation.<br> - The esplanade hop is <5 min gate to gate.<br> - Skip the add‑on on 4‑day stays if you’re budget‑conscious.</p>"
+  },
+  {
+    "title": "<titleBlock>Prime Breakfast Breaks</titleBlock>",
+    "body": "<p>Fuel up while crowds surge.<br> - Jolly Holiday, Red Rose Taverne, or Market House are reliable a.m. stops.<br> - Mobile‑order to dodge the queue.<br> - Grab pastries to snack in standby lines.</p>"
+  },
+  {
+    "title": "<titleBlock>Collect Monthly Park Maps</titleBlock>",
+    "body": "<p>Pick up a map every visit—they change artwork monthly.<br> - Free, flat, and frame‑worthy.<br> - Handy for planning your next lightning‑lane sprint.</p>"
+  },
+  {
+    "title": "<titleBlock>Link Your PhotoPass Code ASAP</titleBlock>",
+    "body": "<p>Input on‑ride photo codes in the app before leaving the unload area.<br> - Saves the pic even if Wi‑Fi drops.<br> - Share the download with linked tickets.</p>"
+  },
+  {
+    "title": "<titleBlock>Posted Wait Times Lag</titleBlock>",
+    "body": "<p>High‑demand rides can rise 15 min while you walk there.<br> - Cross‑check with what you *see* at the entrance.<br> - Short standby spikes often mean LL merge is overloaded.</p>"
+  },
+  {
+    "title": "<titleBlock>Use Your Hotel for Midday Recharge</titleBlock>",
+    "body": "<p>On‑property rooms are a 5‑min stroll via private entrances.<br> - Quick naps prevent burnout during 12‑hour park days.<br> - Swim, change clothes, then ride the night wave.<br> - Early Entry + midday rest = marathon longevity.</p>"
+  },
+
+  /* ──────────  EXTRA 10  ────────── */
+
+  {
+    "title": "<titleBlock>Snipe Cancelled Lightning Lanes</titleBlock>",
+    "body": "<p>Keep refreshing the LL menu—dropped slots flash open.<br> - Tap the ride, back out, then refresh for auto‑scroll.<br> - Confirm fast; others snap them up in seconds.<br> - Great during hotel breaks or parade lulls.</p>"
+  },
+  {
+    "title": "<titleBlock>Save “Green” LLs for Gap Fillers</titleBlock>",
+    "body": "<p>Buzz, Autopia and Star Tours rarely sell out.<br> - Book them only when you need a quick return.<br> - Don’t waste your stack or two‑hour timer.<br> - Use them to bridge time before a headliner.</p>"
+  },
+  {
+    "title": "<titleBlock>Big Thunder ➜ Indy Rope‑Drop Trick</titleBlock>",
+    "body": "<p>Hit Big Thunder first while crowds chase headliners.<br> - Wait dies on Indy ~30 min after open.<br> - You’ll beat the surge and ride both fast.<br> - Works even on Early‑Entry mornings.</p>"
+  },
+  {
+    "title": "<titleBlock>Plan for Rise Downtime</titleBlock>",
+    "body": "<p>Rise of the Resistance opens late or stalls often.<br> - Rope‑drop only if it’s showing “open” at gates.<br> - Have Smugglers Run or Tiana’s Bayou as backup.<br> - Queue’s 30‑40 min even first thing—budget the time.</p>"
+  },
+  {
+    "title": "<titleBlock>Quiet Break: Grizzly River Run Path</titleBlock>",
+    "body": "<p>Need shade and silence? Slip behind Grizzly River Run.<br> - Forested walkway with benches and mist fans.<br> - Perfect for stroller naps or snack resets.<br> - Re‑enter DCA crowds refreshed.</p>"
+  },
+  {
+    "title": "<titleBlock>Tom Sawyer Island Midday Reset</titleBlock>",
+    "body": "<p>Escape the hubbub without leaving Disneyland.<br> - Take the raft over, find a riverside seat.<br> - Kids can explore caves while adults rest.<br> - Cell signal is solid for planning your next LL.</p>"
+  },
+  {
+    "title": "<titleBlock>Watch Pirates’ Elastic Queue</titleBlock>",
+    "body": "<p>Capacity is 3,400 guests / hr—lines evaporate fast.<br> - If the courtyard is half‑full or less, jump in.<br> - Posted waits can drop by 15 min within one cycle.<br> - Skip LL here; standby often matches merge time.</p>"
+  },
+  {
+    "title": "<titleBlock>Arrive 5 min Early for LL Scans</titleBlock>",
+    "body": "<p>Cast Members allow entry 5 min before your slot.<br> - Scan at 8:55 for a 9:00 return, shaving precious minutes.<br> - Use overlap to chain two LLs back‑to‑back.<br> - Great during stacked afternoon runs.</p>"
+  },
+  {
+    "title": "<titleBlock>Scan Everyone Before Booking</titleBlock>",
+    "body": "<p>LL reservations only work for tickets already scanned in.<br> - Link every ticket in one account pre‑trip.<br> - Hold booking until the last person passes the gate.<br> - Prevents orphaned return times and re‑booking headaches.</p>"
+  },
+  {
+    "title": "<titleBlock>Sunrise Riverboat & Columbia Hack</titleBlock>",
+    "body": "<p>Jump on the Mark Twain or Sailing Ship Columbia at rope‑drop.<br> - Virtually empty decks = golden photos of Frontierland sunrise.<br> - Relaxing cruise while crowds stampede elsewhere.<br> - You’ll step off ready to tackle the west‑side headliners.</p>"
+  }
+];
+
   
 // Function to update the tips for the parks
 let tipIndex = 0;
@@ -766,6 +958,8 @@ document.getElementById("audioButton").addEventListener('click', function() {
 pinnedAttractions = []
 
 function populateWaitTimes(park) {
+    const waitContainerParent = document.getElementById('hideAllWaits');
+    console.log(waitContainerParent)
     const waitContainer = document.getElementById('waitContainer');
     const waitContainerPinned = document.getElementById('pinnedWaits');
     
@@ -828,18 +1022,18 @@ function populateWaitTimes(park) {
                     }
                     
                     checkNone = document.getElementsByClassName('waitName')
-
                     if(checkNone.length == 0){
                         waitContainer.innerHTML = '<h1>Park is Closed</h1 style="padding-left:40px;">';
-                        if(displayWaitParkClosed==false){waitContainer.style.display = "none";}else{waitContainer.style.display = "block";}
-                    }else{waitContainer.style.display = "block";}
+                        if(displayWaitParkClosed==false){waitContainerParent.style.display = "none";}else{waitContainerParent.style.display = "block";}
+                        console.log("I ran")
+                    }else{waitContainerParent.style.display = "block";}
                 });
             })
             .catch(error => {
                 console.error('Error fetching or processing data:', error);
             });
 
-        waitContainer.style.display = "none"; // Hide container if park is not supported
+        waitContainerParent.style.display = "none"; // Hide container if park is not supported
         return; // Exit function if park is not Disneyland or DCA
     }
 
@@ -860,7 +1054,7 @@ function populateWaitTimes(park) {
             if (!todayOperating) {
                 // Park is not operating today
                 waitContainer.innerHTML = '<h1>Park is Closed</h1 style="padding-left:40px;">';
-                waitContainer.style.display = displayWaitParkClosed ? "block" : "none";
+                waitContainerParent.style.display = displayWaitParkClosed ? "block" : "none";
                 return;
             }
 
@@ -873,7 +1067,7 @@ function populateWaitTimes(park) {
             if (now < openingTime || now > closingTime) {
                 // Park is closed (outside operating hours)
                 waitContainer.innerHTML = '<h1>Park is Closed</h1 style="padding-left:40px;">';
-                waitContainer.style.display = displayWaitParkClosed ? "block" : "none";
+                waitContainerParent.style.display = displayWaitParkClosed ? "block" : "none";
                 return;
             }
 
@@ -1051,13 +1245,13 @@ function fetchWaitTimes(parkEntityId, waitContainer, waitContainerPinned) {
 
             if (checkNone.length === 0) {
                 waitContainer.innerHTML = '<h1>No Wait Times Available</h1 style="padding-left:40px;">';
-                waitContainer.style.display = "block";
+                waitContainerParent.style.display = "block";
             } else {
-                waitContainer.style.display = "block";
+                waitContainerParent.style.display = "block";
             }
         })
         .catch(error => {
-            waitContainer.style.display = "block";
+            waitContainerParent.style.display = "block";
             console.error(error)
             waitContainer.innerHTML = '<h1>Wait time fetch failed!</h1 style="padding-left:40px;">'
         })
