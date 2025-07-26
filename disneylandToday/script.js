@@ -761,6 +761,7 @@ document.getElementById("audioButton").addEventListener('click', function() {
     togglePanel("audio");
 });
 
+
 pinnedAttractions = []
 function populateWaitTimes(park) {
     const waitContainer = document.getElementById('waitContainer');
@@ -769,15 +770,11 @@ function populateWaitTimes(park) {
     if (park === 'Disneyland') {
         parkId = "DisneylandResortMagicKingdom";
         parkEntityId = '7340550b-c14d-4def-80bb-acdb51d49a66'
-        // Example specific functionality for Disneyland if needed
-        // You can add specific logic here for Disneyland
     } else if (park === 'DCA') {
         parkId = "DisneylandResortCaliforniaAdventure";
         parkEntityId = '832fcd51-ea19-4e77-85c7-75d5843b127c'
-        // Example specific functionality for DCA if needed
-        // You can add specific logic here for California Adventure
     } else {
-        console.log('Park ' + park + ' does not have wait times. Searching hotels...');
+        console.log('Provided park is not Disneyland or DCA, fetching resort wait times instead.');
 
         // Fetch and process data for Hotel or Grand if applicable
         const url = 'https://api.themeparks.wiki/v1/entity/bfc89fd6-314d-44b4-b89e-df1a89cf991e/live';
@@ -786,17 +783,19 @@ function populateWaitTimes(park) {
         fetch(url)
             .then(response => response.json())
             .then(data => {
-                waitContainer.innerHTML = '<h1>Hotel Resturant Status</h1 style="padding-left:40px;">';
+                waitContainer.innerHTML = '<h1>Hotel Restaurant Status</h1 style="padding-left:40px;">';
                 let locations = [];
 
                 if (park === "Hotel") {
                     locations = ["Goofy's Kitchen", "Trader Sam's Enchanted Tiki Bar"];
                 } else if (park === "Grand") {
                     locations = ["Napa Rose", "Storytellers Cafe", "GCH Craftsman Bar"];
+                } else if (park === "Pixar") {
+                    locations = ["Palm Breeze Bar"]
+                } else if (park === "Downtown") { 
+                    console.log("No reported objects for Downtown Disney, skipping wait times.");
                 } else {
-                    console.error("No valid locations found. Trying again.");
-                    populateWaitTimes(displayedLocation);
-                    
+                    console.error("Invalid park specified for hotel wait times.");
                     return;
                 }
 
@@ -820,8 +819,8 @@ function populateWaitTimes(park) {
                         <div class="waitTime" style="background-color: ${backgroundColor};">
                             <span>${waitTime}</span>
                         </div>
-                    `;
-                    waitContainer.appendChild(attractionElement);
+                        `;
+                        waitContainer.appendChild(attractionElement);
                     } else {
                         console.error(`Location '${location}' not found.`);
                     }
@@ -842,182 +841,226 @@ function populateWaitTimes(park) {
         return; // Exit function if park is not Disneyland or DCA
     }
 
-    //park info fetch
-    fetch(`https://api.themeparks.wiki/v1/entity/${parkEntityId}/live`)
-    .then(response => response.json())
-    .then(data => {
-        waitContainer.innerHTML = '<h1>Live Wait Times</h1 style="padding-left:40px;">';
-        waitContainerPinned.innerHTML= '<h3 class="pinnedTitle">Pinned Wait Times</h3 style="padding-left:40px;">'
-        const pinnedTitle = document.querySelector('.pinnedTitle');
-
-        let attractions = data.liveData;
-
-        attractions.sort((a, b) => {
-            // Function to get the wait time safely
-            const getWaitTime = (attraction) => {
-                return attraction.queue?.STANDBY?.waitTime ?? null;
-            };
-        
-            const waitTimeA = getWaitTime(a);
-            const waitTimeB = getWaitTime(b);
-        
-            // Sort by waitTime descending (highest to lowest)
-            if (waitTimeA !== null && waitTimeB !== null) {
-                return waitTimeB - waitTimeA;
-            } else if (waitTimeA !== null) {
-                return -1; // a has waitTime, b does not, so a comes before b
-            } else if (waitTimeB !== null) {
-                return 1; // b has waitTime, a does not, so b comes before a
-            }
-        
-            // If waitTime is null for both, sort by status
-            const statusOrder = {
-                "DOWN": 2,
-                "OPERATING": 1,
-                "REFURBISHMENT": 3,
-                "CLOSED": 4,
-                "null": 5  // null status comes last
-            };
-        
-            const statusA = a.status ?? "null";
-            const statusB = b.status ?? "null";
-        
-            return statusOrder[statusA] - statusOrder[statusB];
-        });
-
-        attractions.forEach(attraction => {
-            var waitTime = (attraction.queue?.STANDBY?.waitTime === null || attraction.queue?.STANDBY?.waitTime === undefined)
-                ? (attraction.status === null || attraction.status === undefined ? "Unknown" : attraction.status)
-                : `${attraction.queue.STANDBY.waitTime} Minutes`;
+    // First, check if the park is currently operating
+    // Get current time in park's timezone (Pacific Time)
+    const now = new Date();
+    const parkTime = new Date(now.toLocaleString("en-US", {timeZone: "America/Los_Angeles"}));
+    const today = parkTime.toISOString().split("T")[0];
     
-            var backgroundColor = (attraction.queue?.BOARDING_GROUP && attraction.status === "OPERATING")
-            ? 'rgba(192, 121, 199, 0.3)'  // Purple background for boarding group only if operating
-            : (attraction.queue?.STANDBY?.waitTime === null || 
-                typeof attraction.queue?.STANDBY?.waitTime !== 'number' || 
-                isNaN(attraction.queue.STANDBY.waitTime))
-                ? (attraction.status === "OPERATING" ? 'rgba(100, 255, 100, 0.3)' 
-                : (attraction.status === "DOWN" ? 'rgba(164,91,0,0.3)' 
-                : (attraction.status === "REFURBISHMENT" ? 'rgba(255, 80, 80, 0.3)' 
-                : 'rgba(0, 0, 0, 0.4)'))) 
-                : getBackgroundColor(attraction.queue.STANDBY.waitTime);
+    fetch(`https://api.themeparks.wiki/v1/entity/${parkEntityId}/schedule`)
+        .then(response => response.json())
+        .then(scheduleData => {
+            // Find today's operating schedule (in park's timezone)
+            const todayOperating = scheduleData.schedule.find(entry => 
+                entry.date === today && entry.type === "OPERATING"
+            );
 
-            const attractionElement = document.createElement('div');
-            let lightningLaneTime = '';
-
-            //lightning lane logic
-            if (attraction.queue?.RETURN_TIME?.returnStart !== undefined) {
-                if (attraction.queue.RETURN_TIME.returnStart === null) {
-                    lightningLaneTime = 'Sold Out';
-                } else {
-                    const returnTime = new Date(attraction.queue.RETURN_TIME.returnStart);
-                    const options = { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Los_Angeles' };
-                    const formattedTime = returnTime.toLocaleString('en-US', options);
-            
-                    lightningLaneTime = `${formattedTime}`;
-                }
+            if (!todayOperating) {
+                // Park is not operating today
+                waitContainer.innerHTML = '<h1>Park is Closed</h1 style="padding-left:40px;">';
+                waitContainer.style.display = displayWaitParkClosed ? "block" : "none";
+                return;
             }
 
-            //boarding group logic
-            if (attraction.queue?.BOARDING_GROUP) {
-                const startGroup = attraction.queue.BOARDING_GROUP.currentGroupStart;
-                const endGroup = attraction.queue.BOARDING_GROUP.currentGroupEnd;
-
-                waitTime = `Boarding ${startGroup} to ${endGroup}`;
+            // Check if current time is within operating hours
+            // API returns times with timezone info, so these will be correctly parsed
+            const openingTime = new Date(todayOperating.openingTime);
+            const closingTime = new Date(todayOperating.closingTime);
             
-                if (attraction.status === 'DOWN') {
-                    backgroundColor = 'rgba(164,91,0,0.3)';
-                    waitTime = 'DOWN';
-                } else if (attraction.status === 'CLOSED') {
-                    backgroundColor = 'rgba(0, 0, 0, 0.4)';
-                    waitTime = 'CLOSED';
-                }
-                else if (attraction.queue.BOARDING_GROUP.currentGroupStart == undefined){
-                    backgroundColor = 'rgba(82, 59, 84,0.3)';
-                    waitTime = 'Virtual Queue Closed';
-                }
+            // Compare using actual current time (not park time) since openingTime/closingTime are already timezone-aware
+            if (now < openingTime || now > closingTime) {
+                // Park is closed (outside operating hours)
+                waitContainer.innerHTML = '<h1>Park is Closed</h1 style="padding-left:40px;">';
+                waitContainer.style.display = displayWaitParkClosed ? "block" : "none";
+                return;
             }
+
+            // Park is open, proceed to fetch wait times
+            fetchWaitTimes(parkEntityId, waitContainer, waitContainerPinned);
+        })
+        .catch(error => {
+            console.error('Error checking park schedule:', error);
+            // If schedule check fails, try to fetch wait times anyway
+            fetchWaitTimes(parkEntityId, waitContainer, waitContainerPinned);
+        });
+}
+
+// Separate function to handle wait time fetching
+function fetchWaitTimes(parkEntityId, waitContainer, waitContainerPinned) {
+    fetch(`https://api.themeparks.wiki/v1/entity/${parkEntityId}/live`)
+        .then(response => response.json())
+        .then(data => {
+            waitContainer.innerHTML = '<h1>Live Wait Times</h1 style="padding-left:40px;">';
+            waitContainerPinned.innerHTML= '<h3 class="pinnedTitle">Pinned Wait Times</h3 style="padding-left:40px;">'
+            const pinnedTitle = document.querySelector('.pinnedTitle');
+
+            let attractions = data.liveData;
+
+            attractions.sort((a, b) => {
+                // Function to get the wait time safely
+                const getWaitTime = (attraction) => {
+                    return attraction.queue?.STANDBY?.waitTime ?? null;
+                };
             
-           if (waitTime.includes("Minutes") || displayClosed == true || waitTime.includes("DOWN") || waitTime.includes("Boarding")) {
-           //if(true){
-                attractionElement.classList.add('waitElement');
+                const waitTimeA = getWaitTime(a);
+                const waitTimeB = getWaitTime(b);
+            
+                // Sort by waitTime descending (highest to lowest)
+                if (waitTimeA !== null && waitTimeB !== null) {
+                    return waitTimeB - waitTimeA;
+                } else if (waitTimeA !== null) {
+                    return -1; // a has waitTime, b does not, so a comes before b
+                } else if (waitTimeB !== null) {
+                    return 1; // b has waitTime, a does not, so b comes before a
+                }
+            
+                // If waitTime is null for both, sort by status
+                const statusOrder = {
+                    "DOWN": 2,
+                    "OPERATING": 1,
+                    "REFURBISHMENT": 3,
+                    "CLOSED": 4,
+                    "null": 5  // null status comes last
+                };
+            
+                const statusA = a.status ?? "null";
+                const statusB = b.status ?? "null";
+            
+                return statusOrder[statusA] - statusOrder[statusB];
+            });
 
-                pinText="Toggle Pin"
-                attractionElement.innerHTML = `
-                    <div class=pinText>${pinText}</div>
-                    <div class="waitName">
-                        <span>${attraction.name}</span>
-                    </div>
-                    ${lightningLaneTime && window.genieActive ? `<div class="lightningLane" style="display: flex; background-color: ${lightningLaneTime === 'Sold Out' ? 'rgba(0,0,0,0.4)' : 'rgba(0, 204, 255, 0.4)'};">
-                        <span>${lightningLaneTime}</span>
-                    </div>` : ''}
-                    <div class="waitTime" style="background-color: ${backgroundColor};">
-                        <span>${waitTime}</span>
-                    </div>
-                `;
-                                // Function to add/remove pin
-                function togglePin() {
-                    const isPinned = pinnedAttractions.some(pinned => pinned.name === attraction.name);
+            attractions.forEach(attraction => {
+                var waitTime = (attraction.queue?.STANDBY?.waitTime === null || attraction.queue?.STANDBY?.waitTime === undefined)
+                    ? (attraction.status === null || attraction.status === undefined ? "Unknown" : attraction.status)
+                    : `${attraction.queue.STANDBY.waitTime} Minutes`;
+        
+                var backgroundColor = (attraction.queue?.BOARDING_GROUP && attraction.status === "OPERATING")
+                ? 'rgba(192, 121, 199, 0.3)'  // Purple background for boarding group only if operating
+                : (attraction.queue?.STANDBY?.waitTime === null || 
+                    typeof attraction.queue?.STANDBY?.waitTime !== 'number' || 
+                    isNaN(attraction.queue.STANDBY.waitTime))
+                    ? (attraction.status === "OPERATING" ? 'rgba(100, 255, 100, 0.3)' 
+                    : (attraction.status === "DOWN" ? 'rgba(164,91,0,0.3)' 
+                    : (attraction.status === "REFURBISHMENT" ? 'rgba(255, 80, 80, 0.3)' 
+                    : 'rgba(0, 0, 0, 0.4)'))) 
+                    : getBackgroundColor(attraction.queue.STANDBY.waitTime);
 
-                    if (isPinned) {
-                        // Remove attraction from pinned array
-                        console.log("returned false ispinned")
-                        pinnedAttractions.splice(pinnedAttractions.findIndex(pinned => pinned.name === attraction.name), 1);
-                        // Move the element back to the main container
-                        waitContainerPinned.removeChild(attractionElement);
-                        waitContainer.appendChild(attractionElement);
+                const attractionElement = document.createElement('div');
+                let lightningLaneTime = '';
 
-                        if (waitContainerPinned.children.length > 0) {
-                            waitContainerPinned.style.display = 'block';
-                        } else {
-                            pinnedTitle.style.display = 'none';
-                        }
-
+                //lightning lane logic
+                if (attraction.queue?.RETURN_TIME?.returnStart !== undefined) {
+                    if (attraction.queue.RETURN_TIME.returnStart === null) {
+                        lightningLaneTime = 'Sold Out';
                     } else {
-                        // Add attraction to pinned array
-                        pinnedAttractions.push(attraction);
-                        // Move the element to the pinned container
-                        waitContainer.removeChild(attractionElement);
-                        waitContainerPinned.appendChild(attractionElement);
-
-                        if (waitContainerPinned.children.length > 0) {
-                            pinnedTitle.style.display = 'block';
-                        } else {
-                            pinnedTitle.style.display = 'none';
-                        }
+                        const returnTime = new Date(attraction.queue.RETURN_TIME.returnStart);
+                        const options = { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/Los_Angeles' };
+                        const formattedTime = returnTime.toLocaleString('en-US', options);
+                
+                        lightningLaneTime = `${formattedTime}`;
                     }
                 }
 
-                // Add click event to the pinText element
-                const pinTextElement = attractionElement.querySelector('.pinText');
-                pinTextElement.addEventListener('click', togglePin);
+                //boarding group logic
+                if (attraction.queue?.BOARDING_GROUP) {
+                    const startGroup = attraction.queue.BOARDING_GROUP.currentGroupStart;
+                    const endGroup = attraction.queue.BOARDING_GROUP.currentGroupEnd;
 
-                // Add the element to the appropriate container based on pinned status
-                if (pinnedAttractions.some(pinned => pinned.name === attraction.name) || (attraction.status === 'DOWN' && pinDownAttractions == true)) {
-                    waitContainerPinned.appendChild(attractionElement);
-                    pinnedTitle.style.display = 'block';
-                } else {
-                    waitContainer.appendChild(attractionElement);
+                    waitTime = `Boarding ${startGroup} to ${endGroup}`;
+                
+                    if (attraction.status === 'DOWN') {
+                        backgroundColor = 'rgba(164,91,0,0.3)';
+                        waitTime = 'DOWN';
+                    } else if (attraction.status === 'CLOSED') {
+                        backgroundColor = 'rgba(0, 0, 0, 0.4)';
+                        waitTime = 'CLOSED';
+                    }
+                    else if (attraction.queue.BOARDING_GROUP.currentGroupStart == undefined){
+                        backgroundColor = 'rgba(82, 59, 84,0.3)';
+                        waitTime = 'Virtual Queue Closed';
+                    }
                 }
+                
+               if (waitTime.includes("Minutes") || displayClosed == true || waitTime.includes("DOWN") || waitTime.includes("Boarding")) {
+                    attractionElement.classList.add('waitElement');
+
+                    pinText="Toggle Pin"
+                    attractionElement.innerHTML = `
+                        <div class=pinText>${pinText}</div>
+                        <div class="waitName">
+                            <span>${attraction.name}</span>
+                        </div>
+                        ${lightningLaneTime && window.genieActive ? `<div class="lightningLane" style="display: flex; background-color: ${lightningLaneTime === 'Sold Out' ? 'rgba(0,0,0,0.4)' : 'rgba(0, 204, 255, 0.4)'};">
+                            <span>${lightningLaneTime}</span>
+                        </div>` : ''}
+                        <div class="waitTime" style="background-color: ${backgroundColor};">
+                            <span>${waitTime}</span>
+                        </div>
+                    `;
+                                    // Function to add/remove pin
+                    function togglePin() {
+                        const isPinned = pinnedAttractions.some(pinned => pinned.name === attraction.name);
+
+                        if (isPinned) {
+                            // Remove attraction from pinned array
+                            console.log("returned false ispinned")
+                            pinnedAttractions.splice(pinnedAttractions.findIndex(pinned => pinned.name === attraction.name), 1);
+                            // Move the element back to the main container
+                            waitContainerPinned.removeChild(attractionElement);
+                            waitContainer.appendChild(attractionElement);
+
+                            if (waitContainerPinned.children.length > 0) {
+                                waitContainerPinned.style.display = 'block';
+                            } else {
+                                pinnedTitle.style.display = 'none';
+                            }
+
+                        } else {
+                            // Add attraction to pinned array
+                            pinnedAttractions.push(attraction);
+                            // Move the element to the pinned container
+                            waitContainer.removeChild(attractionElement);
+                            waitContainerPinned.appendChild(attractionElement);
+
+                            if (waitContainerPinned.children.length > 0) {
+                                pinnedTitle.style.display = 'block';
+                            } else {
+                                pinnedTitle.style.display = 'none';
+                            }
+                        }
+                    }
+
+                    // Add click event to the pinText element
+                    const pinTextElement = attractionElement.querySelector('.pinText');
+                    pinTextElement.addEventListener('click', togglePin);
+
+                    // Add the element to the appropriate container based on pinned status
+                    if (pinnedAttractions.some(pinned => pinned.name === attraction.name) || (attraction.status === 'DOWN' && pinDownAttractions == true)) {
+                        waitContainerPinned.appendChild(attractionElement);
+                        pinnedTitle.style.display = 'block';
+                    } else {
+                        waitContainer.appendChild(attractionElement);
+                    }
+                }
+            });
+
+            document.getElementById('waitContainer').scrollTop=0;
+            checkNone = document.getElementsByClassName('waitName')
+
+            if (checkNone.length === 0) {
+                waitContainer.innerHTML = '<h1>No Wait Times Available</h1 style="padding-left:40px;">';
+                waitContainer.style.display = "block";
+            } else {
+                waitContainer.style.display = "block";
             }
-        });
-
-        document.getElementById('waitContainer').scrollTop=0;
-        checkNone = document.getElementsByClassName('waitName')
-
-        if(checkNone.length == 0){
-            waitContainer.innerHTML = '<h1>Park is Closed</h1 style="padding-left:40px;">';
-            waitBox = document.getElementsByClassName("waitContainer")
-            if(displayWaitParkClosed==false){waitBox.style.display = "none";}else{waitBox.style.display = "block";}
-        }else{waitContainer.style.display = "block";}
-    })
-    .catch(error => {
-        waitContainer.style.display = "block";
-        //waitContainer.innerHTML = '<h1>Wait times could not be retreived.</h1 style="padding-left:40px;">';
-        console.error(error)
-        waitContainer.innerHTML = '<h1>Wait time fetch failed!</h1 style="padding-left:40px;>'
-    })
-    
-        document.getElementById('waitContainer').scrollTop=0;
+        })
+        .catch(error => {
+            waitContainer.style.display = "block";
+            console.error(error)
+            waitContainer.innerHTML = '<h1>Wait time fetch failed!</h1 style="padding-left:40px;">'
+        })
+        
+    document.getElementById('waitContainer').scrollTop=0;
 }
 
 async function fetchParkOpenTimes() {
