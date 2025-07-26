@@ -5,9 +5,11 @@ from PIL import Image, ImageTk
 import tkinter as tk
 import io
 
+# Set up the OpenAI client with your API key
+client = OpenAI(api_key="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")
 
 # --- Function to generate a description using GPT ---
-def chatGPTResponse(prompt_text):
+def generate_description(prompt_text):
     response = client.chat.completions.create(
         model="gpt-4",
         messages=[{"role": "user", "content": prompt_text}],
@@ -19,9 +21,9 @@ def chatGPTResponse(prompt_text):
 # --- Function to generate an image using DALL·E ---
 def generate_image(prompt):
     response = client.images.generate(
-        model="gpt-image-1",
+        model="dall-e-2",
         prompt=prompt,
-        size="auto",
+        size="512x512",
         n=1
     )
     return response.data[0].url
@@ -61,15 +63,14 @@ def open_window(url, text, filename="cosmic_item.mp3"):
 
 # --- Main program ---
 # This section asks the user for input and generates the item description.
-user_input = input("Enter the item you want from the cosmic vending machine: ")
-description = chatGPTResponse("You are a cosmic vending machine. The user has requested this item:" + user_input + ". Please generate a detailed description of this item.")
-imageText= chatGPTResponse("You have generated this item:" + description + ". Please return a response that will be used to generate an image of this item.")
+user_input = input("Enter a cosmic vending machine item description: ")
+description = generate_description(user_input)
 
 print("\nGenerating your Item...")
 
 # Generate the image based on the description - can you make it use its own description?
-image_url = generate_image(imageText)
+image_url = generate_image(description)
 
-# Open the window to display the image and play the TTS audio (formatted (image_url, text_to_read))
+# Open the window to display the image and play the TTS audio
 print("Opening the cosmic vending machine item...")
 open_window(image_url, description)
