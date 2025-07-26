@@ -100,6 +100,7 @@ function cycleWaitInfo() {
     do {
         const currentLocation = locations[nextIndex];
         displayedLocation = currentLocation
+        console.log(currentLocation)
         if (isActive(currentLocation)) {
             populateWaitTimes(currentLocation);
             currentIndex = nextIndex;
@@ -763,6 +764,7 @@ document.getElementById("audioButton").addEventListener('click', function() {
 
 
 pinnedAttractions = []
+
 function populateWaitTimes(park) {
     const waitContainer = document.getElementById('waitContainer');
     const waitContainerPinned = document.getElementById('pinnedWaits');
