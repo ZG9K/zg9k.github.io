@@ -44,14 +44,13 @@ let wakeLock = null;
 async function requestWakeLock() {
     try {
         wakeLock = await navigator.wakeLock.request('screen');
-        console.log('Wake lock is active.');
         
         // Handle release of the wake lock
         wakeLock.addEventListener('release', () => {
             console.log('Wake lock was released.');
         });
     } catch (err) {
-        console.error(`Wake lock request failed: ${err.name}, ${err.message}`);
+        //console.error(`Wake lock request failed: ${err.name}, ${err.message}`);
     }
 }
 
@@ -959,7 +958,6 @@ pinnedAttractions = []
 
 function populateWaitTimes(park) {
     const waitContainerParent = document.getElementById('hideAllWaits');
-    console.log(waitContainerParent)
     const waitContainer = document.getElementById('waitContainer');
     const waitContainerPinned = document.getElementById('pinnedWaits');
     
@@ -1025,7 +1023,6 @@ function populateWaitTimes(park) {
                     if(checkNone.length == 0){
                         waitContainer.innerHTML = '<h1>Park is Closed</h1 style="padding-left:40px;">';
                         if(displayWaitParkClosed==false){waitContainerParent.style.display = "none";}else{waitContainerParent.style.display = "block";}
-                        console.log("I ran")
                     }else{waitContainerParent.style.display = "block";}
                 });
             })
@@ -1199,7 +1196,6 @@ function fetchWaitTimes(parkEntityId, waitContainer, waitContainerPinned) {
 
                         if (isPinned) {
                             // Remove attraction from pinned array
-                            console.log("returned false ispinned")
                             pinnedAttractions.splice(pinnedAttractions.findIndex(pinned => pinned.name === attraction.name), 1);
                             // Move the element back to the main container
                             waitContainerPinned.removeChild(attractionElement);
