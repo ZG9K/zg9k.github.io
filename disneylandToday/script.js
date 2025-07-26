@@ -619,7 +619,7 @@ function getWeatherDescription(wmoCode) {
 
 getWeather();
 
-setInterval(getWeather(), 1000*60*10)
+setInterval(getWeather, 1000*60*10)
 
 document.getElementById("useCelcius").addEventListener('change', getWeather);
 
@@ -1034,23 +1034,34 @@ async function fetchParkOpenTimes() {
 
     const today = new Date().toISOString().split('T')[0];
 
-    // Extract today's schedule for Disneyland
-    const disneylandTodaySchedule = disneylandData.schedule.find(day => day.date === today);
-    // Extract today's schedule for California Adventure
-    const californiaTodaySchedule = californiaData.schedule.find(day => day.date === today);
+    function updateParkTimes(parkData, openId, eeId) {
+        const todaySchedules = parkData.schedule.filter(day => day.date === today);
 
-    if (disneylandTodaySchedule) {
-        document.getElementById('disneyOpenTimes').textContent = 
-            formatTime(disneylandTodaySchedule.openingTime) + ' - ' + 
-            formatTime(disneylandTodaySchedule.closingTime);
+        const operating = todaySchedules.find(entry => entry.type === "OPERATING");
+        const earlyEntry = todaySchedules.find(entry => entry.type === "TICKETED_EVENT" && entry.description?.includes("Early Entry"));
+
+        // Update regular opening hours
+        if (operating) {
+            document.getElementById(openId).textContent =
+                formatTime(operating.openingTime) + ' - ' + formatTime(operating.closingTime);
+        } else {
+            document.getElementById(openId).textContent = '??:00 AM - ??:00 PM';
+        }
+
+        // Update early entry visibility
+        const earlyEntryElement = document.getElementById(eeId);
+        if (earlyEntry) {
+            earlyEntryElement.textContent = 'Early Entry from ' + formatTime(earlyEntry.openingTime);
+            earlyEntryElement.style.display = 'block';
+        } else {
+            earlyEntryElement.style.display = 'none';
+        }
     }
 
-    if (californiaTodaySchedule) {
-        document.getElementById('californiaOpenTimes').textContent = 
-            formatTime(californiaTodaySchedule.openingTime) + ' - ' + 
-            formatTime(californiaTodaySchedule.closingTime);
-    }
+    updateParkTimes(disneylandData, 'disneyOpenTimes', 'disneyEETimes');
+    updateParkTimes(californiaData, 'californiaOpenTimes', 'californiaEETimes');
 }
+
 
   function formatTime(dateTimeString) {
     const options = { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'America/Los_Angeles' };
