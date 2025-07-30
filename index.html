@@ -82,18 +82,15 @@
       user-select: none;
     box-shadow: 5px -5px 0 0px black, -5px -5px 0 0 black, -5px -0px 0 0 black, 5px -0px 0 0 black;
     }
-    .titlebar button {
-      appearance: none;
-      border: none;
-      background: #fff;
-      color: #000;
-      width: 18px;
-      height: 18px;
-      padding: 0;
-      font-weight: bold;
-      cursor: pointer;
-      line-height: 1;
+    /* --- close button for NEW windows only --- */
+    .titlebar button.close{
+      appearance:none; border:none; cursor:pointer;
+      background:#fff; color:#000; font-weight:bold;
+      width:18px; height:18px; line-height:1;
+      margin-left:auto;               /* push to far‑right */
     }
+    .titlebar button.close:hover{ background:#f66; color:#fff; }
+
     .titlebar button:hover { background: #ccc; }
 
     .content {
@@ -146,6 +143,8 @@
     /* blink cursor */
     .blink { animation: blink 1s steps(1) infinite; }
     @keyframes blink { 50% { opacity: 0; } }
+
+    
   </style>
 </head>
 <body><div id="desktop">
@@ -201,14 +200,14 @@
       <p class=caps>contact</p>
       <p>direct mail interface available via:</p>
       <p><a href="mailto:maxtbentley@gmail.com">maxtbentley@gmail.com</a></p>
-      <p>or via discord: <span class="highlight">ZG9K</span></p>
+      <p>or via discord: ZG9K</span></p>
       <p class="highlight">[ack] connection idle | status: reachable</p>
     </div>
   </div>
 
   <!-- ---------------- Clock Window ---------------- -->
   <div class="window" data-window-id="clock" style="width: 160px; left: 831px; top: 390px;">
-    <div class="titlebar"><span class="title">clock tool</span></div>
+    <div class="titlebar"><span class="title">max bentley</span></div>
     <div class="content" style="font-size:18px;text-align:center;">
       <time id="clockDisplay"></time>
     </div>
@@ -216,98 +215,125 @@
 </div>
 
 
-  <script>
-    const desktop = document.getElementById("desktop");
-    const dock = document.getElementById("dock");
+<script>
+  const desktop = document.getElementById("desktop");
 
-    /* ---------------- Utility ---------------- */
-    const getMaxZ = () =>
-      Array.from(desktop.children).reduce((m, el) => Math.max(m, +el.style.zIndex || 0), 0);
+  /* ---------- helpers ---------- */
+  const getMaxZ = () =>
+    [...desktop.children].reduce((m, el) => Math.max(m, +el.style.zIndex || 0), 0);
 
-    /* ---------------- Drag & Minimise ---------------- */
-    function initWindow(win) {
-      const titlebar = win.querySelector(".titlebar");
-      const btnMin = win.querySelector(".minimize");
+  /* ---------- make any window draggable & closable ---------- */
+function initWindow(win){
+  const titlebar = win.querySelector(".titlebar");
 
-      /* Bring to front */
-      win.addEventListener("mousedown", () => (win.style.zIndex = getMaxZ() + 1));
+  /* -- wire the close button once, at init -- */
+  const btnCls = win.querySelector(".close");
+  if (btnCls){
+    btnCls.removeAttribute("onclick");
+    btnCls.addEventListener("click", e=>{
+      e.stopPropagation();   // don’t trigger drag
+      win.remove();          // destroy window
+    });
+  }
 
-      /* Dragging */
-      let offsetX, offsetY;
-      titlebar.addEventListener("pointerdown", (e) => {
-        if (e.button !== 0) return;
-        offsetX = e.clientX - win.offsetLeft;
-        offsetY = e.clientY - win.offsetTop;
-        win.setPointerCapture(e.pointerId);
-        win.style.zIndex = getMaxZ() + 1;
-        const onMove = (ev) => {
-          win.style.left = `${ev.clientX - offsetX}px`;
-          win.style.top = `${ev.clientY - offsetY}px`;
-        };
-        const onUp = (ev) => {
-          win.releasePointerCapture(ev.pointerId);
-          win.removeEventListener("pointermove", onMove);
-          win.removeEventListener("pointerup", onUp);
-        };
-        win.addEventListener("pointermove", onMove);
-        win.addEventListener("pointerup", onUp);
-      });
-    }
+  /* bring to front on any click */
+  win.addEventListener("mousedown", () => win.style.zIndex = getMaxZ() + 1);
 
-    /* ---------------- Dock Icons ---------------- */
-    function addIconFor(win) {
-      const icon = document.createElement("div");
-      icon.className = "icon";
-      icon.textContent = win.querySelector(".title").textContent[0] || "?";
-      dock.appendChild(icon);
-      icon.addEventListener("click", () => {
-        win.style.display = "flex"; // restore
-        win.style.zIndex = getMaxZ() + 1;
-        dock.removeChild(icon);
-      });
-    }
+  /* drag logic */
+  let ox, oy;
+  titlebar.addEventListener("pointerdown", e=>{
+    /* ignore clicks that started on the close button */
+    if (e.target.closest(".close")) return;
+    if (e.button !== 0) return;               // only left‑button
 
-    /* ---------------- Window Factory (public) ---------------- */
-    window.createWindow = function ({
-      title = "New Window",
-      html = "<p>Hello!</p>",
-      x = 40,
-      y = 40,
-      w = 320,
-      h = 200,
-    } = {}) {
-      const win = document.createElement("div");
-      win.className = "window";
-      win.style.cssText += `left:${x}px;top:${y}px;width:${w}px;height:${h}px;`;
-      win.innerHTML = `<div class="titlebar"><span class="title">${title}</span></div><div class="content">${html}</div>`;
-      desktop.appendChild(win);
-      initWindow(win);
-      return win;
+    ox = e.clientX - win.offsetLeft;
+    oy = e.clientY - win.offsetTop;
+    win.setPointerCapture(e.pointerId);
+    win.style.zIndex = getMaxZ() + 1;
+
+    const move = ev=>{
+      win.style.left = `${ev.clientX - ox}px`;
+      win.style.top  = `${ev.clientY - oy}px`;
     };
-
-    /* ---------------- Background Setter (public) ---------------- */
-    // window.setDesktopBackground = function () {
-    //     // Get current date as YYYYMMDD
-    //     const now = new Date();
-    //     const seed = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
-    //     const url = `https://picsum.photos/seed/${seed}/1920/1080?grayscale&blur=2`;
-    //     document.documentElement.style.setProperty("--desktop-bg", `url('${url}')`);
-    // };
-
-    /* This function normally changes the desktop background to a new image based on the current date, but I disabled it lol
-    //window.setDesktopBackground();
-
-
-    /* ---------------- Clock ---------------- */
-    const clockEl = document.getElementById("clockDisplay");
-    function tick() {
-      if (clockEl) clockEl.textContent = new Date().toLocaleString();
-      requestAnimationFrame(tick);
+    const up = ev=>{
+      win.releasePointerCapture(ev.pointerId);
+      win.removeEventListener("pointermove", move);
+      win.removeEventListener("pointerup",    up);
+    };
+    win.addEventListener("pointermove", move);
+    win.addEventListener("pointerup",    up);
+  });
+}
+  /* ---------- factory: produces ONE copy per href ---------- */
+  window.createWindow = ({title="new window",html="<p>Hello!</p>",x=40,y=40,w=320,h=200,href=""}={})=>{
+    if(href){
+      const existing = desktop.querySelector(`.window[data-href="${href}"]`);
+      if(existing){ existing.style.zIndex=getMaxZ()+1; return existing; }
     }
-    tick();
 
-    /* ---------------- Initialise existing windows ---------------- */
-    document.querySelectorAll(".window").forEach(initWindow);
-  </script>
+    const win = document.createElement("div");
+    win.className = "window";
+    if(href) win.dataset.href = href;
+    win.style.cssText += `left:${x}px;top:${y}px;width:${w}px;height:${h}px;`;
+    win.innerHTML =
+      `<div class="titlebar">
+         <span class="title">${title}</span>
+         <button class="close" type="button">×</button>
+       </div>
+       <div class="content">${html}</div>`;
+    desktop.appendChild(win);
+    win.style.zIndex = getMaxZ() + 1;
+    initWindow(win);
+    return win;
+  };
+
+  /* ---------- mapped in‑desktop pages ---------- */
+  const projectPages = {
+    "projects/newmanse.html": `
+      <section class="hero">
+<iframe width="495" height="250" src="https://www.youtube.com/embed/1LXm8pBzSpo?si=vVbV1ehzasWV0Hhk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen=false></iframe>
+      </section>
+
+      <p class="caps highlight">The New Manse</p>
+      <p class="subheading">VCD 3/4 Final * 2024</p>
+
+      <div class="links">
+        <span>Video Links:</span>
+        <a href="https://www.youtube.com/watch?v=1LXm8pBzSpo" target="_blank">The New Manse</a>·
+        <a href="https://www.youtube.com/watch?v=dxm5qSfQu4I"  target="_blank">The Recital Space</a>
+      </div>
+
+      <p>This project was a redevelopment of the St Michael’s Grammar School Music Manse to accommodate new practice rooms, staff spaces, a student foyer, social areas, and a classroom/recital space.</p>
+      <p>The brief only required exterior design for the New Manse and the recital space, but I ended up doing everything anyway  :)</p>
+      <p>It was a great project and I loved fitting the new work into the existing architecture.</p>
+    `
+  };
+
+  /* ---------- link‑click interception ---------- */
+  document.addEventListener("click", e=>{
+    const a = e.target.closest("a");
+    if(!a) return;
+    const href = a.getAttribute("href");
+    if(projectPages[href]){
+      e.preventDefault();
+      createWindow({
+        title: a.textContent.trim(),
+        html : projectPages[href],
+        w:500, h:500, x:120, y:80,
+        href
+      });
+    }
+  });
+
+  /* ---------- clock ---------- */
+  const clock = document.getElementById("clockDisplay");
+  const tick  = () => { if(clock) clock.textContent = new Date().toLocaleString(); requestAnimationFrame(tick); };
+  tick();
+
+  /* ---------- initialise existing static windows ---------- */
+  document.querySelectorAll(".window").forEach(initWindow);
+</script>
+</script>
+
 </body>
 </html>
