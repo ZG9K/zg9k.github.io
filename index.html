@@ -84,12 +84,18 @@
     }
     /* --- close button for NEW windows only --- */
     .titlebar button.close{
-      appearance:none; border:none; cursor:pointer;
-      background:#fff; color:#000; font-weight:bold;
-      width:18px; height:18px; line-height:1;
-      margin-left:auto;               /* push to far‑right */
+      appearance:none;
+      border:none; 
+      cursor:pointer;
+      background:#fff; 
+      color:#000; 
+      font-weight:bold;
+      width:min-content; 
+      height:min-content; 
+      line-height:1;
+      margin-left:auto;
     }
-    .titlebar button.close:hover{ background:#f66; color:#fff; }
+    .titlebar button.close:hover{ background:#696969; color:#fff; }
 
     .titlebar button:hover { background: #ccc; }
 
@@ -126,6 +132,7 @@
     a {
         color: #000;
         text-decoration: none;
+        font-weight: bold;
     }
     a:hover {
         text-shadow: #858585 0px 1px 0px;
@@ -209,7 +216,8 @@
   <div class="window" data-window-id="clock" style="width: 160px; left: 831px; top: 390px;">
     <div class="titlebar"><span class="title">max bentley</span></div>
     <div class="content" style="font-size:18px;text-align:center;">
-      <time id="clockDisplay"></time>
+      <time id="clockDisplay"></time><br>
+      <p class="highlight">[info] waiting for user input<span class="blink">...</span> </p>
     </div>
   </div>
 </div>
@@ -302,7 +310,7 @@ function initWindow(win){
         <a href="https://www.youtube.com/watch?v=1LXm8pBzSpo" target="_blank">The New Manse</a>·
         <a href="https://www.youtube.com/watch?v=dxm5qSfQu4I"  target="_blank">The Recital Space</a>
       </div>
-
+      <hr style="border: none; border-top: 1.5px dotted #888; margin: 12px 0;">
       <p>This project was a redevelopment of the St Michael’s Grammar School Music Manse to accommodate new practice rooms, staff spaces, a student foyer, social areas, and a classroom/recital space.</p>
       <p>The brief only required exterior design for the New Manse and the recital space, but I ended up doing everything anyway  :)</p>
       <p>It was a great project and I loved fitting the new work into the existing architecture.</p>
