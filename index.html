@@ -1,178 +1,313 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Cool Amazing Website</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<style>
-    /* ========== EARLY‑NET AESTHETIC ========== */
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Desktop</title>
+  <link rel="stylesheet" href="https://use.typekit.net/dsm0ynv.css">
+  <style>
+    :root {
+      /* Change this to any image URL to swap the wallpaper */
+      --desktop-bg: url("");
+    }
+
+    html,
     body {
-        background: black url('https://64.media.tumblr.com/b55e414642dc5944857514ceb2b7b004/7b100907ad94189e-27/s400x600/6db6e3f45524a91362cbac7ef37a1c1e3dcf734e.gif') repeat;
-        color: #00ff00;
-        font-family: "Courier New", monospace;
-        margin: 0;
-        padding: 0;
+      height: 100%;
+      margin: 0;
+      font-family: lores-9-narrow, sans-serif;
+      background: var(--desktop-bg) center/cover fixed no-repeat;
+      overflow: hidden;
+      cursor: default;
+      user-select: none;
     }
-    h1, h2 {
-        text-align: center;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        margin-top: 40px;
-        text-shadow: 0 0 5px #00ff00;
+
+    #desktop {
+      position: relative;
+      width: 100%;
+      height: calc(100% - 42px); /* leave room for dock */
     }
-     h2:nth-of-type(1) { color: #00ff00; text-shadow: 0 0 5px #00ff00; }
-    h2:nth-of-type(2) { color: #ff00ff; text-shadow: 0 0 5px #ff00ff; }
-    h2:nth-of-type(3) { color: #00ffff; text-shadow: 0 0 5px #00ffff; }
-    h2:nth-of-type(4) { color: #ffff00; text-shadow: 0 0 5px #ffff00; }
-    /* Header & Nav */
-    header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 20px;
-        background: rgba(0,0,0,0.8);
-        border-bottom: 2px dashed #00ff00;
+
+    /* ---------------- Dock (taskbar) ---------------- */
+    #dock {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 42px;
+      background: #c0c0c0;
+      border-top: 2px solid #000;
+      display: flex;
+      align-items: center;
+      padding: 4px 8px;
+      gap: 6px;
     }
-    .logo {
-        color: #00ffff;
-        text-decoration: none;
-        font-weight: bold;
-        font-size: 1.2rem;
+    .icon {
+      width: 32px;
+      height: 32px;
+      background: #000;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      border: 2px solid #000;
     }
-    .nav-icons a { margin-left: 10px; }
-    .nav-icons img { width: 24px; height: 24px; object-fit: contain; }
-    /* Content Wrapper */
+
+    /* ---------------- Window ---------------- */
+    .window {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+    box-shadow:
+      0 0 0 2px #000,
+      0 0 0 3px #fff,
+      0 0 0 5px #000;
+      min-width: 160px;
+      min-height: 120px;
+    }
+
+    .titlebar {
+      background: #000;
+      color: #fff;
+      padding: 0px 6px;
+      padding-bottom: 2px;
+      cursor: move;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 4px;
+      user-select: none;
+    box-shadow: 5px -5px 0 0px black, -5px -5px 0 0 black, -5px -0px 0 0 black, 5px -0px 0 0 black;
+    }
+    .titlebar button {
+      appearance: none;
+      border: none;
+      background: #fff;
+      color: #000;
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .titlebar button:hover { background: #ccc; }
+
     .content {
-        max-width: 1000px;
-        margin: auto;
-        background: rgba(0,0,0,0.6);
-        padding: 20px;
-        border: 2px dashed #00ff00;
+      flex: 1;
+      overflow: auto;
+      background: #dedede;
+      padding: 2px;
     }
-    /* Projects list */
-    .projects-list { list-style: none; padding: 0; }
-    .projects-list li { margin: 12px 0; }
+
+    /* ---------------- Content Styles ---------------- */
+    .title,
+    body, html {
+        font-family: 'geneva-9-1', sans-serif;
+        font-weight: normal;
+        font-style: normal;
+        font-size: 20px;
+    }
+    @font-face {
+        font-family: 'geneva-9-1';
+        src: url('assets/fonts/geneva-9-1.otf') format('opentype');
+        font-weight: normal;
+        font-style: normal;
+    }
+    .caps {
+        text-transform: uppercase;
+    }
+    p {
+        margin: 0 0 0px;
+    }
+    ul{
+        margin:0px;
+    }
+    a {
+        color: #000;
+        text-decoration: none;
+    }
+    a:hover {
+        text-shadow: #858585 0px 1px 0px;
+    }
+    .highlight{
+        background-color: #b4b4b4;
+        color: #ffffff;
+    }
+    /* custom list styling */
+    .projects-list { list-style: none; padding-left: 0; }
+    .projects-list li { margin: 4px 0; }
+    .projects-list img { vertical-align: middle; margin-right: 4px; }
     .projects-list img { width: 14px; height: 14px; vertical-align: middle; margin-right: 8px; }
-    .projects-list a { color: #00ffff; text-decoration: none; }
-    .projects-list a:hover { text-decoration: underline; }
-    /* Misc */
-    .counter { margin-top: 40px; text-align: center; font-size: 0.8rem; }
-    .blink { animation: blink 1s step-start infinite; }
+
+    /* blink cursor */
+    .blink { animation: blink 1s steps(1) infinite; }
     @keyframes blink { 50% { opacity: 0; } }
-    footer { text-align: center; margin: 40px 0; color: #ffffff; font-size: 0.8rem; }
-</style>
+  </style>
 </head>
-<body>
-<!-- ======== HEADER ======== -->
-<header>
-    <a href="#" class="logo">MAX BENTLEY</a>
-    <nav class="nav-icons">
-        <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn"><img src="https://placehold.co/24x24?text=L" alt="LinkedIn"></a>
-        <a href="https://instagram.com" target="_blank" aria-label="Instagram"><img src="https://placehold.co/24x24?text=I" alt="Instagram"></a>
-    </nav>
-</header>
-
-<!-- ======== MARQUEE BANNER ======== -->
-<marquee id="marqueeText" behavior="scroll" direction="left" scrollamount="6"></marquee>
-
-<!-- ======== MAIN CONTENT ======== -->
-<div class="content">
-    <h2 id="projects">Projects <span class="blink">_</span></h2>
-
-    <ul class="projects-list">
-        <li><img src="https://media.tenor.com/pXEDrZV2s4QAAAAj/star-spinning.gif" alt="*"> <a href="projects/newmanse.html"><strong>The New Manse</strong></a> — Units 3/4 VCD Final (2024)</li>
-        <li><img src="https://media.tenor.com/pXEDrZV2s4QAAAAj/star-spinning.gif" alt="*"> <a href="disneylandToday/view.html"><strong>Disneyland Today</strong></a> — Replica of the original Disneyland Hotel TV Dashboard (2024)</li>
-    </ul>
-
-    <h2 id="contact">Student templates </h2>
-        <p>Here are some python AI program templates I made for my students to use in their projects! Feel free to download- no openAI key included!</p>
-        <ul class="projects-list">
-          <li><img src="https://media.tenor.com/pXEDrZV2s4QAAAAj/star-spinning.gif" alt="*"> <a href="templates/jobscript.py" target="_blank"><strong>Job Interview Script</strong></a> — Simple OpenAI API Chat Response template</li>
-          <li><img src="https://media.tenor.com/pXEDrZV2s4QAAAAj/star-spinning.gif" alt="*"> <a href="templates/imagegen.py" target="_blank"><strong>Image Generator Script</strong></a> — Simple OpenAI API Image Generator</li>
-                <li><img src="https://media.tenor.com/pXEDrZV2s4QAAAAj/star-spinning.gif" alt="*"> <a href="templates/cosmicmachine.py" target="_blank"><strong>Cosmic Vending Machine Template</strong></a> — This vending machine uses the power of the universe!</li>
-          </ul>
-
-    <h2 id="cool-links">Cool Websites</h2>
-        <p>Some websites I find cool, inspiring, or just plain fun:</p>
-        <ul class="projects-list">
-            <li><img src="https://media.tenor.com/pXEDrZV2s4QAAAAj/star-spinning.gif" alt="*"> <a href="https://slowroads.io/" target="_blank"><strong>slowroads.io</strong></a> — This got me through year 12.</li>
-            <li><img src="https://media.tenor.com/pXEDrZV2s4QAAAAj/star-spinning.gif" alt="*"> <a href="https://ashtondoughty.com/" target="_blank"><strong>ashtondoughty.com</strong></a> — This person seems pretty cool!</li>
-            <li><img src="https://media.tenor.com/pXEDrZV2s4QAAAAj/star-spinning.gif" alt="*"> <a href="https://madebyyuma.com/" target="_blank"><strong>madebyyuma.com</strong></a> — This duck seems pretty cool!</li>
-        </ul>
-
-    <h2 id="contact">Contact</h2>
-        <p>Email me anything you feel like emailing me at <a href="mailto:maxtbentley@gmail.com">maxtbentley@gmail.com</a>, or message me on Discord @ ZG9K!</p>
-
-    <!-- ======== VISITOR COUNTER ======== -->
-    <div class="counter">
-        <p>You are visitor number:</p>
-        <!-- Replace the src below with your own hosted counter if desired -->
-         <a href='http://www.freevisitorcounters.com'>Free Counters</a> <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=1f1aecec0931cf68586816ae056ffef0630f4939'></script>
-<script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/1369965/t/9"></script>
+<body><div id="desktop">
+  <!-- ---------------- Projects Window ---------------- -->
+  <div class="window" data-window-id="projects" style="left: 304px; top: 127px; width: 400; height: 300;">
+    <div class="titlebar"><span class="title">projects<span class="blink">_</span></span></div>
+    <div class="content">
+      <p class=caps>projects</p>
+      <p class="highlight">[ok] loading local manifest: ./projects</p>
+      <ul class="projects-list">
+        <li>* <a href="projects/newmanse.html"><strong>the new manse</strong></a> — final vcd unit 3/4 project (2024), speculative architecture folio</li>
+        <li>* <a href="disneylandToday/view.html"><strong>disneyland today</strong></a> — interactive recreation of 1980s hotel dashboard ui</li>
+      </ul>
+      <p class="highlight">[info] 2 entries loaded | last update: mon 19 feb 2024</p>
     </div>
+  </div>
+
+  <!-- ---------------- Templates Window ---------------- -->
+  <div class="window" data-window-id="templates" style="left: 1065px; top: 223px; width: 600px; height: 300px;">
+    <div class="titlebar"><span class="title">student templates</span></div>
+    <div class="content">
+      <p class=caps>student templates</p>
+      <p class="highlight">[warn] openai key not included — manual insertion required</p>
+      <p>compiled reference scripts for use in ai education modules. tested under python 3.10+</p>
+      <ul class="projects-list">
+        <li>* <a href="templates/jobscript.py" target="_blank"><strong>job interview script</strong></a> — basic gpt-powered q/a bot for roleplay scenarios</li>
+        <li>* <a href="templates/imagegen.py" target="_blank"><strong>image generator</strong></a> — openai dall-e image prompt pipeline</li>
+        <li>* <a href="templates/cosmicmachine.py" target="_blank"><strong>cosmic vending machine</strong></a> — playful ai reward selector using pseudo-random metaphysics</li>
+      </ul>
+      <p class="highlight">[sys] path=/usr/edu/scripts/templates | 3 scripts active</p>
+    </div>
+  </div>
+
+  <!-- ---------------- Cool Links Window ---------------- -->
+  <div class="window" data-window-id="links" style="left: 372px; top: 376px; width: 360px; height: 260px;">
+    <div class="titlebar"><span class="title">web links</span></div>
+    <div class="content">
+      <p class=caps>web links</p>
+      <p>external references & bookmarks of interest. <span class="highlight">[network ok]</span></p>
+      <ul class="projects-list">
+        <li>* <a href="https://slowroads.io/" target="_blank"><strong>slowroads.io</strong></a> — this got me through year 12</li>
+        <li>* <a href="https://ashtondoughty.com/" target="_blank"><strong>ashtondoughty.com</strong></a> — this person seems pretty cool!</li>
+        <li>* <a href="https://madebyyuma.com/" target="_blank"><strong>madebyyuma.com</strong></a> — this duck seems pretty cool!</li>
+      </ul>
+      <p class="highlight">[dns resolved] 3 sites online</p>
+    </div>
+  </div>
+
+  <!-- ---------------- Contact Window ---------------- -->
+  <div class="window" data-window-id="contact" style="left: 844px; top: 607px; width: 380px; height: 180px;">
+    <div class="titlebar"><span class="title">contact<span class="blink">_</span></span></div>
+    <div class="content">
+      <p class=caps>contact</p>
+      <p>direct mail interface available via:</p>
+      <p><a href="mailto:maxtbentley@gmail.com">maxtbentley@gmail.com</a></p>
+      <p>or via discord: <span class="highlight">ZG9K</span></p>
+      <p class="highlight">[ack] connection idle | status: reachable</p>
+    </div>
+  </div>
+
+  <!-- ---------------- Clock Window ---------------- -->
+  <div class="window" data-window-id="clock" style="width: 160px; left: 831px; top: 390px;">
+    <div class="titlebar"><span class="title">clock tool</span></div>
+    <div class="content" style="font-size:18px;text-align:center;">
+      <time id="clockDisplay"></time>
+    </div>
+  </div>
 </div>
 
-<!-- ======== FOOTER ======== -->
-<footer>
-    <span>&copy; <span id="year"></span> Max Bentley.</span>
-</footer>
 
-<!-- Dynamic year in footer -->
-<script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-    const splashList = [
-        "Ducks are pretty cool",
-        "More themes one day???",
-        "Custom themes one day???",
-        "Cubifying dogs, 50% loaded",
-        "Boppity bibbity your breathing is now a conscious activity",
-        "We would like to contact you about your car's extended warranty",
-        "As seen on TV!",
-        "Déjà vu!",
-        "It's here!",
-        "One of a kind!",
-        "Mobile compatible!",
-        "There are no facts, only interpretations.",
-        "Made with CSS!",
-        "Made with JS!",
-        "0% Sugar!",
-        "The future is now!",
-        "Schol+ >>>",
-        "bea was here",
-        "2024 exclusive!",
-        "Now with themes!",
-        "All I want for Christmas is for you to wash your dishes",
-        "... But no one came.",
-        "You are filled with determination.",
-        "Hey you. You're finally awake",
-        "That's an infix!",
-        "Did you spot it?",
-        "Was that the bite of 87???",
-        "150% hyperbole!",
-        "Any computer is a laptop if you're brave enough!",
-        "| || || |_",
-        "Complex cellular automata!",
-        "Doesn't avoid double negatives!",
-        "doot doot",
-        "From the streets of Melbourne!",
-        "Ghoughpteighbteau tchoghs!",
-        "Bring me a shrubbery.",
-        "Dragon free!",
-        "Probably follows ventilation guidelines.",
-        "Look Mum! I'm a splash!",
-        "Meeting expectations!"
-    ];
+  <script>
+    const desktop = document.getElementById("desktop");
+    const dock = document.getElementById("dock");
 
-    const marquee = document.getElementById("marqueeText");
-    const welcomeSplash = "Welcome, Person #0110! Cruise My Cyber Den ★ Grab A Soda, Stay Awhile!";
-    const splashSeen = localStorage.getItem("splashSeen");
+    /* ---------------- Utility ---------------- */
+    const getMaxZ = () =>
+      Array.from(desktop.children).reduce((m, el) => Math.max(m, +el.style.zIndex || 0), 0);
 
-    if (!splashSeen) {
-        marquee.textContent = welcomeSplash;
-        localStorage.setItem("splashSeen", "true");
-    } else {
-        marquee.textContent = splashList[Math.floor(Math.random() * splashList.length)];
+    /* ---------------- Drag & Minimise ---------------- */
+    function initWindow(win) {
+      const titlebar = win.querySelector(".titlebar");
+      const btnMin = win.querySelector(".minimize");
+
+      /* Bring to front */
+      win.addEventListener("mousedown", () => (win.style.zIndex = getMaxZ() + 1));
+
+      /* Dragging */
+      let offsetX, offsetY;
+      titlebar.addEventListener("pointerdown", (e) => {
+        if (e.button !== 0) return;
+        offsetX = e.clientX - win.offsetLeft;
+        offsetY = e.clientY - win.offsetTop;
+        win.setPointerCapture(e.pointerId);
+        win.style.zIndex = getMaxZ() + 1;
+        const onMove = (ev) => {
+          win.style.left = `${ev.clientX - offsetX}px`;
+          win.style.top = `${ev.clientY - offsetY}px`;
+        };
+        const onUp = (ev) => {
+          win.releasePointerCapture(ev.pointerId);
+          win.removeEventListener("pointermove", onMove);
+          win.removeEventListener("pointerup", onUp);
+        };
+        win.addEventListener("pointermove", onMove);
+        win.addEventListener("pointerup", onUp);
+      });
     }
-</script>
+
+    /* ---------------- Dock Icons ---------------- */
+    function addIconFor(win) {
+      const icon = document.createElement("div");
+      icon.className = "icon";
+      icon.textContent = win.querySelector(".title").textContent[0] || "?";
+      dock.appendChild(icon);
+      icon.addEventListener("click", () => {
+        win.style.display = "flex"; // restore
+        win.style.zIndex = getMaxZ() + 1;
+        dock.removeChild(icon);
+      });
+    }
+
+    /* ---------------- Window Factory (public) ---------------- */
+    window.createWindow = function ({
+      title = "New Window",
+      html = "<p>Hello!</p>",
+      x = 40,
+      y = 40,
+      w = 320,
+      h = 200,
+    } = {}) {
+      const win = document.createElement("div");
+      win.className = "window";
+      win.style.cssText += `left:${x}px;top:${y}px;width:${w}px;height:${h}px;`;
+      win.innerHTML = `<div class="titlebar"><span class="title">${title}</span></div><div class="content">${html}</div>`;
+      desktop.appendChild(win);
+      initWindow(win);
+      return win;
+    };
+
+    /* ---------------- Background Setter (public) ---------------- */
+    // window.setDesktopBackground = function () {
+    //     // Get current date as YYYYMMDD
+    //     const now = new Date();
+    //     const seed = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
+    //     const url = `https://picsum.photos/seed/${seed}/1920/1080?grayscale&blur=2`;
+    //     document.documentElement.style.setProperty("--desktop-bg", `url('${url}')`);
+    // };
+
+    /* This function normally changes the desktop background to a new image based on the current date, but I disabled it lol
+    //window.setDesktopBackground();
+
+
+    /* ---------------- Clock ---------------- */
+    const clockEl = document.getElementById("clockDisplay");
+    function tick() {
+      if (clockEl) clockEl.textContent = new Date().toLocaleString();
+      requestAnimationFrame(tick);
+    }
+    tick();
+
+    /* ---------------- Initialise existing windows ---------------- */
+    document.querySelectorAll(".window").forEach(initWindow);
+  </script>
 </body>
 </html>

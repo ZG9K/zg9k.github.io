@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cool Amazing Website</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+    /* ========== EARLY‑NET AESTHETIC ========== */
+    body {
+        background: black url('https://64.media.tumblr.com/b55e414642dc5944857514ceb2b7b004/7b100907ad94189e-27/s400x600/6db6e3f45524a91362cbac7ef37a1c1e3dcf734e.gif') repeat;
+        color: #00ff00;
+        font-family: "Courier New", monospace;
+        margin: 0;
+        padding: 0;
+    }
+    h1, h2 {
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-top: 40px;
+        text-shadow: 0 0 5px #00ff00;
+    }
+     h2:nth-of-type(1) { color: #00ff00; text-shadow: 0 0 5px #00ff00; }
+    h2:nth-of-type(2) { color: #ff00ff; text-shadow: 0 0 5px #ff00ff; }
+    h2:nth-of-type(3) { color: #00ffff; text-shadow: 0 0 5px #00ffff; }
+    h2:nth-of-type(4) { color: #ffff00; text-shadow: 0 0 5px #ffff00; }
+    /* Header & Nav */
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        background: rgba(0,0,0,0.8);
+        border-bottom: 2px dashed #00ff00;
+    }
+    .logo {
+        color: #00ffff;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+    .nav-icons a { margin-left: 10px; }
+    .nav-icons img { width: 24px; height: 24px; object-fit: contain; }
+    /* Content Wrapper */
+    .content {
+        max-width: 1000px;
+        margin: auto;
+        background: rgba(0,0,0,0.6);
+        padding: 20px;
+        border: 2px dashed #00ff00;
+    }
+    /* Projects list */
+    .projects-list { list-style: none; padding: 0; }
+    .projects-list li { margin: 12px 0; }
+    .projects-list img { width: 14px; height: 14px; vertical-align: middle; margin-right: 8px; }
+    .projects-list a { color: #00ffff; text-decoration: none; }
+    .projects-list a:hover { text-decoration: underline; }
+    /* Misc */
+    .counter { margin-top: 40px; text-align: center; font-size: 0.8rem; }
+    .blink { animation: blink 1s step-start infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+    footer { text-align: center; margin: 40px 0; color: #ffffff; font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<!-- ======== HEADER ======== -->
+<header>
+    <a href="#" class="logo">MAX BENTLEY</a>
+    <nav class="nav-icons">
+        <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn"><img src="https://placehold.co/24x24?text=L" alt="LinkedIn"></a>
+        <a href="https://instagram.com" target="_blank" aria-label="Instagram"><img src="https://placehold.co/24x24?text=I" alt="Instagram"></a>
+    </nav>
+</header>
+
+<!-- ======== MARQUEE BANNER ======== -->
+<marquee id="marqueeText" behavior="scroll" direction="left" scrollamount="6"></marquee>
+
+<!-- ======== MAIN CONTENT ======== -->
+<div class="content">
+    <h2 id="projects">Projects <span class="blink">_</span></h2>
+
+    <ul class="projects-list">
+        <li><img src="https://media.tenor.com/pXEDrZV2s4QAAAAj/star-spinning.gif" alt="*"> <a href="projects/newmanse.html"><strong>The New Manse</strong></a> — Units 3/4 VCD Final (2024)</li>
+        <li><img src="https://media.tenor.com/pXEDrZV2s4QAAAAj/star-spinning.gif" alt="*"> <a href="disneylandToday/view.html"><strong>Disneyland Today</strong></a> — Replica of the original Disneyland Hotel TV Dashboard (2024)</li>
+    </ul>
+
+    <h2 id="contact">Student templates </h2>
+        <p>Here are some python AI program templates I made for my students to use in their projects! Feel free to download- no openAI key included!</p>
+        <ul class="projects-list">
+          <li><img src="https://media.tenor.com/pXEDrZV2s4QAAAAj/star-spinning.gif" alt="*"> <a href="templates/jobscript.py" target="_blank"><strong>Job Interview Script</strong></a> — Simple OpenAI API Chat Response template</li>
+          <li><img src="https://media.tenor.com/pXEDrZV2s4QAAAAj/star-spinning.gif" alt="*"> <a href="templates/imagegen.py" target="_blank"><strong>Image Generator Script</strong></a> — Simple OpenAI API Image Generator</li>
+                <li><img src="https://media.tenor.com/pXEDrZV2s4QAAAAj/star-spinning.gif" alt="*"> <a href="templates/cosmicmachine.py" target="_blank"><strong>Cosmic Vending Machine Template</strong></a> — This vending machine uses the power of the universe!</li>
+          </ul>
+
+    <h2 id="cool-links">Cool Websites</h2>
+        <p>Some websites I find cool, inspiring, or just plain fun:</p>
+        <ul class="projects-list">
+            <li><img src="https://media.tenor.com/pXEDrZV2s4QAAAAj/star-spinning.gif" alt="*"> <a href="https://slowroads.io/" target="_blank"><strong>slowroads.io</strong></a> — This got me through year 12.</li>
+            <li><img src="https://media.tenor.com/pXEDrZV2s4QAAAAj/star-spinning.gif" alt="*"> <a href="https://ashtondoughty.com/" target="_blank"><strong>ashtondoughty.com</strong></a> — This person seems pretty cool!</li>
+            <li><img src="https://media.tenor.com/pXEDrZV2s4QAAAAj/star-spinning.gif" alt="*"> <a href="https://madebyyuma.com/" target="_blank"><strong>madebyyuma.com</strong></a> — This duck seems pretty cool!</li>
+        </ul>
+
+    <h2 id="contact">Contact</h2>
+        <p>Email me anything you feel like emailing me at <a href="mailto:maxtbentley@gmail.com">maxtbentley@gmail.com</a>, or message me on Discord @ ZG9K!</p>
+
+    <!-- ======== VISITOR COUNTER ======== -->
+    <div class="counter">
+        <p>You are visitor number:</p>
+        <!-- Replace the src below with your own hosted counter if desired -->
+         <a href='http://www.freevisitorcounters.com'>Free Counters</a> <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=1f1aecec0931cf68586816ae056ffef0630f4939'></script>
+<script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/1369965/t/9"></script>
+    </div>
+</div>
+
+<!-- ======== FOOTER ======== -->
+<footer>
+    <span>&copy; <span id="year"></span> Max Bentley.</span>
+</footer>
+
+<!-- Dynamic year in footer -->
+<script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const splashList = [
+        "Ducks are pretty cool",
+        "More themes one day???",
+        "Custom themes one day???",
+        "Cubifying dogs, 50% loaded",
+        "Boppity bibbity your breathing is now a conscious activity",
+        "We would like to contact you about your car's extended warranty",
+        "As seen on TV!",
+        "Déjà vu!",
+        "It's here!",
+        "One of a kind!",
+        "Mobile compatible!",
+        "There are no facts, only interpretations.",
+        "Made with CSS!",
+        "Made with JS!",
+        "0% Sugar!",
+        "The future is now!",
+        "Schol+ >>>",
+        "bea was here",
+        "2024 exclusive!",
+        "Now with themes!",
+        "All I want for Christmas is for you to wash your dishes",
+        "... But no one came.",
+        "You are filled with determination.",
+        "Hey you. You're finally awake",
+        "That's an infix!",
+        "Did you spot it?",
+        "Was that the bite of 87???",
+        "150% hyperbole!",
+        "Any computer is a laptop if you're brave enough!",
+        "| || || |_",
+        "Complex cellular automata!",
+        "Doesn't avoid double negatives!",
+        "doot doot",
+        "From the streets of Melbourne!",
+        "Ghoughpteighbteau tchoghs!",
+        "Bring me a shrubbery.",
+        "Dragon free!",
+        "Probably follows ventilation guidelines.",
+        "Look Mum! I'm a splash!",
+        "Meeting expectations!"
+    ];
+
+    const marquee = document.getElementById("marqueeText");
+    const welcomeSplash = "Welcome, Person #0110! Cruise My Cyber Den ★ Grab A Soda, Stay Awhile!";
+    const splashSeen = localStorage.getItem("splashSeen");
+
+    if (!splashSeen) {
+        marquee.textContent = welcomeSplash;
+        localStorage.setItem("splashSeen", "true");
+    } else {
+        marquee.textContent = splashList[Math.floor(Math.random() * splashList.length)];
+    }
+</script>
+</body>
+</html>
