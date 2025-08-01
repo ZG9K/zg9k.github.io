@@ -16,7 +16,10 @@
       height: 100%;
       margin: 0;
       font-family: lores-9-narrow, sans-serif;
-      background: var(--desktop-bg) center/cover fixed no-repeat;
+        background-color: white; /* fallback */
+  background-image: 
+    repeating-conic-gradient(#000 0% 25%, #fff 0% 50%);
+  background-size: 2px 2px;
       overflow: hidden;
       cursor: default;
       user-select: none;
@@ -70,6 +73,7 @@
     }
 
     .titlebar {
+      height:10px;
       background: #000;
       color: #fff;
       padding: 0px 6px;
@@ -101,7 +105,7 @@
 
     .content {
       flex: 1;
-      overflow: auto;
+      overflow: hidden;
       background: #dedede;
       padding: 2px;
     }
@@ -114,6 +118,11 @@
         font-style: normal;
         font-size: 20px;
     }
+
+    .title{
+      transform:matrix(1, 0, 0, 1, -5, -3);
+    }
+
     @font-face {
         font-family: 'geneva-9-1';
         src: url('assets/fonts/geneva-9-1.otf') format('opentype');
@@ -126,6 +135,7 @@
     p {
         margin: 0 0 0px;
     }
+
     ul{
         margin:0px;
     }
@@ -151,26 +161,66 @@
     .blink { animation: blink 1s steps(1) infinite; }
     @keyframes blink { 50% { opacity: 0; } }
 
+    .styledTextInput{
+      border: none;
+      background: none;
+      background-image: 
+      repeating-conic-gradient(#000 0% 25%, #fff 0% 50%);
+      background-size: 2px 2px;
+      width:100%;
+      font-family: 'geneva-9-1', sans-serif;
+      font-size: 20px;
+      margin-top: 5px;
+      border-radius: none;
+    }
+    .styledTextInput:hover{
+      background-image: 
+      repeating-conic-gradient(#000 0% 25%, #fff 0% 50%);
+      background-size: 2px 2px;
+    }
+
+    button{
+      font-family: 'geneva-9-1', sans-serif;
+      border-radius: none;
+      border:none;
+      background-color: none;
+      margin-top:5px;
+              color: #000;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 20px;
+        padding: 5px;
+        box-shadow: inset -1px -1px 0px 0px black, inset 1px 1px 0px 0px white;
+    }
+
+      button:hover {
+                background-color: #b4b4b4;
+                box-shadow: inset -1px -1px 0px 0px white, inset 1px 1px 0px 0px black;
+    }
+
+    .buttonText{
+      transform:matrix(1, 0, 0, 1, -20, -20);
+    }
     
   </style>
 </head>
 <body><div id="desktop">
   <!-- ---------------- Projects Window ---------------- -->
-  <div class="window" data-window-id="projects" style="left: 304px; top: 127px; width: 400; height: 300;">
+  <div class="window" data-window-id="projects" style="left: 20vw; top: 127px; width: 400; height: 300;">
     <div class="titlebar"><span class="title">projects<span class="blink">_</span></span></div>
     <div class="content">
       <p class=caps>projects</p>
       <p class="highlight">[ok] loading local manifest: ./projects</p>
       <ul class="projects-list">
-        <li>* <a href="projects/newmanse.html"><strong>the new manse</strong></a> — final vcd unit 3/4 project (2024), speculative architecture folio</li>
-        <li>* <a href="disneylandToday/view.html"><strong>disneyland today</strong></a> — interactive recreation of 1980s hotel dashboard ui</li>
+        <li>* <a href="projects/newmanse.html"><strong>the new manse</strong></a> — final vcd unit 3/4 project (2024)</li>
+        <li>* <a href="disneylandToday/view.html"><strong>disneyland today</strong></a> — interactive recreation of the old tv dashboard ui</li>
       </ul>
       <p class="highlight">[info] 2 entries loaded | last update: mon 19 feb 2024</p>
     </div>
   </div>
 
   <!-- ---------------- Templates Window ---------------- -->
-  <div class="window" data-window-id="templates" style="left: 1065px; top: 223px; width: 600px; height: 300px;">
+  <div class="window" data-window-id="templates" style="left: 58vw; top: 223px; width: 500px; height: 300px;">
     <div class="titlebar"><span class="title">student templates</span></div>
     <div class="content">
       <p class=caps>student templates</p>
@@ -179,14 +229,14 @@
       <ul class="projects-list">
         <li>* <a href="templates/jobscript.py" target="_blank"><strong>job interview script</strong></a> — basic gpt-powered q/a bot for roleplay scenarios</li>
         <li>* <a href="templates/imagegen.py" target="_blank"><strong>image generator</strong></a> — openai dall-e image prompt pipeline</li>
-        <li>* <a href="templates/cosmicmachine.py" target="_blank"><strong>cosmic vending machine</strong></a> — playful ai reward selector using pseudo-random metaphysics</li>
+        <li>* <a href="templates/cosmicmachine.py" target="_blank"><strong>cosmic vending machine</strong></a> — the most advanced ai vending machine using pseudo-random metaphysics (no metal goods supplied)</li>
       </ul>
       <p class="highlight">[sys] path=/usr/edu/scripts/templates | 3 scripts active</p>
     </div>
   </div>
 
   <!-- ---------------- Cool Links Window ---------------- -->
-  <div class="window" data-window-id="links" style="left: 372px; top: 376px; width: 360px; height: 260px;">
+  <div class="window" data-window-id="links" style="left: 17vw; top: 376px; width: 360px; height: 260px;">
     <div class="titlebar"><span class="title">web links</span></div>
     <div class="content">
       <p class=caps>web links</p>
@@ -201,23 +251,25 @@
   </div>
 
   <!-- ---------------- Contact Window ---------------- -->
-  <div class="window" data-window-id="contact" style="left: 844px; top: 607px; width: 380px; height: 180px;">
+  <div class="window" data-window-id="contact" style="left: 45vw; top: 607px; width: 380px; height: 180px;">
     <div class="titlebar"><span class="title">contact<span class="blink">_</span></span></div>
     <div class="content">
       <p class=caps>contact</p>
       <p>direct mail interface available via:</p>
       <p><a href="mailto:maxtbentley@gmail.com">maxtbentley@gmail.com</a></p>
-      <p>or via discord: ZG9K</span></p>
+      <p>or via discord @ZG9K</span></p>
       <p class="highlight">[ack] connection idle | status: reachable</p>
     </div>
   </div>
 
   <!-- ---------------- Clock Window ---------------- -->
-  <div class="window" data-window-id="clock" style="width: 160px; left: 831px; top: 390px;">
+  <div class="window" data-window-id="clock" style="width: 160px; left: 44vw; top: 370px;">
     <div class="titlebar"><span class="title">max bentley</span></div>
     <div class="content" style="font-size:18px;text-align:center;">
       <time id="clockDisplay"></time><br>
       <p class="highlight">[info] waiting for user input<span class="blink">...</span> </p>
+      <input type="text" class="styledTextInput">
+      <button><span class="buttonText">go!</span></button>
     </div>
   </div>
 </div>
