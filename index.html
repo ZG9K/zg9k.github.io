@@ -227,7 +227,6 @@
       <p class="highlight">[warn] openai key not included — manual insertion required</p>
       <p>compiled reference scripts for use in ai education modules. tested under python 3.10+</p>
       <ul class="projects-list">
-        <li>* <a href="templates/tbrpg.py" target="_blank"><strong>text based rpg</strong></a> — text based adventure game, similar to zork!</li>
         <li>* <a href="templates/jobscript.py" target="_blank"><strong>job interview script</strong></a> — basic gpt-powered q/a bot for roleplay scenarios</li>
         <li>* <a href="templates/imagegen.py" target="_blank"><strong>image generator</strong></a> — openai dall-e image prompt pipeline</li>
         <li>* <a href="templates/cosmicmachine.py" target="_blank"><strong>cosmic vending machine</strong></a> — the most advanced ai vending machine using pseudo-random metaphysics (no metal goods supplied)</li>
@@ -270,7 +269,7 @@
       <time id="clockDisplay"></time><br>
       <p class="highlight">[info] waiting for user input<span class="blink">...</span> </p>
       <input type="text" class="styledTextInput">
-      <button><span class="buttonText">go!</span></button>
+      <button id=activate><span class="buttonText">go!</span></button>
     </div>
   </div>
 </div>
@@ -393,6 +392,24 @@ function initWindow(win){
 
   /* ---------- initialise existing static windows ---------- */
   document.querySelectorAll(".window").forEach(initWindow);
+
+    // Define your code-to-link mapping here
+  const linkMap = {
+    hello: "https://zg9k.github.io/templates/tbrpg.py",
+    disney: "https://www.disney.com",
+    google: "https://www.google.com"
+    // Add more key-value pairs as needed
+  };
+
+  document.getElementById("activate").addEventListener("click", () => {
+    const input = document.querySelector(".styledTextInput").value.trim().toLowerCase();
+
+    if (linkMap[input]) {
+      window.location.href = linkMap[input];
+    } else {
+      alert("Invalid code.");
+    }
+  });
 </script>
 </script>
 
