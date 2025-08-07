@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Disneyland Dashboard Mock‑up</title>
+    <style>
+      :root {
+        /* Brand colours */
+        --color-top-start: #9386b0;
+        --color-top-end: #d5a3b2;
+
+        /* Widget styling */
+        --color-widget-bg: #f3d7c3dd;
+        --color-widget-border: #d3c3e0;
+        --color-widget-heading: #465484;
+      }
+
+      /* Full‑page gradient */
+      body {
+        position: relative;
+        margin: 0;
+        font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+        /* background: linear-gradient(180deg, #9386b0 0%, #d5a3b2 100%); */
+        color: #333;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background-color: #e3a1ab;
+      }
+
+      #page {
+        flex: 1 0 auto;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      /* Title (image placeholder) */
+      #title-area {
+        background-size: cover;
+        color: #fff;
+        text-align: center;
+        background-image: none;
+        width: 100%;
+        max-width: 100vw;
+        height: 60vh;
+        min-height: 0;
+      }
+
+    /* sidebar */
+    .sidebar {
+      position: fixed;
+      top: 50%;
+      left: 20px;
+      transform: translateY(-50%);
+      background-color: #7d789e;
+      border-radius: 2rem;
+      padding: 1rem 0.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+    }
+
+    .sidebar-button {
+      width: 40px;
+      height: 40px;
+      background-color: #5e6192;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      text-decoration: none;
+      transition: background-color 0.2s, transform 0.2s;
+    }
+
+    .sidebar-button:hover {
+      background-color: #878bc2;
+      transform: scale(1.1);
+    }
+
+      /* Main content */
+      #content {
+        display: flex;
+        gap: 1.5rem;
+        padding: 2rem 1.5rem;
+        flex: 1 0 auto;
+        background: linear-gradient(to bottom, transparent 0%, var(--color-top-end) 50%, var(--color-top-start) 100%);
+        padding-left: 100px;
+      }
+
+      .column {
+        flex: 1 1 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .columnTitle {
+        border: 1px solid var(--color-widget-border);
+        border-radius: 12px;
+        box-shadow: 0 2px 5px rgb(0 0 0 / 8%);
+        backdrop-filter: blur(8px) saturate(120%);
+        -webkit-backdrop-filter: blur(12px) saturate(100%);
+        border: 2px solid rgba(211, 195, 224, 0.1);
+        color: #465484;
+        text-align: center;
+        font-size: 20px;
+        margin-left: 25px;
+        margin-right: 25px;
+        padding: 5px;
+        text-transform: uppercase;
+      }
+
+      .widget {
+        border: 1px solid var(--color-widget-border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        box-shadow: 0 2px 5px rgb(0 0 0 / 8%);
+        backdrop-filter: blur(8px) saturate(120%);
+        -webkit-backdrop-filter: blur(12px) saturate(100%);
+        border: 2px solid rgba(211, 195, 224, 0.1);
+        color: #465484;
+        transition: 0.2s ease-in-out;
+      }
+
+      .widget:hover {
+        background-color: rgba(255, 255, 255, 0.01);
+        box-shadow: 0 6px 24px 0 rgba(147, 134, 176, 0.18), 0 1.5px 8px 0 rgba(213, 163, 178, 0.10);
+        backdrop-filter: blur(14px) saturate(125%);
+        border-color: rgba(211, 195, 224, 0.1);
+        transform: translateY(-2px) scale(1.001);
+      }
+
+      .widget h3 {
+        margin: 0 0 0.75rem;
+        font-size: 1.1rem;
+        color: var(--color-widget-heading);
+        text-transform: uppercase;
+      }
+
+      .widget ul {
+        background-color: rgba(0, 0, 0, 0.025);
+        border-radius: 16px;
+        padding:8px;
+        margin: 8px;
+      }
+
+      .widget ul li {
+        padding: 8px;
+        padding-right: 8px;
+        list-style-type: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      /* Footer */
+      footer {
+        background: var(--color-top-start);
+        color: #fff;
+        text-align: center;
+        padding: 1rem;
+        font-size: 0.9rem;
+      }
+
+    #bg-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 75vh;
+        object-fit: cover;
+        object-position: right top;
+        z-index: 0;
+        pointer-events: none;
+        user-select: none;
+        padding-right: 100px;
+      }
+      #page, #title-area, #content, footer, .widget {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Mobile */
+      @media (max-width: 960px) {
+        #content {
+          flex-direction: column;
+        }
+      }
+
+      @font-face {
+        font-family: 'DisneyFont';
+        src: url(disneylandToday/fonts/disneyFont.ttf) format('truetype');
+    }
+
+      body {
+        font-family: 'DisneyFont', sans-serif;
+      }
+
+    #titles{
+        position: absolute;
+        left: 16vw;
+        top: 90px;
+        height: 400px;
+    }
+    </style>
+  </head>
+  <body>
+    
+    <div id="page">
+        <img id="bg-img" src="assets/Twilight Castle and Fireworks Display.png" alt="Background" />
+      <!-- Top image / hero area -->
+      <div id="title-area">
+        <img id="titles" src="assets/wecome_to_disneyland.png" alt="Welcome to Disneyland" /> 
+      </div>
+
+
+      <div class="sidebar">
+    <a class="sidebar-button" href="#">🏠</a>
+    <a class="sidebar-button" href="#">🎥</a>
+    <a class="sidebar-button" href="#">🗺️</a>
+    <a class="sidebar-button" href="#">📋</a>
+    <a class="sidebar-button" href="#">👕</a>
+    <a class="sidebar-button" href="#">📄</a>
+    <a class="sidebar-button" href="#">📁</a>
+  </div>
+
+      <!-- Three‑column widget grid -->
+      <div id="content">
+        <div class="column">
+            <div class="columnTitle">
+                Projects
+            </div>
+          <div class="widget">
+            <h3>Disneyland Today Dashboard</h3>
+            A live dashboard for Disneyland visitors, providing real-time updates on ride wait times, park hours, dining options, and more! This dashboard replicates the original dashboard seen on hotel room TVs around the Disneyland Resort.
+            <ul>
+              <li>Space Mountain: 45 min</li>
+              <li>Indiana Jones Adventure: 30 min</li>
+              <li>Haunted Mansion: 20 min</li>
+              <li>Big Thunder Mountain: 25 min</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="column">
+                        <div class="columnTitle">
+                Guides
+            </div>
+          <div class="widget">
+            <h3>Guide to Disneyland</h3>
+            A comprehensive first-time visitor's guide to Disneyland, including tips on rides, dining, and park navigation.
+            <ul>
+              <li>Rope Drop: Head to Rise of the Resistance</li>
+              <li>Use Genie+ for Indiana Jones</li>
+              <li>Visit Fantasyland before 10 AM</li>
+              <li>Afternoon: Enjoy shows & parades</li>
+            </ul>
+          </div>
+          <div class="widget">
+            <h3>Advanced Tips & Tricks Guide</h3>
+            The guide for maximising your Disneyland experience, including advanced strategies for lightning lanes, rope drops, and dining reservations.
+            <ul>
+              <li>Reserve Blue Bayou for lunch</li>
+              <li>Try a Dole Whip at Tiki Juice Bar</li>
+              <li>Mickey Beignets at Mint Julep Bar</li>
+              <li>Mobile order to save time</li>
+            </ul>
+          </div>
+        </div>
+
+        
+        <div class="column">
+                        <div class="columnTitle">
+                Dashboard
+            </div>
+          <div class="widget">
+            <h3>Hotel Hub</h3>
+            <ul>
+              <li>Disneyland Hotel: Check-in 3:00 PM</li>
+              <li>Grand Californian: Pool open 7:00 AM</li>
+              <li>Character Breakfast: 7:30–11:00 AM</li>
+              <li>Shuttle to parks every 20 min</li>
+            </ul>
+          </div>
+          <div class="widget">
+            <h3>Weather &amp; Outfits</h3>
+            <ul>
+              <li>Today: 78°F, sunny</li>
+              <li>Evening: 65°F, light breeze</li>
+              <li>Recommended: Mickey Ears, sunscreen, comfy shoes</li>
+              <li>Bring a light jacket for nighttime shows</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+          <!-- Footer -->
+    <footer>
+      Built by MB — Not affiliated with Disney
+    </footer>
+    </div>
+
+
+  </body>
+</html>
