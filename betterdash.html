@@ -46,33 +46,6 @@ body{
     gap:28px;
   padding:28px clamp(16px, 4vw, 40px) 40px;
 }
-
-/* Floating left sidebar (pill) */
-.sidebar{
-  position:fixed;
-  left:18px;
-  top:140px;
-  width:72px;
-  padding:14px 10px;
-  background:linear-gradient(180deg, #f7f4ffcc, #ede7ffbb);
-  backdrop-filter: blur(6px);
-  border-radius:999px;
-  box-shadow:var(--shadow);
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-  z-index:10;
-  border:1px solid #fff6;
-}
-.sidebar .dot{
-  width:42px;height:42px;border-radius:50%;
-  background:linear-gradient(135deg, #c0b7ff, #8ec5ff);
-  margin:0 auto;
-  box-shadow: inset 0 0 0 2px #ffffffaa;
-  display:grid;place-items:center;
-  font-weight:700;font-size:12px;color:#fff;
-}
-
 /* Hero */
 .hero{
   border-radius:28px;
@@ -195,6 +168,10 @@ body{
 /* Footer */
 .footer{
   text-align:center; color:#fff; opacity:.9; font-size:14px;
+  z-index: 10;
+}
+.footer p{
+  z-index: 100;
 }
 .footer small{opacity:.9}
 .brand{
@@ -203,6 +180,7 @@ body{
   background:#ffffff66;
   border-radius:999px;
   margin:0 6px;
+  z-index: inherit;
 }
 
 /* Tiny bullets like the sample */
@@ -227,22 +205,52 @@ body{
     user-select: none;
   }
 
+
+/* sidebar */
+.corner-nav{
+  position:fixed; left:16px; bottom:16px; z-index:50;
+}
+.corner-nav .fab{
+  width:64px; height:64px; border-radius:999px; border:none; cursor:pointer;
+  display:grid; place-items:center; font-size:24px; color:#fff; 
+  background:radial-gradient(120% 120% at 30% 30%, #a4a8ff, #6f76d9 70%);
+  box-shadow:var(--shadow); transition:transform .18s ease, box-shadow .18s ease;
+}
+.corner-nav .fab:active{transform:translateY(1px); box-shadow:0 6px 18px rgba(33,17,68,.25)}
+.corner-nav .fab[aria-expanded="true"]{outline:3px solid #ffffff88}
+
+.corner-nav .tray{
+  position:absolute; left:0; bottom:76px;
+  transform-origin:bottom left;
+  background:linear-gradient(180deg,#f7f4ffcc,#ede7ffbb);
+  backdrop-filter:blur(8px);
+  border:1px solid #ffffff88; border-radius:20px; padding:12px;
+  box-shadow:var(--shadow);
+
+  display:flex; flex-direction:column; gap:10px;
+  opacity:0; transform:scale(.85); pointer-events:none;
+  transition:opacity .24s ease, transform .24s cubic-bezier(.2,.9,.2,1);
+}
+.corner-nav.open .tray{opacity:1; transform:scale(1); pointer-events:auto}
+
+.nav-btn{
+  width:56px; height:56px; border-radius:14px; border:1px solid #fff6;
+  background:linear-gradient(135deg,#c0b7ff,#8ec5ff);
+  display:grid; place-items:center; color:#fff; font-weight:700; font-size:20px;
+  box-shadow:inset 0 0 0 2px #ffffffaa;
+  cursor:pointer;
+}
+.nav-label{font-size:12px; text-align:center; color:#3b2f5e; opacity:.8; padding-top:4px}
+
+@media (prefers-reduced-motion: reduce){
+  .corner-nav .tray{transition:none}
+  .corner-nav .fab{transition:none}
+}
 </style>
 </head>
 <body>
   <div class="frame">
     <img id="bg-img" src="assets/Twilight Castle and Fireworks Display.png" alt="Background" />
-
-    <!-- Floating sidebar -->
-    <aside class="sidebar" aria-label="Quick nav">
-      <div class="dot">🏠</div>
-      <div class="dot">🕒</div>
-      <div class="dot">📅</div>
-      <div class="dot">🗺️</div>
-      <div class="dot">🍔</div>
-      <div class="dot">🏨</div>
-      <div class="dot">☀️</div>
-    </aside>
 
     <!-- Hero -->
     <header class="hero" role="banner">
@@ -253,6 +261,7 @@ body{
     <div class="content">
     <!-- Cards -->
     <main class="grid" role="main">
+
       <!-- Wait Time Dashboard -->
       <section class="card">
         <h3>WAIT TIME DASHBOARD</h3>
@@ -308,20 +317,24 @@ body{
             <strong>8:30 PM</strong>
           </div>
         </div>
-        <a class="link" href="#"><span class="bullet">•</span> View Schedule</a>
       </section>
 
       <!-- Ride Strategy Guides -->
       <section class="card">
-        <h3>RIDE STRATEGY GUIDES</h3>
+        <h3>DISNEYLAND RESORT GUIDES</h3>
         <div class="list">
-          <div class="row"><span class="title">Park Hopping</span><span>✶</span></div>
-          <div class="row"><span class="title">Genie+ Tips</span><span>✶</span></div>
-          <div class="row"><span class="title">Rope Drop Plan</span><span>✶</span></div>
-                <div class="row">
-        <span class="title">Full Strategy PDF</span>
-        <a class="download-btn" href="strategy.pdf" download>Download</a>
-      </div>
+          <div class="row">
+            <span class="title">Guide to Disneyland</span>
+            <a class="download-btn" href="strategy.pdf" download>Open</a>
+          </div>
+          <div class="row">
+            <span class="title">Guide to Disney's California Adventure</span>
+            <a class="download-btn" href="strategy.pdf" download>Open</a>
+          </div>
+          <div class="row">
+            <span class="title">Advanced Tips & Tricks</span>
+            <a class="download-btn" href="strategy.pdf" download>Open</a>
+          </div>
         </div>
       </section>
 
@@ -335,17 +348,6 @@ body{
         <a class="link" href="#"><span class="bullet">•</span> Mobile Ordering Tips</a>
       </section>
 
-      <!-- Hotel Hub -->
-      <section class="card">
-        <h3>HOTEL HUB</h3>
-        <div class="list">
-          <div class="row"><span class="title">Disneyland Hotel</span><span>ℹ︎</span></div>
-          <div class="row"><span class="title">Grand Californian</span><span>ℹ︎</span></div>
-          <div class="row"><span class="title">Paradise Pier Hotel</span><span>ℹ︎</span></div>
-        </div>
-        <a class="link" href="#"><span class="bullet">•</span> View Info</a>
-      </section>
-
       <!-- Weather & Outfits -->
       <section class="card">
         <h3>WEATHER &amp; OUTFITS</h3>
@@ -357,12 +359,48 @@ body{
       </section>
     </main>
         <footer class="footer">
-      <p>Built with love by <span class="brand">You</span> • <small>Not affiliated with Disney.</small></p>
+      <p>Built with love by <span class="brand">ZG9K</span> • <small>Not affiliated with Disney.</small></p>
     </footer>
     </div>
 
     <!-- Footer -->
 
+      <nav class="corner-nav" aria-label="Quick actions">
+    <button class="fab" id="menuFab" aria-expanded="false" aria-controls="cornerTray" aria-label="Open menu">☰</button>
+    <div class="tray" id="cornerTray" role="menu">
+      <button class="nav-btn" role="menuitem" title="Home">🏠</button>
+      <button class="nav-btn" role="menuitem" title="Waits">🕒</button>
+      <button class="nav-btn" role="menuitem" title="Schedule">📅</button>
+      <button class="nav-btn" role="menuitem" title="Map">🗺️</button>
+      <button class="nav-btn" role="menuitem" title="Dining">🍔</button>
+      <button class="nav-btn" role="menuitem" title="Hotels">🏨</button>
+      <button class="nav-btn" role="menuitem" title="Weather">☀️</button>
+    </div>
+  </nav>
+
   </div>
+
+  <script>
+(() => {
+  const nav = document.querySelector('.corner-nav');
+  const fab = document.getElementById('menuFab');
+
+  function toggle(open) {
+    const isOpen = open ?? !nav.classList.contains('open');
+    nav.classList.toggle('open', isOpen);
+    fab.setAttribute('aria-expanded', String(isOpen));
+  }
+
+  fab.addEventListener('click', () => toggle());
+
+  document.addEventListener('click', (e) => {
+    if (!nav.contains(e.target)) toggle(false);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') toggle(false);
+  });
+})();
+</script>
 </body>
 </html>
