@@ -44,7 +44,7 @@ body{
   background: linear-gradient(to bottom, transparent 0%, var(--bg-2) 50%, var(--bg-1) 100%);
   width: 100vw auto;
     gap:28px;
-  padding:28px clamp(16px, 4vw, 40px) 40px;
+  padding:28px clamp(16px, 4vw, 40px) 70px;
 }
 /* Hero */
 .hero{
@@ -222,9 +222,9 @@ body{
 .corner-nav .tray{
   position:absolute; left:0; bottom:76px;
   transform-origin:bottom left;
-  background:linear-gradient(180deg,#f7f4ffcc,#ede7ffbb);
+  background:linear-gradient(180deg,#f7f4ff22,#ede7ff22);
   backdrop-filter:blur(8px);
-  border:1px solid #ffffff88; border-radius:20px; padding:12px;
+  border:1px solid #ffffff88; border-radius:999px; padding:4px;
   box-shadow:var(--shadow);
 
   display:flex; flex-direction:column; gap:10px;
@@ -234,8 +234,8 @@ body{
 .corner-nav.open .tray{opacity:1; transform:scale(1); pointer-events:auto}
 
 .nav-btn{
-  width:56px; height:56px; border-radius:14px; border:1px solid #fff6;
-  background:linear-gradient(135deg,#c0b7ff,#8ec5ff);
+  width:56px; height:56px; border-radius:999px; border:1px solid #fff6;
+  background:linear-gradient(135deg,#c0b7ff99,#8ec5ff99);
   display:grid; place-items:center; color:#fff; font-weight:700; font-size:20px;
   box-shadow:inset 0 0 0 2px #ffffffaa;
   cursor:pointer;
@@ -246,6 +246,46 @@ body{
   .corner-nav .tray{transition:none}
   .corner-nav .fab{transition:none}
 }
+
+*{box-sizing:border-box}
+body{margin:0;font-family:"DM Sans",system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
+
+/* --- Card + list --- */
+.card{background:var(--card);border:1px solid #fff6;border-radius:16px;box-shadow:var(--shadow);padding:16px}
+.card h3{margin:0 0 12px;font-size:16px;letter-spacing:.06em;font-weight:800}
+.list{display:grid;gap:10px}
+
+/* --- Row --- */
+.row{display:flex;align-items:center;justify-content:space-between;background:#ffffffcc;border-radius:12px;padding:10px 14px}
+.row .title{font-weight:700}
+.row .sub{font-size:12px;color:var(--ink-dim)}
+.row .right{display:flex;align-items:center;gap:8px}
+.row .edit{border:none;background:transparent;cursor:pointer;font-size:18px;color:#6b64a6}
+
+/* --- Buttons --- */
+.icon-btn{width:36px;height:36px;border-radius:999px;border:1px solid #e7e2ff;background:var(--pill);display:grid;place-items:center;cursor:pointer}
+.icon-btn:hover{background:#fff}
+.btn{padding:10px 14px;border-radius:10px;border:1px solid transparent;cursor:pointer;font-weight:700}
+.btn.primary{background:var(--accent);color:#fff}
+.btn.ghost{background:#f7f4ff;border-color:#eae3ff}
+.btn.danger{background:#ffe9e9;color:#b3002f;border-color:#ffd1d1}
+
+/* --- Card actions --- */
+.card-actions{position:absolute;right:12px;top:12px;display:flex;gap:8px}
+.planboard{position:relative}
+
+/* --- Modal --- */
+#planModal{position:fixed;inset:0;background:rgba(20,12,40,.25);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:100}
+#planModal.open{display:flex}
+.modal-card{width:min(520px,92vw);background:#fff;border-radius:16px;box-shadow:var(--shadow);border:1px solid #eee}
+.modal-head{padding:14px 16px;font-weight:800;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center}
+.modal-body{display:grid;gap:12px;padding:16px}
+.modal-foot{display:flex;justify-content:space-between;gap:10px;padding:12px 16px;border-top:1px solid #eee}
+.input{display:grid;gap:6px}
+.input label{font-size:12px;color:#5a5175}
+.input input,.input textarea{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #ddd;font:inherit}
+.input textarea{min-height:80px;resize:vertical}
+
 </style>
 </head>
 <body>
@@ -295,29 +335,49 @@ body{
             <strong>30 min</strong>
           </div>
         </div>
-        <a class="link" href="#"><span class="bullet">•</span> See All Rides</a>
+        <a class="link" href="#"><span class="bullet">•</span> See All Attractions</a>
       </section>
+  <!-- Drop this <section> wherever you want the planboard to render. -->
+  <section class="card planboard" id="planboard" data-storage-key="planboardItems/v1">
+    <h3>PLANBOARD</h3>
+    <div class="card-actions">
+      <button class="icon-btn" id="addPlanBtn" title="Add item">＋</button>
+    </div>
+    <div class="list" id="planList"><!-- items render here --></div>
+  </section>
 
-      <!-- Park Hours & Events -->
-      <section class="card">
-        <h3>PARK HOURS &amp; EVENTS</h3>
-        <div class="list">
-          <div class="row">
-            <div class="left">
-              <span class="title">Disneyland</span>
-              <span class="sub">Open</span>
-            </div>
-            <strong>8:00 AM – 11:00 PM</strong>
-          </div>
-          <div class="row">
-            <div class="left">
-              <span class="title">Disney California Adventure</span>
-              <span class="sub">Tonight</span>
-            </div>
-            <strong>8:30 PM</strong>
-          </div>
+  <!-- Modal for add/edit -->
+  <div id="planModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="planTitle">
+      <div class="modal-head">
+        <div id="planTitle">Planboard Item</div>
+        <button class="icon-btn" id="closeModal" title="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="input">
+          <label for="planTime">Time</label>
+          <input id="planTime" type="time" required />
         </div>
-      </section>
+        <div class="input">
+          <label for="planName">Name</label>
+          <input id="planName" type="text" placeholder="Reservation, ride, break…" required />
+        </div>
+        <div class="input">
+          <label for="planNotes">Notes</label>
+          <textarea id="planNotes" placeholder="Any details you want to remember"></textarea>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <div>
+          <button class="btn danger" id="removeItem" style="display:none">Remove</button>
+        </div>
+        <div>
+          <button class="btn ghost" id="cancelItem">Cancel</button>
+          <button class="btn primary" id="saveItem">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
       <!-- Ride Strategy Guides -->
       <section class="card">
@@ -338,15 +398,26 @@ body{
         </div>
       </section>
 
-      <!-- Dining Planboard -->
       <section class="card">
-        <h3>DINING PLANBOARD</h3>
+        <h3>PARK HOURS &amp; EVENTS</h3>
         <div class="list">
-          <div class="row"><span class="title">Café Orleans</span><strong>5:00 PM</strong></div>
-          <div class="row"><span class="title">Oga’s Cantina</span><strong>1:30 PM</strong></div>
+          <div class="row">
+            <div class="left">
+              <span class="title">Disneyland</span>
+              <span class="sub">Open</span>
+            </div>
+            <strong>8:00 AM – 11:00 PM</strong>
+          </div>
+          <div class="row">
+            <div class="left">
+              <span class="title">Disney California Adventure</span>
+              <span class="sub">Tonight</span>
+            </div>
+            <strong>8:30 PM</strong>
+          </div>
         </div>
-        <a class="link" href="#"><span class="bullet">•</span> Mobile Ordering Tips</a>
       </section>
+
 
       <!-- Weather & Outfits -->
       <section class="card">
@@ -355,7 +426,19 @@ body{
           <div class="big">☀️ <span>77°F</span></div>
           <div class="row"><span class="title">Outfit</span><span>T-Shirt & Shorts</span></div>
         </div>
-        <a class="link" href="#"><span class="bullet">•</span> What to Pack</a>
+        <a class="link" href="#"><span class="bullet">•</span> What should I pack?</a>
+      </section>
+
+                <section class="card">
+        <h3>Disneyland Today Dashboard</h3>
+         A live dashboard for Disneyland visitors, providing real-time updates on ride wait times, park hours, dining options, and more! This dashboard replicates the original dashboard that used to be seen on hotel room TVs around the Disneyland Resort.
+        <div class="list">
+          <br>
+          <div class="row">
+            <span class="title">Disneyland Today</span>
+            <a class="download-btn" href="disneylandToday/view.html" download>Open</a>
+          </div>
+        </div>
       </section>
     </main>
         <footer class="footer">
@@ -363,7 +446,6 @@ body{
     </footer>
     </div>
 
-    <!-- Footer -->
 
       <nav class="corner-nav" aria-label="Quick actions">
     <button class="fab" id="menuFab" aria-expanded="false" aria-controls="cornerTray" aria-label="Open menu">☰</button>
@@ -381,7 +463,6 @@ body{
   </div>
 
   <script>
-(() => {
   const nav = document.querySelector('.corner-nav');
   const fab = document.getElementById('menuFab');
 
@@ -400,7 +481,131 @@ body{
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') toggle(false);
   });
-})();
+
+  // Elements
+  const planEl = document.getElementById('planboard');
+  const listEl = document.getElementById('planList');
+  const addBtn = document.getElementById('addPlanBtn');
+  const modal = document.getElementById('planModal');
+  const closeModalBtn = document.getElementById('closeModal');
+  const cancelBtn = document.getElementById('cancelItem');
+  const saveBtn = document.getElementById('saveItem');
+  const removeBtn = document.getElementById('removeItem');
+  const inputTime = document.getElementById('planTime');
+  const inputName = document.getElementById('planName');
+  const inputNotes = document.getElementById('planNotes');
+
+  // Storage key (customize via data-storage-key on the section)
+  const STORAGE_KEY = planEl.dataset.storageKey || 'planboardItems/v1';
+  let editingIndex = null;
+
+  // Persistence
+  const load = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? []; } catch { return []; } };
+  const save = (items) => localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+
+  // Time helpers
+  const parseTimeToMinutes = (t) => {
+    if(!t || !/^\d{2}:\d{2}$/.test(t)) return 99999; // push invalid to bottom
+    const [h,m] = t.split(':').map(Number);
+    return h*60 + m;
+  };
+  const minutesNow = () => { const d=new Date(); return d.getHours()*60 + d.getMinutes(); };
+  const sortBySoonest = (items) => {
+    const now = minutesNow();
+    return items.slice().sort((a,b)=>{
+      const da = (parseTimeToMinutes(a.time) - now + 1440) % 1440;
+      const db = (parseTimeToMinutes(b.time) - now + 1440) % 1440;
+      return da - db;
+    });
+  };
+
+  // Render
+  function render(){
+    const items = sortBySoonest(load());
+    listEl.innerHTML = '';
+    if(items.length === 0){
+      const empty = document.createElement('div');
+      empty.className = 'row';
+      empty.innerHTML = '<span class="sub">No items yet. Add your first plan above!</span>';
+      listEl.appendChild(empty);
+      return;
+    }
+    items.forEach((item, idx) => {
+      const row = document.createElement('div'); row.className = 'row';
+      const left = document.createElement('div'); left.style.display='grid'; left.style.gap='2px';
+      const title = document.createElement('span'); title.className='title'; title.textContent = item.name || '(Untitled)';
+      const notes = document.createElement('span'); notes.className='sub'; notes.textContent = item.notes || '';
+      left.appendChild(title); if(item.notes) left.appendChild(notes);
+
+      const right = document.createElement('div'); right.className='right';
+      const time = document.createElement('strong'); time.textContent = item.time || '--:--';
+      const edit = document.createElement('button'); edit.className='edit'; edit.title='Edit'; edit.innerText='⋯';
+      edit.addEventListener('click', () => openModal(idx));
+      right.appendChild(time); right.appendChild(edit);
+
+      row.appendChild(left); row.appendChild(right);
+      listEl.appendChild(row);
+    });
+  }
+
+  // Modal open/close
+  function openModal(index){
+    const items = load();
+    editingIndex = (index ?? null);
+    if(editingIndex === null){
+      inputTime.value = '';
+      inputName.value = '';
+      inputNotes.value = '';
+      removeBtn.style.display = 'none';
+    } else {
+      const it = items[editingIndex];
+      inputTime.value = it.time || '';
+      inputName.value = it.name || '';
+      inputNotes.value = it.notes || '';
+      removeBtn.style.display = 'inline-block';
+    }
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden','false');
+    setTimeout(()=>inputName.focus(), 50);
+  }
+  function closeModal(){
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden','true');
+    editingIndex = null;
+  }
+
+  // Actions
+  function onSave(){
+    const t = inputTime.value.trim();
+    const n = inputName.value.trim();
+    const notes = inputNotes.value.trim();
+    if(!n){ inputName.focus(); return; }
+    const items = load();
+    const nextItem = { time: t, name: n, notes };
+    if(editingIndex === null){ items.push(nextItem); }
+    else { items[editingIndex] = nextItem; }
+    save(items);
+    closeModal(); render();
+  }
+  function onRemove(){
+    if(editingIndex === null) return;
+    const items = load();
+    items.splice(editingIndex,1);
+    save(items);
+    closeModal(); render();
+  }
+
+  // Wire up
+  addBtn.addEventListener('click', () => openModal(null));
+  document.getElementById('closeModal').addEventListener('click', closeModal);
+  document.getElementById('cancelItem').addEventListener('click', closeModal);
+  document.getElementById('saveItem').addEventListener('click', onSave);
+  document.getElementById('removeItem').addEventListener('click', onRemove);
+  document.getElementById('planModal').addEventListener('click', (e)=>{ if(e.target === document.getElementById('planModal')) closeModal(); });
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+
+  // Initial render
+  render();
 </script>
 </body>
 </html>
