@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Disneyland Dashboard – Mock</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-1:#9386b0;       /* sky top */
+  --bg-2:#d5a3b2;       /* sky bottom */
+  --card:#f3eef9ee;     /* frosted card */
+  --chip:#e7def6dd;
+  --ink:#2b2141;
+  --ink-dim:#4d406a;
+  --accent:#5e66d4;
+  --accent-2:#9b6ec5;
+  --pill:#ffffffaa;
+  --shadow:0 10px 30px rgba(33,17,68,.25);
+  --radius:22px;
+}
+
+/* Reset-ish */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:"DM Sans",system-ui,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--ink);
+  background-color: #e3a1ab;
+}
+
+/* Full gradient frame */
+.frame{
+  min-height:100dvh;
+  display:grid;
+  grid-template-rows:auto auto 1fr auto;
+  position:relative;
+  overflow:hidden;
+}
+
+.content{
+  background: linear-gradient(to bottom, transparent 0%, var(--bg-2) 50%, var(--bg-1) 100%);
+  width: 100vw auto;
+    gap:28px;
+  padding:28px clamp(16px, 4vw, 40px) 40px;
+}
+
+/* Floating left sidebar (pill) */
+.sidebar{
+  position:fixed;
+  left:18px;
+  top:140px;
+  width:72px;
+  padding:14px 10px;
+  background:linear-gradient(180deg, #f7f4ffcc, #ede7ffbb);
+  backdrop-filter: blur(6px);
+  border-radius:999px;
+  box-shadow:var(--shadow);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  z-index:10;
+  border:1px solid #fff6;
+}
+.sidebar .dot{
+  width:42px;height:42px;border-radius:50%;
+  background:linear-gradient(135deg, #c0b7ff, #8ec5ff);
+  margin:0 auto;
+  box-shadow: inset 0 0 0 2px #ffffffaa;
+  display:grid;place-items:center;
+  font-weight:700;font-size:12px;color:#fff;
+}
+
+/* Hero */
+.hero{
+  border-radius:28px;
+  text-align:center;
+  position:relative;
+  color:#fff;
+  background: none;
+  overflow:hidden;
+  padding-top: 5vw;
+  padding-bottom: 5vw;
+}
+
+#titles{
+  width: 80vw;
+  max-width: 100%;
+  z-index: 1;
+  padding-top: 80px;
+  max-width: 800px;
+}
+
+.hero h1{
+  margin:0;
+  font-family:"Quicksand",system-ui,sans-serif;
+  letter-spacing:.12em;
+  font-weight:700;
+  font-size:14px;
+}
+.hero h2{
+  margin:10px 0 6px;
+  font-family:"Quicksand";
+  font-size:min(15vw, 96px);
+  line-height:.9;
+  text-shadow:0 10px 30px rgba(0,0,40,.25);
+}
+.hero .cta-row{
+  display:flex; gap:16px; justify-content:center; flex-wrap:wrap;
+  margin-top:18px;
+}
+.chip{
+  background:var(--chip);
+  color:var(--ink);
+  padding:16px 22px;
+  border-radius:999px;
+  font-weight:700;
+  letter-spacing:.02em;
+  border:1px solid #fff6;
+  box-shadow:0 8px 18px rgba(40,20,80,.15);
+}
+.chip:focus-visible{outline:3px solid #fff9}
+
+/* Cards grid */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0,1fr));
+  gap:22px;
+}
+@media (max-width:1100px){
+  .grid{grid-template-columns:repeat(2, minmax(0,1fr))}
+}
+@media (max-width:740px){
+  .grid{grid-template-columns:1fr}
+  .sidebar{left:10px;top:auto;bottom:18px;flex-direction:row;width:auto;padding:10px 12px}
+}
+
+.card{
+  background:var(--card);
+  backdrop-filter: blur(6px);
+  border:1px solid #fff6;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:20px;
+}
+.card h3{
+  margin:2px 0 14px;
+  font-size:16px;
+  letter-spacing:.06em;
+  font-weight:800;
+  color:var(--ink);
+}
+.list{display:grid;gap:10px}
+.row{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 12px; border-radius:14px;
+  background:#ffffffaa;
+}
+.row .left{display:grid; gap:2px}
+.row .title{font-weight:700}
+.row .sub{font-size:12px;color:var(--ink-dim)}
+.link{
+  display:inline-flex; gap:8px; align-items:center;
+  margin-top:12px; font-weight:700; color:var(--accent);
+  text-decoration:none;
+}
+
+.download-btn {
+  background:#5e66d4;
+  color:#fff;
+  padding:8px 16px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:700;
+  font-size:14px;
+  box-shadow:0 4px 8px rgba(0,0,0,0.15);
+  transition: 0.2s ease-in-out;
+}
+.download-btn:hover {
+  background:#4a53b5;
+  scale: 1.05;
+}
+
+/* Weather block */
+.weather{
+  display:grid; gap:10px;
+}
+.weather .big{
+  display:flex; align-items:center; gap:14px;
+  font-size:26px; font-weight:800;
+}
+
+/* Footer */
+.footer{
+  text-align:center; color:#fff; opacity:.9; font-size:14px;
+}
+.footer small{opacity:.9}
+.brand{
+  display:inline-block;
+  padding:4px 10px;
+  background:#ffffff66;
+  border-radius:999px;
+  margin:0 6px;
+}
+
+/* Tiny bullets like the sample */
+.bullet{
+  display:inline-grid; place-items:center;
+  width:18px;height:18px;border-radius:50%;
+  background:linear-gradient(135deg,#a3a9ff,#7bc4ff);
+  box-shadow: inset 0 0 0 2px #fff9;
+  font-size:12px;color:#fff;font-weight:800;
+}
+
+#bg-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 75vh;
+    object-fit: cover;
+    object-position: right top;
+    z-index: 0;
+    pointer-events: none;
+    user-select: none;
+  }
+
+</style>
+</head>
+<body>
+  <div class="frame">
+    <img id="bg-img" src="assets/Twilight Castle and Fireworks Display.png" alt="Background" />
+
+    <!-- Floating sidebar -->
+    <aside class="sidebar" aria-label="Quick nav">
+      <div class="dot">🏠</div>
+      <div class="dot">🕒</div>
+      <div class="dot">📅</div>
+      <div class="dot">🗺️</div>
+      <div class="dot">🍔</div>
+      <div class="dot">🏨</div>
+      <div class="dot">☀️</div>
+    </aside>
+
+    <!-- Hero -->
+    <header class="hero" role="banner">
+      <div class="castle" aria-hidden="true"></div>
+<img id="titles" src="assets/wecome_to_disneyland.png" alt="Welcome to Disneyland" /> 
+    </header>
+
+    <div class="content">
+    <!-- Cards -->
+    <main class="grid" role="main">
+      <!-- Wait Time Dashboard -->
+      <section class="card">
+        <h3>WAIT TIME DASHBOARD</h3>
+        <div class="list">
+          <div class="row">
+            <div class="left">
+              <span class="title">Big Thunder Mountain</span>
+              <span class="sub">Standby</span>
+            </div>
+            <strong>15 min</strong>
+          </div>
+          <div class="row">
+            <div class="left">
+              <span class="title">Haunted Mansion</span>
+              <span class="sub">Standby</span>
+            </div>
+            <strong>15 min</strong>
+          </div>
+          <div class="row">
+            <div class="left">
+              <span class="title">Indiana Jones Adventure</span>
+              <span class="sub">Standby</span>
+            </div>
+            <strong>35 min</strong>
+          </div>
+          <div class="row">
+            <div class="left">
+              <span class="title">it’s a small world</span>
+              <span class="sub">Standby</span>
+            </div>
+            <strong>30 min</strong>
+          </div>
+        </div>
+        <a class="link" href="#"><span class="bullet">•</span> See All Rides</a>
+      </section>
+
+      <!-- Park Hours & Events -->
+      <section class="card">
+        <h3>PARK HOURS &amp; EVENTS</h3>
+        <div class="list">
+          <div class="row">
+            <div class="left">
+              <span class="title">Disneyland</span>
+              <span class="sub">Open</span>
+            </div>
+            <strong>8:00 AM – 11:00 PM</strong>
+          </div>
+          <div class="row">
+            <div class="left">
+              <span class="title">Disney California Adventure</span>
+              <span class="sub">Tonight</span>
+            </div>
+            <strong>8:30 PM</strong>
+          </div>
+        </div>
+        <a class="link" href="#"><span class="bullet">•</span> View Schedule</a>
+      </section>
+
+      <!-- Ride Strategy Guides -->
+      <section class="card">
+        <h3>RIDE STRATEGY GUIDES</h3>
+        <div class="list">
+          <div class="row"><span class="title">Park Hopping</span><span>✶</span></div>
+          <div class="row"><span class="title">Genie+ Tips</span><span>✶</span></div>
+          <div class="row"><span class="title">Rope Drop Plan</span><span>✶</span></div>
+                <div class="row">
+        <span class="title">Full Strategy PDF</span>
+        <a class="download-btn" href="strategy.pdf" download>Download</a>
+      </div>
+        </div>
+      </section>
+
+      <!-- Dining Planboard -->
+      <section class="card">
+        <h3>DINING PLANBOARD</h3>
+        <div class="list">
+          <div class="row"><span class="title">Café Orleans</span><strong>5:00 PM</strong></div>
+          <div class="row"><span class="title">Oga’s Cantina</span><strong>1:30 PM</strong></div>
+        </div>
+        <a class="link" href="#"><span class="bullet">•</span> Mobile Ordering Tips</a>
+      </section>
+
+      <!-- Hotel Hub -->
+      <section class="card">
+        <h3>HOTEL HUB</h3>
+        <div class="list">
+          <div class="row"><span class="title">Disneyland Hotel</span><span>ℹ︎</span></div>
+          <div class="row"><span class="title">Grand Californian</span><span>ℹ︎</span></div>
+          <div class="row"><span class="title">Paradise Pier Hotel</span><span>ℹ︎</span></div>
+        </div>
+        <a class="link" href="#"><span class="bullet">•</span> View Info</a>
+      </section>
+
+      <!-- Weather & Outfits -->
+      <section class="card">
+        <h3>WEATHER &amp; OUTFITS</h3>
+        <div class="weather">
+          <div class="big">☀️ <span>77°F</span></div>
+          <div class="row"><span class="title">Outfit</span><span>T-Shirt & Shorts</span></div>
+        </div>
+        <a class="link" href="#"><span class="bullet">•</span> What to Pack</a>
+      </section>
+    </main>
+        <footer class="footer">
+      <p>Built with love by <span class="brand">You</span> • <small>Not affiliated with Disney.</small></p>
+    </footer>
+    </div>
+
+    <!-- Footer -->
+
+  </div>
+</body>
+</html>
