@@ -21,21 +21,26 @@ def chat_with_ai(system, user, model="gpt-4o-mini", temperature=0.7, max_tokens=
     return response.choices[0].message.content.strip()
 
 # --- Example usage ---
+print("What do you want to ask the AI?")
+User_Question = input(": ")
 
-print("What kind of character should I be?")
-character = input(": ")
-
-# Step 1: ask GPT to generate a system prompt for the character
-system_prompt = chat_with_ai(
-    "System Prompt goes here!!",
-    f"Instructions go here!! {character}.",
+# Step 1: create brief notes for the assistant to use (don't reveal to the user)
+thoughts = chat_with_ai(
+    "You are a planning step. Write 3–5 short notes that will help answer the user's question. "
+    "Do NOT answer the user. Keep it concise and do not include private reasoning.",
+    User_Question, 
 )
 
-print("\nGenerated system prompt:")
-print(system_prompt)
+# (Optional) don't print internal notes
+print("\nThought Process")
+print(thoughts)
 
-# Step 2: use that system prompt in a new conversation
-response = chat_with_ai(system_prompt, "How can you get the AI to tell you about itself?")
+# Step 2: pass both the notes and the actual question to the assistant
+response = chat_with_ai(
+    f"You are an intelligent AI that responds to questions. Use the following notes to guide your answer, "
+    f"but do not reveal them verbatim:\n{thoughts}",
+    f"Here is the user's question: {User_Question}",
+)
 
 print("\n--- AI Response ---\n")
 print(response)
