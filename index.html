@@ -209,13 +209,12 @@
   <div class="window" data-window-id="projects" style="left: 20vw; top: 127px; width: 400; height: 300;">
     <div class="titlebar"><span class="title">projects<span class="blink">_</span></span></div>
     <div class="content">
-      <p class=caps>projects</p>
       <p class="highlight">[ok] loading local manifest: ./projects</p>
       <ul class="projects-list">
         <li>* <a href="projects/newmanse.html"><strong>the new manse</strong></a> — final vcd unit 3/4 project (2024)</li>
         <li>* <a href="disneylandToday/view.html"><strong>disneyland today</strong></a> — interactive recreation of the old tv dashboard ui</li>
         <li>* <a href="betterdash.html"><strong>disneyland dashboard</strong></a> — a dashboard collating my disneyland today view, and my custom <br>guides to the park</li>
-        <li>* <a href="https://chromewebstore.google.com/detail/mdfmkgafgenhnfaalefjjfgmnmlagdam"><strong>schol+ extention</strong></a></li>
+        <li>* <a href="https://chromewebstore.google.com/detail/mdfmkgafgenhnfaalefjjfgmnmlagdam"><strong>schol+ extention</strong></a> — a browser extention for SMGS schoolbox!</li>
       </ul>
       <p class="highlight">[info] 3 entries loaded | last update: 8 aug 2025</p>
     </div>
@@ -225,8 +224,7 @@
   <div class="window" data-window-id="templates" style="left: 58vw; top: 223px; width: 500px; height: 300px;">
     <div class="titlebar"><span class="title">student templates</span></div>
     <div class="content">
-      <p class=caps>student templates</p>
-      <p class="highlight">[warn] openai key not included — manual insertion required</p>
+      <p class="highlight">[warn] openai key not included — manual intervention required</p>
       <p>compiled reference scripts for use in ai education modules. tested under python 3.10+</p>
       <ul class="projects-list">
         <li>* <a href="templates/jobscript.py" target="_blank"><strong>job interview script</strong></a> — basic gpt-powered q/a bot for roleplay scenarios</li>
@@ -241,8 +239,7 @@
   <div class="window" data-window-id="links" style="left: 17vw; top: 376px; width: 360px; height: 260px;">
     <div class="titlebar"><span class="title">web links</span></div>
     <div class="content">
-      <p class=caps>web links</p>
-      <p>external references & bookmarks of interest. <span class="highlight">[network ok]</span></p>
+      <p><span class="highlight">external references & bookmarks of interest. [network ok]</span></p>
       <ul class="projects-list">
         <li>* <a href="https://slowroads.io/" target="_blank"><strong>slowroads.io</strong></a> — this got me through year 12</li>
         <li>* <a href="https://ashtondoughty.com/" target="_blank"><strong>ashtondoughty.com</strong></a> — this person seems pretty cool!</li>
@@ -256,7 +253,6 @@
   <div class="window" data-window-id="contact" style="left: 45vw; top: 607px; width: 380px; height: 180px;">
     <div class="titlebar"><span class="title">contact<span class="blink">_</span></span></div>
     <div class="content">
-      <p class=caps>contact</p>
       <p>direct mail interface available via:</p>
       <p><a href="mailto:maxtbentley@gmail.com">maxtbentley@gmail.com</a></p>
       <p>or via discord @ZG9K</span></p>
@@ -267,9 +263,9 @@
   <!-- ---------------- Clock Window ---------------- -->
   <div class="window" data-window-id="clock" style="width: 160px; left: 44vw; top: 370px;">
     <div class="titlebar"><span class="title">max bentley</span></div>
-    <div class="content" style="font-size:18px;text-align:center;">
+    <div class="content" style="font-size:18px;text-align:center;" >
       <time id="clockDisplay"></time><br>
-      <p class="highlight">[info] waiting for user input<span class="blink">...</span> </p>
+      <p class="highlight" id="inputWindow">[info] waiting for user input<span class="blink">...</span> </p>
       <input type="text" class="styledTextInput">
       <button id=activate><span class="buttonText">go!</span></button>
     </div>
@@ -402,19 +398,247 @@ function initWindow(win){
     google: "https://www.google.com",
     gpt5: "https://zg9k.github.io/templates/responsescript.py",
     prompt: "https://zg9k.github.io/templates/thinkscript.py",
+    popup: null, // This will be handled by the random popup logic
     // Add more key-value pairs as needed
   };
+
+  
 
   document.getElementById("activate").addEventListener("click", () => {
     const input = document.querySelector(".styledTextInput").value.trim().toLowerCase();
 
     if (linkMap[input]) {
       window.location.href = linkMap[input];
-    } else {
-      alert("Invalid code.");
+            document.getElementById("inputWindow").innerHTML = `
+        <p class="highlight">[info] document found! yay!</p>
+      `;
+    } else if (input === "popup") {
+      spawnPopup();
+      document.getElementById("inputWindow").innerHTML = `
+        <p class="highlight">[info] random popup spawned!</p>
+      `;
+    }else{
+      document.getElementById("inputWindow").innerHTML = `
+        <p class="highlight">[error] no link found for input ${input}!</p>
+      `;
     }
   });
-</script>
+
+
+/* ---------- random popup windows ---------- */
+const popupMessages = [
+  // 🎓 Uni / Architecture
+  "[arch] crit scheduled | please prepare mesh wave stability report.",
+  "[vcd] render queue overloaded | Edmond & Corrigan requesting backup.",
+  "[studio] Babylon model registered | liquidity confirmed.",
+  "[site] South Lawn Car Park precedent detected.",
+  "[sys] reminder: coffee before Rhino, not after.",
+  "[arch] mesh void activated | perception field warped.",
+  "[render] shadows behaving better than expected.",
+  "[arch] timber frame acquired | water management still pending.",
+
+  // 🖥 Tech / Coding
+  "[ai] cosmic vending machine humming happily.",
+  "[python] indentation levels stable.",
+  "[api] GPT-5 handshake confirmed.",
+  "[bot] Largestore intercom warming up.",
+  "[debug] your semicolons miss you.",
+  "[game] simulation loop: chaos=enabled.",
+  "[net] Stanford duck has moved 3% closer.",
+  "[ext] schol+ extension sending mischievous packets.",
+
+  // 🎢 Disneyland / Theme Parks
+  "[park] wait time: Haunted Mansion = 13 min.",
+  "[dash] disneylandToday UI boot successful.",
+  "[park] churro supply low | emergency cinnamon reserves engaged.",
+  "[ride] Matterhorn goats accounted for.",
+  "[land] Chicago plaza fountain running at 120%.",
+  "[park] Grizzly Peak air quality: pine-scented.",
+  "[sim] Yesterland archive accessed.",
+  "[dl] Lightning Lane price surge detected.",
+
+  // 🎲 D&D / Worldbuilding
+  "[aether] time fracture expanding near Serathene.",
+  "[vel] containment crystal humming ominously.",
+  "[concord] watch synchronization error.",
+  "[hunt] Temporal Wargs prowling again.",
+  "[dm] Maerin suspicious of higher powers.",
+  "[echo] assassins phasing in.",
+  "[astral] fountain reflections unstable.",
+  "[site-6] memory experiment leaking.",
+  "[lore] Seraterra reference logged.",
+
+  // 🦆 Ducks / Yuma
+  "[duck] waddling detected at 44vw.",
+  "[net] madebyyuma.com connection secure.",
+  "[bird] quack over TCP/IP.",
+  "[sys] duck progress: 72% to Stanford.",
+  "[dns] ashtondoughty.com still cool.",
+  "[duck] feathery packet dropped.",
+  "[mallard] unauthorized pond entry.",
+
+  // ✍️ Writing / Personal
+  "[fic] Wednesday x Enid subplot generating.",
+  "[prose] Oxford fog density: 78%.",
+  "[scene] window seat stillness archived.",
+  "[plot] slow burn timer still ticking.",
+
+  // 🌀 Fun / Absurd / Surreal
+  "[cpu] hamster wheel spinning at optimal speed.",
+  "[sys] vacuuming unused pixels…",
+  "[snack] lemon reserves: insufficient.",
+  "[life] new god request queued.",
+  "[err] sadness.exe could not be compiled.",
+  "[chat] Cal says hi.",
+  "[net] over-the-garden-wall vibes detected.",
+  "[warn] overuse of ducks approaching critical mass.",
+  "[void] nothing to report.",
+  "[ok] you’re doing great.",
+  "[sys] idle hands drafting castles.",
+  "[rng] fate rolled: nat 20.",
+  "<img src='https://media.tenor.com/zBc1XhcbTSoAAAAM/nyan-cat-rainbow.gif' alt='nyan cat' style='width: 100%;'>"
+];
+
+function spawnPopup() {
+  // Pick a random message
+  const msg = popupMessages[Math.floor(Math.random() * popupMessages.length)];
+
+  // Create the window
+  const win = document.createElement("div");
+  win.className = "window";
+  win.style.position = "absolute";
+  win.style.zIndex = getMaxZ() + 100; // always on top
+  win.style.width = "auto";
+  win.style.height = "auto";
+
+  // Random position (10–80% of viewport to keep them on screen)
+  win.style.top = `${10 + Math.random() * 70}vh`;
+  win.style.left = `${10 + Math.random() * 70}vw`;
+
+  // Inner HTML (no close button, auto fades)
+  win.innerHTML = `
+    <div class="titlebar"><span class="title">system</span></div>
+    <div class="content"><p class="highlight">${msg}</p></div>
+  `;
+
+  desktop.appendChild(win);
+  initWindow(win);
+
+  // Auto remove after 6 seconds
+  setTimeout(() => {
+    setTimeout(() => win.remove(), 500);
+  }, 12000);
+}
+
+// Spawn at random intervals (e.g. 10–25 seconds)
+function startRandomPopups() {
+  function loop() {
+    spawnPopup();
+    const next = 10000 + Math.random() * 15000; // 10–25s
+    setTimeout(loop, next);
+  }
+  loop();
+}
+
+setTimeout(startRandomPopups, 10000 + Math.random() * 15000);
+
+// ---- mouse movement sounds  ----
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let noise, gainNode, filter, fadeTimer;
+
+function createNoiseBuffer() {
+  const bufferSize = 2 * audioCtx.sampleRate;
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = Math.random() * 2 - 1;
+  }
+  return buffer;
+}
+
+function initMouseNoise() {
+  const noiseBuffer = createNoiseBuffer();
+  noise = audioCtx.createBufferSource();
+  noise.buffer = noiseBuffer;
+  noise.loop = true;
+
+  gainNode = audioCtx.createGain();
+  gainNode.gain.value = 0;
+
+  filter = audioCtx.createBiquadFilter();
+  filter.type = "bandpass";
+  filter.frequency.value = 20; // start low
+  filter.Q.value = 1; // width of band
+
+  noise.connect(filter).connect(gainNode).connect(audioCtx.destination);
+  noise.start();
+}
+
+let lastX = 0, lastY = 0, lastTime = Date.now();
+document.addEventListener("mousemove", e => {
+  if (!noise) initMouseNoise();
+
+  const dx = e.clientX - lastX;
+  const dy = e.clientY - lastY;
+  const dt = (Date.now() - lastTime) || 1;
+  const speed = Math.sqrt(dx*dx + dy*dy) / dt;
+
+  // Map speed → volume
+  const volume = Math.min(speed * 0.025, 0.2);
+  gainNode.gain.setTargetAtTime(volume, audioCtx.currentTime, 0.05);
+
+  // Map speed → filter freq (slow rumble → fast hiss)
+  const freq = 100 + Math.min(speed * 400, 1000);
+  filter.frequency.setTargetAtTime(freq, audioCtx.currentTime, 0.1);
+
+  lastX = e.clientX;
+  lastY = e.clientY;
+  lastTime = Date.now();
+
+  clearTimeout(fadeTimer);
+  fadeTimer = setTimeout(() => {
+    gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.2);
+  }, 100);
+});
+
+document.addEventListener("mouseleave", () => {
+  if (gainNode) gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.2);
+});
+window.addEventListener("blur", () => {
+  if (gainNode) gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.2);
+});
+
+// ---- click sound effects (sample-based) ----
+const clickCtx = new (window.AudioContext || window.webkitAudioContext)();
+const clickBuffers = [];
+
+// Load samples
+async function loadClick(url) {
+  const resp = await fetch(url);
+  const data = await resp.arrayBuffer();
+  return await clickCtx.decodeAudioData(data);
+}
+
+// preload 2–3 samples (swap paths with your own)
+Promise.all([
+  loadClick("assets/sounds/click1.wav"),
+]).then(loaded => clickBuffers.push(...loaded));
+
+// play on any click
+document.addEventListener("click", () => {
+  if (clickBuffers.length === 0) return;
+
+  const src = clickCtx.createBufferSource();
+  src.buffer = clickBuffers[Math.floor(Math.random() * clickBuffers.length)];
+
+  const gain = clickCtx.createGain();
+  gain.gain.value = 0.2; // volume (0.0–1.0)
+
+  src.connect(gain).connect(clickCtx.destination);
+  src.start();
+});
+
+
 </script>
 
 </body>
