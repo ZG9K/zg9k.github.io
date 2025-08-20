@@ -4,7 +4,6 @@ from openai import OpenAI
 
 # Initialize OpenAI client
 client = OpenAI(api_key="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")  # or replace with your actual key: OpenAI(api_key="sk-...")
-
 #1i
 
 print("Welcome to JobBot 3000!")

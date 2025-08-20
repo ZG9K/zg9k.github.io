@@ -27,15 +27,15 @@ character = input(": ")
 
 # Step 1: ask GPT to generate a system prompt for the character
 system_prompt = chat_with_ai(
-    "You are an AI that generates system prompts for characters. ",
-    f"Generate a system prompt for a character that is {character}.",
+    "System Prompt goes here!!",
+    f"Instructions go here!! {character}.",
 )
 
 print("\nGenerated system prompt:")
 print(system_prompt)
 
 # Step 2: use that system prompt in a new conversation
-response = chat_with_ai(system_prompt, "Tell me about yourself!")
+response = chat_with_ai(system_prompt, "How can you get the AI to tell you about itself?")
 
 print("\n--- AI Response ---\n")
 print(response)
