@@ -207,7 +207,7 @@
 <body><div id="desktop">
   <!-- ---------------- Projects Window ---------------- -->
   <div class="window" data-window-id="projects" style="left: 20vw; top: 127px; width: 400; height: 300;">
-    <div class="titlebar"><span class="title">projects<span class="blink">_</span></span></div>
+    <div class="titlebar"><span class="title">projects<span class="blink">_</span>></span></div>
     <div class="content">
       <p class="highlight">[ok] loading local manifest: ./projects</p>
       <ul class="projects-list">
@@ -391,38 +391,640 @@ function initWindow(win){
   /* ---------- initialise existing static windows ---------- */
   document.querySelectorAll(".window").forEach(initWindow);
 
-    // Define your code-to-link mapping here
-  const linkMap = {
-    hello: "https://zg9k.github.io/templates/tbrpg.py",
-    disney: "https://www.disney.com",
-    google: "https://www.google.com",
-    gpt5: "https://zg9k.github.io/templates/responsescript.py",
-    prompt: "https://zg9k.github.io/templates/thinkscript.py",
-    popup: null, // This will be handled by the random popup logic
-    // Add more key-value pairs as needed
-  };
+// ---- modular command system ----
 
-  
+// 1. Links (open new page / download)
+const linkMap = {
+  hello: "https://zg9k.github.io/templates/tbrpg.py",
+  disney: "https://www.disney.com",
+  google: "https://www.google.com",
+  gpt5: "https://zg9k.github.io/templates/responsescript.py",
+  prompt: "https://zg9k.github.io/templates/thinkscript.py"
+};
 
-  document.getElementById("activate").addEventListener("click", () => {
-    const input = document.querySelector(".styledTextInput").value.trim().toLowerCase();
+const funcMap = {
+  popup: () => {
+    spawnPopup();
+    updateStatus("[info] random popup spawned!");
+  },
 
-    if (linkMap[input]) {
-      window.location.href = linkMap[input];
-            document.getElementById("inputWindow").innerHTML = `
-        <p class="highlight">[info] document found! yay!</p>
-      `;
-    } else if (input === "popup") {
-      spawnPopup();
-      document.getElementById("inputWindow").innerHTML = `
-        <p class="highlight">[info] random popup spawned!</p>
-      `;
-    }else{
-      document.getElementById("inputWindow").innerHTML = `
-        <p class="highlight">[error] no link found for input ${input}!</p>
-      `;
+  duck: () => {
+    const gif = document.createElement("img");
+    gif.src = "https://media.tenor.com/pTKDuhPtZIcAAAAi/onte-duck.gif";
+    gif.style.position = "fixed";
+    gif.style.bottom = "42px"; // above dock
+    gif.style.left = "-64px";
+    gif.style.height = "48px";
+    gif.style.zIndex = getMaxZ() + 200;
+    document.body.appendChild(gif);
+
+    let pos = -64;
+    const interval = setInterval(() => {
+      pos += 2;
+      gif.style.left = pos + "px";
+      if (pos > window.innerWidth) {
+        clearInterval(interval);
+        gif.remove();
+      }
+    }, 16);
+
+    updateStatus("[duck] moonwalking sequence engaged.");
+  },
+
+  whoami: () => {
+    createWindow({
+      title: "identity",
+      html: `<p class="highlight">[sys] you are not the user.</p>`,
+      x: 200, y: 200, w: 250, h: 100
+    });
+    updateStatus("[warn] identity mismatch logged.");
+  },
+
+  fortune: () => {
+    const fortunes = [
+      "A slow burn is still a fire.",
+      "You will find ducks in unexpected places.",
+      "Vel is watching, quietly.",
+      "Your project deadline is closer than it appears.",
+      "Love in the Margins wordcount overflow imminent.",
+      "The void is patient.",
+      "You are doing great, probably.",
+      "South Lawn Car Park precedent reloaded."
+    ];
+    const msg = fortunes[Math.floor(Math.random() * fortunes.length)];
+    createWindow({
+      title: "fortune",
+      html: `<p class="highlight">${msg}</p>`,
+      x: 150 + Math.random()*200, y: 150 + Math.random()*200, w: 300, h: 100
+    });
+    updateStatus("[ok] fortune delivered.");
+  },
+  theme: () => {
+    // Simple gradient cycle to avoid external images
+    const themes = [
+      "linear-gradient(135deg,#ffffff 0%,#e9e9e9 100%)",
+      "radial-gradient(1200px 800px at 20% 30%, #f7f7ff, #e6e6f9, #e0e0ff 70%)",
+      "linear-gradient(180deg,#0d0d0d,#1a1a1a)",
+      "linear-gradient(135deg,#fff6e5,#ffe1f0)"
+    ];
+    const choice = themes[Math.floor(Math.random()*themes.length)];
+    document.body.style.backgroundImage = choice;
+    updateStatus("[sys] wallpaper cycled.");
+  },
+
+  blue: () => {
+    createWindow({
+      title: "fatal error",
+      html: `<p style="color:#0000aa;font-family:geneva-9-1;">A problem has been detected and Windows has been shut down to prevent damage...<br><br>*** STOP: 0x000000D0</p>`,
+      x: 100, y: 100, w: 500, h: 250
+    });
+    updateStatus("[err] blue screen invoked.");
+  },
+
+  emma: () => {
+    createWindow({
+      title: "character dossier",
+      html: `<p class="highlight">[char] Emma Myers — bold, affectionate, and slightly late to class.</p>`,
+      x: 250, y: 150, w: 400, h: 120
+    });
+    updateStatus("[info] dossier retrieved.");
+  },
+
+  vel: () => {
+    createWindow({
+      title: "containment breach",
+      html: `<p class="highlight">[vel] containment unstable…</p>`,
+      x: 180, y: 180, w: 300, h: 100
+    });
+    const clock = document.getElementById("clockDisplay");
+    if (clock) {
+      const old = clock.textContent;
+      clock.textContent = "[error] time not found.";
+      setTimeout(() => { clock.textContent = old; }, 5000);
     }
+    updateStatus("[warn] temporal instability triggered.");
+  },
+
+  cal: () => {
+    createWindow({
+      title: "Cal",
+      html: `<p class="highlight">I’m already here.</p>`,
+      x: 220, y: 220, w: 200, h: 100
+    });
+    updateStatus("[chat] Cal acknowledged.");
+  },
+
+  // --- new inventive commands ---
+
+  // Shake all windows briefly like a tiny earthquake
+  quake: () => {
+    const wins = [...document.querySelectorAll(".window")];
+    wins.forEach(w => w.style.transition = "transform 0.05s");
+    let t = 0;
+    const id = setInterval(() => {
+      t++;
+      wins.forEach(w => {
+        w.style.transform = `translate(${(Math.random()-0.5)*6}px, ${(Math.random()-0.5)*6}px)`;
+      });
+      if (t > 20) {
+        clearInterval(id);
+        wins.forEach(w => w.style.transform = "");
+        updateStatus("[warn] minor quake resolved.");
+      }
+    }, 50);
+  },
+
+  // Toggle CRT scanline overlay
+  scan: () => {
+    let overlay = document.getElementById("scanlines");
+    if (overlay) {
+      overlay.remove();
+      updateStatus("[sys] scanlines disabled.");
+      return;
+    }
+    overlay = document.createElement("div");
+    overlay.id = "scanlines";
+    overlay.style.position = "fixed";
+    overlay.style.inset = "0";
+    overlay.style.pointerEvents = "none";
+    overlay.style.zIndex = getMaxZ() + 500;
+    overlay.style.background = "repeating-linear-gradient(transparent 0 2px, rgba(0,0,0,.08) 2px 4px)";
+    overlay.style.mixBlendMode = "multiply";
+    document.body.appendChild(overlay);
+    updateStatus("[sys] scanlines enabled.");
+  },
+
+  // Toggle full-page invert/hue-rotate for uncanny vibe
+  invert: () => {
+    const b = document.body;
+    const on = b.dataset.inverted === "1";
+    if (on) {
+      b.dataset.inverted = "";
+      b.style.filter = "";
+      updateStatus("[ok] color inversion cleared.");
+    } else {
+      b.dataset.inverted = "1";
+      b.style.filter = "invert(1) hue-rotate(180deg)";
+      updateStatus("[warn] color inversion active.");
+    }
+  },
+
+  // Quick visual "glitch" burst
+  glitch: () => {
+    const wins = [...document.querySelectorAll(".window")];
+    const jitter = () => wins.forEach(w => {
+      w.style.transform = `translate(${(Math.random()-0.5)*3}px, ${(Math.random()-0.5)*3}px)`;
+    });
+    wins.forEach(w => w.style.transition = "transform .03s");
+    const id = setInterval(jitter, 30);
+    document.body.style.transition = "filter .15s";
+    document.body.style.filter = "contrast(1.4) saturate(1.6) hue-rotate(20deg)";
+    setTimeout(() => {
+      clearInterval(id);
+      wins.forEach(w => w.style.transform = "");
+      document.body.style.filter = "";
+      updateStatus("[err] transient glitch contained.");
+    }, 450);
+  },
+
+  // Tiny paint app in a window (draw with mouse)
+  paint: () => {
+    const w = createWindow({
+      title: "paint.exe",
+      html: `
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;">
+          <button id="p_clear" type="button">clear</button>
+          <label>size <input id="p_size" type="range" min="1" max="16" value="3"></label>
+        </div>
+        <canvas id="p_canvas" width="360" height="220" style="background:#fff;border:1px solid #000;display:block;"></canvas>
+      `,
+      x: 120 + Math.random()*120, y: 120 + Math.random()*120, w: 400, h: 320
+    });
+    const c = w.querySelector("#p_canvas");
+    const g = c.getContext("2d");
+    let drawing = false, last = null;
+    const sizeEl = w.querySelector("#p_size");
+    g.lineCap = "round";
+    g.strokeStyle = "#000";
+    const drawTo = (x,y) => {
+      if (!last) last = {x,y};
+      g.lineWidth = +sizeEl.value;
+      g.beginPath(); g.moveTo(last.x,last.y); g.lineTo(x,y); g.stroke();
+      last = {x,y};
+    };
+    c.addEventListener("pointerdown", e => { drawing=true; last=null; drawTo(e.offsetX,e.offsetY); });
+    c.addEventListener("pointermove", e => { if (drawing) drawTo(e.offsetX,e.offsetY); });
+    window.addEventListener("pointerup", () => drawing=false);
+    w.querySelector("#p_clear").addEventListener("click", ()=> g.clearRect(0,0,c.width,c.height));
+    updateStatus("[ok] paint ready.");
+  },
+
+  // Two-system windows that appear near each other, like a whisper & reply
+  echo: () => {
+    const calls = [
+      "[echo] are you still there?",
+      "[sys] we can see you.",
+      "[void] something moved.",
+      "[arch] the mesh remembers."
+    ];
+    const replies = [
+      "[ok] confirmed.",
+      "[warn] unknown process acknowledged.",
+      "[log] silence observed.",
+      "[sys] carry on."
+    ];
+    const baseX = 60 + Math.random()*300;
+    const baseY = 80 + Math.random()*220;
+    const a = createWindow({ title: "system", html: `<p class="highlight">${calls[Math.floor(Math.random()*calls.length)]}</p>`, x: baseX, y: baseY, w: 260, h: 90 });
+    setTimeout(()=> {
+      createWindow({ title: "system", html: `<p class="highlight">${replies[Math.floor(Math.random()*replies.length)]}</p>`, x: baseX+40, y: baseY+60, w: 260, h: 90 });
+    }, 900);
+    updateStatus("[sys] echo exchange initiated.");
+  },
+
+  // Rain multiple ducks across the screen
+  ducks: () => {
+    const makeDuck = () => {
+      const d = document.createElement("img");
+      d.src = "https://media.tenor.com/pTKDuhPtZIcAAAAi/onte-duck.gif";
+      d.style.position = "fixed";
+      d.style.top = Math.round(10 + Math.random()*70) + "vh";
+      d.style.left = "-48px";
+      d.style.height = "36px";
+      d.style.zIndex = getMaxZ() + 200;
+      document.body.appendChild(d);
+      let x = -48, v = 1.5 + Math.random()*2.5;
+      const id = setInterval(() => {
+        x += v;
+        d.style.left = x + "px";
+        if (x > window.innerWidth) { clearInterval(id); d.remove(); }
+      }, 16);
+    };
+    const n = 5 + Math.floor(Math.random()*5);
+    for (let i=0;i<n;i++) setTimeout(makeDuck, i*200);
+    updateStatus(`[duck] ${n} ducks deployed.`);
+  },
+
+  // Dreamlike fog overlay toggle
+  dream: () => {
+    let fog = document.getElementById("fog-overlay");
+    if (fog) {
+      fog.remove();
+      updateStatus("[sys] dream layer cleared.");
+      return;
+    }
+    // inject keyframes once
+    if (!document.getElementById("fog-anim-style")) {
+      const st = document.createElement("style");
+      st.id = "fog-anim-style";
+      st.textContent = `
+        @keyframes fogPulse { 
+          0% { opacity: .06; transform: translate3d(0,0,0) scale(1); }
+          50% { opacity: .12; transform: translate3d(2%, -1%, 0) scale(1.04); }
+          100% { opacity: .08; transform: translate3d(-1%, 1%, 0) scale(1.02); }
+        }
+      `;
+      document.head.appendChild(st);
+    }
+    fog = document.createElement("div");
+    fog.id = "fog-overlay";
+    fog.style.position = "fixed";
+    fog.style.inset = "0";
+    fog.style.pointerEvents = "none";
+    fog.style.background = "radial-gradient(1200px 700px at 20% 30%, rgba(255,255,255,.2), transparent 60%), radial-gradient(900px 600px at 80% 70%, rgba(255,255,255,.15), transparent 60%)";
+    fog.style.filter = "blur(10px)";
+    fog.style.animation = "fogPulse 6s ease-in-out infinite";
+    fog.style.zIndex = getMaxZ() + 400;
+    document.body.appendChild(fog);
+    updateStatus("[sys] dream layer engaged.");
+  },
+
+  // Toggle low, eerie whisper ambience using filtered noise
+  whisper: () => {
+    if (!window.__whisperCtx) {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const bufferSize = 2 * ctx.sampleRate;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i=0;i<bufferSize;i++) data[i] = (Math.random()*2 - 1) * 0.6;
+      const src = ctx.createBufferSource(); src.buffer = buffer; src.loop = true;
+      const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 500;
+      const gain = ctx.createGain(); gain.gain.value = 0;
+      src.connect(lp).connect(gain).connect(ctx.destination);
+      src.start();
+      window.__whisperCtx = ctx;
+      window.__whisperGain = gain;
+    }
+    const g = window.__whisperGain;
+    const on = (g.gain.value > 0.001);
+    g.gain.setTargetAtTime(on ? 0 : 0.05, window.__whisperCtx.currentTime, 0.5);
+    updateStatus(on ? "[audio] whisper disabled." : "[audio] whisper enabled.");
+  },
+
+  help: () => {
+  createWindow({
+    title: "help",
+    html: `
+      <p class="highlight">[sys] command reference loaded.</p>
+      <p>Try typing one of the following commands into the input field below the clock:</p>
+      <ul class="projects-list">
+        <li>duck<span class="blink">_</span> — deploys a small duck across the screen</li>
+        <li>popup<span class="blink">_</span> — spawns a random system message</li>
+        <li>paint<span class="blink">_</span> — opens a basic drawing tool</li>
+        <li>fortune<span class="blink">_</span> — reveals a cryptic truth</li>
+        <li>invert<span class="blink">_</span> — toggles visual distortion</li>
+        <li>echo<span class="blink">_</span> — calls into the system; it may reply</li>
+        <li>commands<span class="blink">_</span> — displays a complete system command list</li>
+      </ul>
+      <p class="highlight">[note] not all commands are listed. some must be discovered.</p>
+    `,
+    x: 180, y: 160, w: 440, h: 280
   });
+  updateStatus("[sys] help window opened.");
+},
+commands: () => {
+  createWindow({
+    title: "commands.txt",
+    html: `
+      <p class="highlight">[error] file not found.</p>
+      <p>access to system-level command list is restricted.</p>
+      <p>try <strong>help</strong> instead.</p>
+    `,
+    x: 180, y: 180, w: 360, h: 140
+  });
+  updateStatus("[err] access denied to commands.txt");
+}
+};
+
+Object.assign(funcMap, {
+  // 1) Soft reboot (with boot overlay)
+  reboot: () => {
+    const overlay = document.createElement("div");
+    overlay.style.position = "fixed";
+    overlay.style.inset = "0";
+    overlay.style.background = "#000";
+    overlay.style.color = "#0f0";
+    overlay.style.fontFamily = "geneva-9-1";
+    overlay.style.display = "flex";
+    overlay.style.flexDirection = "column";
+    overlay.style.alignItems = "center";
+    overlay.style.justifyContent = "center";
+    overlay.style.zIndex = getMaxZ() + 9999;
+    overlay.innerHTML = `
+      <div style="text-align:center">
+        <div>[boot] initializing…</div>
+        <div>[sys] mounting /usr/desktop</div>
+        <div>[ok] user: bea</div>
+        <div>[ok] windows: ${document.querySelectorAll(".window").length}</div>
+        <div style="opacity:.8;margin-top:12px">rebooting…</div>
+      </div>`;
+    document.body.appendChild(overlay);
+    updateStatus("[sys] reboot starting…");
+    setTimeout(()=> location.reload(), 1500);
+  },
+
+  // 2) Gravity: drop then restore
+  gravity: () => {
+    const wins = [...document.querySelectorAll(".window")];
+    const H = window.innerHeight;
+    const saved = wins.map(w => ({
+      w,
+      left: w.style.left,
+      top:  w.style.top
+    }));
+    wins.forEach(w => w.style.transition = "top .6s cubic-bezier(.2,.8,.2,1)");
+    wins.forEach(w => {
+      const rect = w.getBoundingClientRect();
+      const maxTop = Math.max(0, H - rect.height - 50); // stop above dock
+      w.style.top = `${maxTop}px`;
+    });
+    updateStatus("[warn] gravity engaged.");
+    setTimeout(()=>{
+      wins.forEach((w,i)=> {
+        w.style.top = saved[i].top;
+      });
+      setTimeout(()=> wins.forEach(w=> w.style.transition=""), 700);
+      updateStatus("[ok] gravity restored.");
+    }, 2000);
+  },
+
+  // 3) Teleport: scatter & snap back
+  teleport: () => {
+    const wins = [...document.querySelectorAll(".window")];
+    const saved = wins.map(w => ({ w, left: w.style.left, top: w.style.top }));
+    wins.forEach(w => {
+      w.style.transition = "left .35s ease, top .35s ease";
+      w.style.left = `${10 + Math.random()*80}vw`;
+      w.style.top  = `${10 + Math.random()*70}vh`;
+      w.style.zIndex = getMaxZ()+1;
+    });
+    updateStatus("[sys] teleport scatter.");
+    setTimeout(()=>{
+      saved.forEach(s=>{
+        s.w.style.left = s.left;
+        s.w.style.top  = s.top;
+      });
+      setTimeout(()=> wins.forEach(w=> w.style.transition=""), 400);
+      updateStatus("[ok] teleport return.");
+    }, 1200);
+  },
+
+  // 4) Matrix: ASCII rain toggle
+  matrix: () => {
+    let cvs = document.getElementById("matrixRain");
+    if (cvs) { cvs.remove(); updateStatus("[sys] matrix cleared."); return; }
+    cvs = document.createElement("canvas");
+    cvs.id = "matrixRain";
+    cvs.style.position = "fixed";
+    cvs.style.inset = "0";
+    cvs.style.zIndex = getMaxZ() + 500;
+    cvs.style.pointerEvents = "none";
+    document.body.appendChild(cvs);
+
+    const ctx = cvs.getContext("2d");
+    const resize = () => { cvs.width = innerWidth; cvs.height = innerHeight; };
+    resize(); addEventListener("resize", resize);
+    const letters = "アカサタナハマヤラワ0123456789#@$%&*".split("");
+    const fontSize = 14;
+    let columns = Math.floor(cvs.width / fontSize);
+    let drops = Array(columns).fill(1);
+
+    let raf;
+    const draw = () => {
+      ctx.fillStyle = "rgba(0,0,0,0.08)";
+      ctx.fillRect(0, 0, cvs.width, cvs.height);
+      ctx.fillStyle = "#0f0";
+      ctx.font = `${fontSize}px geneva-9-1`;
+      for (let i = 0; i < drops.length; i++) {
+        const txt = letters[(Math.random()*letters.length)|0];
+        ctx.fillText(txt, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > cvs.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      }
+      raf = requestAnimationFrame(draw);
+    };
+    draw();
+    cvs.addEventListener("remove", ()=> cancelAnimationFrame(raf));
+    updateStatus("[sys] matrix engaged.");
+  },
+
+  // 5) Portal: circular inversion lens following cursor (toggle)
+  portal: () => {
+    let lens = document.getElementById("portalLens");
+    if (lens) { lens.remove(); updateStatus("[sys] portal closed."); return; }
+    lens = document.createElement("div");
+    lens.id = "portalLens";
+    lens.style.position = "fixed";
+    lens.style.width = "220px";
+    lens.style.height = "220px";
+    lens.style.borderRadius = "50%";
+    lens.style.pointerEvents = "none";
+    lens.style.mixBlendMode = "difference";
+    lens.style.backdropFilter = "invert(1) hue-rotate(180deg) saturate(1.2)";
+    lens.style.boxShadow = "0 0 0 2px #000, 0 0 30px rgba(0,0,0,.25) inset";
+    lens.style.zIndex = getMaxZ() + 600;
+    document.body.appendChild(lens);
+
+    const follow = e => {
+      lens.style.left = (e.clientX - 110) + "px";
+      lens.style.top  = (e.clientY - 110) + "px";
+    };
+    document.addEventListener("mousemove", follow);
+    lens.addEventListener("remove", ()=> document.removeEventListener("mousemove", follow));
+    updateStatus("[sys] portal opened.");
+  },
+
+  // 6) Void: drain color & soften audio (toggle)
+  void: () => {
+    const on = document.body.dataset.void === "1";
+    if (on) {
+      document.body.dataset.void = "";
+      document.body.style.filter = "";
+      if (window.__whisperGain) window.__whisperGain.gain.setTargetAtTime(0.05, window.__whisperCtx.currentTime, 0.5);
+      updateStatus("[ok] void receded.");
+    } else {
+      document.body.dataset.void = "1";
+      document.body.style.filter = "grayscale(1) contrast(1.2) brightness(0.9)";
+      if (window.__whisperGain) window.__whisperGain.gain.setTargetAtTime(0.02, window.__whisperCtx.currentTime, 0.5);
+      updateStatus("[warn] void encroaches.");
+    }
+  },
+
+  // 7) Midnight: dream fog + whisper + clock flicker
+  midnight: () => {
+    // engage dream overlay if not already
+    if (typeof funcMap.dream === "function") funcMap.dream();
+    // enable whisper ambience
+    if (typeof funcMap.whisper === "function") {
+      if (!window.__whisperCtx || (window.__whisperGain && window.__whisperGain.gain.value < 0.001)) funcMap.whisper();
+    }
+    // clock flicker
+    const clock = document.getElementById("clockDisplay");
+    const old = clock ? clock.textContent : "";
+    if (clock) {
+      clock.textContent = "[error] time not found.";
+      setTimeout(()=> clock.textContent = old, 5000);
+    }
+    updateStatus("[sys] midnight event.");
+    setTimeout(()=> {
+      // auto clear dream after 15s
+      const fog = document.getElementById("fog-overlay"); if (fog) fog.remove();
+      updateStatus("[ok] dawn approaching.");
+    }, 15000);
+  },
+
+  // 8) Echoes: ghost duplicates of windows
+  echoes: () => {
+    const wins = [...document.querySelectorAll(".window")];
+    wins.forEach(w => {
+      const ghost = w.cloneNode(false);
+      const r = w.getBoundingClientRect();
+      ghost.style.position = "fixed";
+      ghost.style.left = r.left + "px";
+      ghost.style.top  = r.top + "px";
+      ghost.style.width = r.width + "px";
+      ghost.style.height = r.height + "px";
+      ghost.style.opacity = "0.15";
+      ghost.style.filter = "blur(1px)";
+      ghost.style.pointerEvents = "none";
+      ghost.style.zIndex = getMaxZ() + 50;
+      document.body.appendChild(ghost);
+      setTimeout(()=> ghost.remove(), 1200);
+    });
+    updateStatus("[echo] traces detected.");
+  },
+
+  // 9) Archive: fake explorer with files that trigger real commands
+  archive: () => {
+    const files = [
+      { name: "vel.log", cmd: "vel" },
+      { name: "ducks.bin", cmd: "ducks" },
+      { name: "scan.cfg", cmd: "scan" },
+      { name: "glitch.dmp", cmd: "glitch" },
+      { name: "echo.msg", cmd: "echo" },
+      { name: "whisper.snd", cmd: "whisper" },
+      { name: "invert.fx", cmd: "invert" },
+      { name: "portal.dev", cmd: "portal" }
+    ];
+    const html = `
+      <p class="highlight">[dir] /usr/archive</p>
+      <ul class="projects-list">
+        ${files.map(f=>`<li>* <a href="#" data-cmd="${f.cmd}"><strong>${f.name}</strong></a></li>`).join("")}
+      </ul>
+      <p class="highlight">[note] some files may be corrupt.</p>
+    `;
+    const w = createWindow({ title: "archive", html, x: 160, y: 140, w: 360, h: 240 });
+    w.querySelectorAll("[data-cmd]").forEach(a => {
+      a.addEventListener("click", e => {
+        e.preventDefault();
+        const c = a.dataset.cmd;
+        if (funcMap[c]) funcMap[c]();
+      });
+    });
+    updateStatus("[sys] archive opened.");
+  },
+
+  // 10) Room: cosy mode
+  room: () => {
+    // warm gradient + vignette overlay
+    document.body.style.backgroundImage = "linear-gradient(135deg,#ffe7c6,#ffd0e3)";
+    let vig = document.getElementById("vignette");
+    if (!vig) {
+      vig = document.createElement("div");
+      vig.id = "vignette";
+      vig.style.position = "fixed";
+      vig.style.inset = "0";
+      vig.style.pointerEvents = "none";
+      vig.style.zIndex = getMaxZ() + 300;
+      vig.style.background = "radial-gradient(70% 60% at 50% 50%, transparent 60%, rgba(0,0,0,.25) 100%)";
+      document.body.appendChild(vig);
+    }
+    updateStatus("[ok] room: window seat stillness engaged.");
+    // auto fade vignette after 30s
+    setTimeout(()=> { if (vig) vig.remove(); }, 30000);
+  }
+});
+
+
+
+// helper to update status window
+function updateStatus(msg) {
+  document.getElementById("inputWindow").innerHTML = `<p class="highlight">${msg}</p>`;
+}
+
+// 3. Main handler
+document.getElementById("activate").addEventListener("click", () => {
+  const input = document.querySelector(".styledTextInput").value.trim().toLowerCase();
+
+  if (funcMap[input]) {
+    funcMap[input](); // run custom function
+  } else if (linkMap[input]) {
+    window.location.href = linkMap[input];
+    updateStatus("[info] document found! yay!");
+  } else {
+    updateStatus(`[error] nothing found for input!`);
+  }
+});
 
 
 /* ---------- random popup windows ---------- */
@@ -496,7 +1098,18 @@ const popupMessages = [
   "[ok] you’re doing great.",
   "[sys] idle hands drafting castles.",
   "[rng] fate rolled: nat 20.",
-  "<img src='https://media.tenor.com/zBc1XhcbTSoAAAAM/nyan-cat-rainbow.gif' alt='nyan cat' style='width: 100%;'>"
+  "<img src='https://media.tenor.com/zBc1XhcbTSoAAAAM/nyan-cat-rainbow.gif' alt='nyan cat' style='width: 100%;'>",
+
+  // hidden commands!
+  "[hint] try typing 'fortune'.",
+  "[hint] want to draw? try 'paint'.",
+  "[hint] type 'echo' and see who responds.",
+  "[cmd] try: dream, cal, whoami",
+  "[cmd] glitch. invert. quake. whisper.",
+  "[cmd] ask for ducks. plural.",
+  "[cmd] curious? type help.",
+  "[echo] the system listens. you can speak.",
+  "[sys] enable scan mode? try 'scan'."
 ];
 
 function spawnPopup() {
@@ -542,9 +1155,9 @@ function startRandomPopups() {
 
 setTimeout(startRandomPopups, 10000 + Math.random() * 15000);
 
-// ---- mouse movement sounds  ----
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-let noise, gainNode, filter, fadeTimer;
+// ---- mouse movement sounds ----
+let audioCtx, noise, gainNode, filter, fadeTimer;
+let mouseSoundReady = false;
 
 function createNoiseBuffer() {
   const bufferSize = 2 * audioCtx.sampleRate;
@@ -557,6 +1170,7 @@ function createNoiseBuffer() {
 }
 
 function initMouseNoise() {
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   const noiseBuffer = createNoiseBuffer();
   noise = audioCtx.createBufferSource();
   noise.buffer = noiseBuffer;
@@ -567,27 +1181,33 @@ function initMouseNoise() {
 
   filter = audioCtx.createBiquadFilter();
   filter.type = "bandpass";
-  filter.frequency.value = 20; // start low
-  filter.Q.value = 1; // width of band
+  filter.frequency.value = 20;
+  filter.Q.value = 1;
 
   noise.connect(filter).connect(gainNode).connect(audioCtx.destination);
   noise.start();
+
+  mouseSoundReady = true;
 }
 
+// Wait until first user click to enable sound
+window.addEventListener("click", () => {
+  if (!mouseSoundReady) initMouseNoise();
+}, { once: true });
+
+// ---- mouse move listener ----
 let lastX = 0, lastY = 0, lastTime = Date.now();
 document.addEventListener("mousemove", e => {
-  if (!noise) initMouseNoise();
+  if (!mouseSoundReady) return;
 
   const dx = e.clientX - lastX;
   const dy = e.clientY - lastY;
   const dt = (Date.now() - lastTime) || 1;
-  const speed = Math.sqrt(dx*dx + dy*dy) / dt;
+  const speed = Math.sqrt(dx * dx + dy * dy) / dt;
 
-  // Map speed → volume
   const volume = Math.min(speed * 0.025, 0.2);
   gainNode.gain.setTargetAtTime(volume, audioCtx.currentTime, 0.05);
 
-  // Map speed → filter freq (slow rumble → fast hiss)
   const freq = 100 + Math.min(speed * 400, 1000);
   filter.frequency.setTargetAtTime(freq, audioCtx.currentTime, 0.1);
 
@@ -600,6 +1220,7 @@ document.addEventListener("mousemove", e => {
     gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.2);
   }, 100);
 });
+
 
 document.addEventListener("mouseleave", () => {
   if (gainNode) gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.2);
@@ -638,8 +1259,28 @@ document.addEventListener("click", () => {
   src.start();
 });
 
+// ---- First-time visitor welcome ----
+if (!localStorage.getItem("desktopVisited")) {
+  localStorage.setItem("desktopVisited", "true");
+  createWindow({
+    title: "welcome",
+    html: `
+      <p class="highlight">Welcome, user.</p>
+      <p>You may type "<strong>help</strong>", or you may type something else.</p>
+      <br>
+      <p>Starter commands:</p>
+      <ul>
+        <li>duck— deploy the duck</li>
+        <li>popup — spawn a random system message</li>
+        <li>fortune — receive a cryptic truth</li>
+      </ul>
+    `,
+    x: 180, y: 160, w: 340, h: 200
+  });
+}
+
+
 
 </script>
-
 </body>
 </html>
