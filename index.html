@@ -206,7 +206,7 @@
 </head>
 <body><div id="desktop">
   <!-- ---------------- Projects Window ---------------- -->
-  <div class="window" data-window-id="projects" style="left: 20vw; top: 127px; width: 400; height: 300;">
+  <div class="window" data-window-id="projects" style="left: 20vw; top: 127px; width: 400px; height: 300;">
     <div class="titlebar"><span class="title">projects<span class="blink">_</span>></span></div>
     <div class="content">
       <p class="highlight">[ok] loading local manifest: ./projects</p>
@@ -391,7 +391,53 @@ function initWindow(win){
   /* ---------- initialise existing static windows ---------- */
   document.querySelectorAll(".window").forEach(initWindow);
 
-// ---- modular command system ----
+let journalWindow = null;
+
+// --- discovery storage helpers ---
+function getDiscoveredCommands() {
+  try {
+    return new Set(JSON.parse(localStorage.getItem("discoveredCommands") || "[]"));
+  } catch { return new Set(); }
+}
+function saveDiscoveredCommands(set) {
+  localStorage.setItem("discoveredCommands", JSON.stringify([...set]));
+}
+function registerDiscovery(cmd) {
+  const keys = Object.keys(HINTS);
+  if (!keys.includes(cmd)) return; // only track commands in HINTS
+
+  const found = getDiscoveredCommands();
+  if (!found.has(cmd)) {
+    found.add(cmd);
+    saveDiscoveredCommands(found);
+    updateJournal(); // refresh if Journal is open
+  }
+}
+
+function buildJournalHTML() {
+  const total = Object.keys(HINTS).length;
+  const found = getDiscoveredCommands();
+  const count = found.size;
+
+  const rows = Object.keys(HINTS).map(key => {
+    const hint = HINTS[key];
+    const name = found.has(key) ? key : "______ (unfound command)";
+    return `<p><strong>${name}</strong> ${hint}</p>`;
+  }).join("");
+
+  return `
+    <p class="highlight">[sys] commands discovered ${count}/${total}</p>
+    <p class="highlight">[log] commands loading...</p>
+    ${rows}
+  `;
+}
+
+function updateJournal() {
+  if (journalWindow) {
+    const content = buildJournalHTML();
+    journalWindow.querySelector(".window-content").innerHTML = content;
+  }
+}
 
 // 1. Links (open new page / download)
 const linkMap = {
@@ -429,7 +475,7 @@ const funcMap = {
       }
     }, 16);
 
-    updateStatus("[duck] moonwalking sequence engaged.");
+    updateStatus("[duck] normalwalking sequence engaged.");
   },
 
   whoami: () => {
@@ -776,8 +822,8 @@ Object.assign(funcMap, {
       <div style="text-align:center">
         <div>[boot] initializing…</div>
         <div>[sys] mounting /usr/desktop</div>
-        <div>[ok] user: bea</div>
-        <div>[ok] windows: ${document.querySelectorAll(".window").length}</div>
+        <div>[ok] user: ????</div>
+        <div>[ok] score: ${score}</div>
         <div style="opacity:.8;margin-top:12px">rebooting…</div>
       </div>`;
     document.body.appendChild(overlay);
@@ -1007,6 +1053,17 @@ Object.assign(funcMap, {
   }
 });
 
+const HINTS = { duck: "Something small waddles if you ask nicely.", ducks: "Where one waddles, many follow.", quake: "Double-click any titlebar… the ground trembles.", scan: "Old CRTs leave lines. Enable them.", invert: "Flip the world’s colors inside out.", glitch: "Errors can be invited, briefly.", paint: "Create first, then clear—try the tiny app.", echo: "Call; the system answers.", fortune: "The future fits in a small window.", whoami: "Identity is a sensitive topic.", emma: "Character dossier awaits.", vel: "Containment never lasts forever.", cal: "He’s already here.", echoes: "Ghosts of windows linger.", archive: "There’s an /usr/archive with odd files.", void: "Let the color drain away.", midnight: "When dream + whisper + time break coincide.", popup: "Noise appears at random—invite it on demand.", theme: "Cycle the wallpaper moods.", blue: "Cause a dramatic fake failure.", reboot: "Sometimes you must restart the whole thing.", gravity: "Time feels heavy near the clock.", teleport: "Scatter and snap back—windows know how.", matrix: "Green rain falls between characters.", portal: "Open a lens. Move your mouse through it.", room: "A cosy vignette. Window seat stillness." };
+
+funcMap.journal = () => {
+  const html = buildJournalHTML();
+  journalWindow = createWindow({
+    title: "JOURNAL",
+    html,
+    x: 160, y: 120, w: 520, h: 420
+  });
+  updateStatus("[ok] journal opened.");
+};
 
 
 // helper to update status window
@@ -1019,6 +1076,7 @@ document.getElementById("activate").addEventListener("click", () => {
   const input = document.querySelector(".styledTextInput").value.trim().toLowerCase();
 
   if (funcMap[input]) {
+    registerDiscovery(input);
     funcMap[input](); // run custom function
   } else if (linkMap[input]) {
     window.location.href = linkMap[input];
@@ -1276,6 +1334,30 @@ if (!localStorage.getItem("desktopVisited")) {
     x: 180, y: 160, w: 340, h: 200
   });
 }
+
+let keyClickBuf; let keyClickCtx;
+async function initKeyClicks(){
+  keyClickCtx = new (window.AudioContext||window.webkitAudioContext)();
+  const ab = await fetch("assets/sounds/click1.wav").then(r=>r.arrayBuffer());
+  keyClickBuf = await keyClickCtx.decodeAudioData(ab);
+}
+window.addEventListener("click", ()=>{ if(!keyClickCtx) initKeyClicks(); }, { once:true });
+
+document.addEventListener("keydown", () => {
+  if (!keyClickBuf) return;
+  const src = keyClickCtx.createBufferSource();
+  src.buffer = keyClickBuf;
+  src.playbackRate.value = 0.9 + Math.random()*0.3;
+  const gain = keyClickCtx.createGain(); gain.gain.value = 0.15;
+  src.connect(gain).connect(keyClickCtx.destination); src.start();
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault(); // stop accidental form submission
+    document.getElementById("activate").click();
+  }
+});
 
 </script>
 </body>
