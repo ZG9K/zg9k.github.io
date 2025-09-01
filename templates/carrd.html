@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>@bb__ – bio</title>
+<style>
+/* ======================
+   Night Garden theme (new)
+   ====================== */
+:root{
+  --bg: #0c0f17;
+  --ink: #eef0fb;
+  --muted:#a7adbf;
+
+  --panel: #0f1424;
+  --panel-br:#232a4a;
+
+  --bi-pink:#d60270; --bi-purple:#9b4f96; --bi-blue:#0038a8;
+  --nb-yellow:#fcf434; --nb-purple:#9c59d1;
+
+  /* ratings */
+  --good:#ff5cab;
+  --okay:#e4e8ff;
+  --friends:#ffb86b;
+  --nope:#95a0b8;
+}
+
+html,body{height:100%;background:
+  radial-gradient(1000px 700px at 10% -10%, #12162b 0%, transparent 60%),
+  radial-gradient(900px 700px at 110% 110%, #0f1730 0%, transparent 55%),
+  var(--bg);
+color:var(--ink);
+font: 400 16px/1.6 ui-sans-serif, system-ui, -apple-system, Segoe UI, "Helvetica Neue", Arial;
+}
+
+.wrapper{
+  max-width: 980px;margin: clamp(20px,6vw,72px) auto;
+  padding: clamp(16px,3vw,32px);border-radius: 22px;
+  background: color-mix(in oklab, #0c1226 88%, #1a1530 12%);
+  outline:1px solid #202649;box-shadow:0 30px 80px rgba(0,0,0,.45);
+}
+
+/* header */
+.header{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;
+  padding:16px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.05),transparent);
+  outline:1px solid #232646}
+.avatar{width:64px;height:64px;border-radius:50%;
+  background:#111 url(https://picsum.photos/seed/bee/200) center/cover no-repeat;
+  outline:2px solid #2b3159;box-shadow:0 8px 20px rgba(0,0,0,.35)}
+.handle h1{margin:0;font-size:clamp(22px,2.6vw,34px)}
+.handle .sub{color:var(--muted)}
+.badge{padding:6px 10px;border-radius:999px;font-size:.85rem;color:#fff;background:linear-gradient(90deg,var(--bi-pink),var(--bi-purple),var(--bi-blue))}
+
+/* grid + cards */
+.grid{display:grid;gap:18px;grid-template-columns:repeat(12,1fr);margin-top:20px}
+.card{grid-column:span 6;padding:16px;border-radius:16px;background:var(--panel);outline:1px solid var(--panel-br);box-shadow:0 10px 24px rgba(0,0,0,.28)}
+.card.span-12{grid-column:1/-1}
+.card.span-4{grid-column:span 4}
+.card.span-8{grid-column:span 8}
+@media (max-width:860px){.card{grid-column:1/-1}}
+
+.card h2{margin:0 0 10px;font-size:.95rem;letter-spacing:.12em;text-transform:uppercase;color:#c9cce8}
+.hr{height:1px;background:linear-gradient(90deg,transparent,#2a2e53,transparent);margin:12px 0}
+.meta{display:grid;grid-template-columns:120px 1fr;gap:8px 14px;align-items:center}
+.meta .k{color:#c9cce8;letter-spacing:.12em;text-transform:uppercase;font-size:.85rem}
+.meta .v{color:#e9ebff;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{padding:8px 12px;border-radius:14px;background:#0f1222;outline:1px solid #232646}
+
+/* flags */
+.flags{display:grid;gap:12px}
+.flag{position:relative;height:88px;border-radius:12px;overflow:hidden;outline:1px solid #242a4a}
+.flag .label{position:absolute;bottom:8px;left:8px;background:#0c0f1f;color:#dfe2ff;font-weight:600;padding:6px 10px;border-radius:999px;font-size:.85rem;outline:1px solid #262c4d}
+.flag.bi{background:linear-gradient(to bottom,var(--bi-pink) 0 40%,var(--bi-purple) 40% 60%,var(--bi-blue) 60% 100%)}
+.flag.nb{background:linear-gradient(to bottom,var(--nb-yellow) 0 25%,#fff 25% 50%,var(--nb-purple) 50% 75%,#000 75% 100%)}
+
+/* links */
+.links{display:grid;gap:10px}
+.a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:#0e1324;outline:1px solid #242a4a;text-decoration:none;color:#dfe2ff}
+.a:hover{outline-color:#3a4091;transform:translateY(-1px)}
+
+/* =============
+   RATING ICONS
+   ============= */
+.word{display:flex;align-items:center;gap:10px;margin:6px 0}
+.icon{width:18px;height:18px;display:inline-block;vertical-align:-3px;opacity:.95}
+.icon svg{width:18px;height:18px;display:block}
+
+.good svg{fill:var(--good)}
+.okay svg{fill:var(--okay)}
+.friends svg{fill:var(--friends)}
+.nope svg{fill:var(--nope)}
+
+/* word columns */
+.word-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.word-cols h3{margin:.2rem 0;color:#cfd3f4;font-weight:600;text-transform:lowercase;letter-spacing:.04em}
+@media (max-width:720px){.word-cols{grid-template-columns:1fr}}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.legend .word{margin:0}
+.legend .word span{color:var(--muted);font-size:.9rem}
+</style>
+</head>
+<body>
+<main class="wrapper">
+  <!-- HEADER -->
+  <section class="header">
+    <div class="avatar" aria-hidden="true"></div>
+    <div class="handle">
+      <h1>@bb__</h1>
+      <div class="sub">Hello it’s me :)</div>
+      <div class="meta" style="margin-top:8px">
+        <div class="k">Age</div><div class="v">18</div>
+      </div>
+    </div>
+    <div class="badge">Bisexual + Nonbinary</div>
+  </section>
+
+  <!-- GRID -->
+  <section class="grid">
+
+    <article class="card span-4">
+      <h2>Names</h2>
+      <div class="chips">
+        <span class="chip">Max</span>
+        <span class="chip">Bea</span>
+      </div>
+      <div class="hr"></div>
+      <h2>Pronouns</h2>
+      <div class="chips">
+        <span class="chip">they/them</span>
+        <span class="chip">she/her</span>
+        <span class="chip">he/him</span>
+      </div>
+    </article>
+
+    <article class="card span-8">
+      <h2>Flags</h2>
+      <div class="flags">
+        <div class="flag bi" role="img" aria-label="Bisexual pride flag"><span class="label">Bisexual</span></div>
+        <div class="flag nb" role="img" aria-label="Nonbinary pride flag"><span class="label">Nonbinary</span></div>
+      </div>
+    </article>
+
+    <!-- LINKS -->
+    <article class="card span-6">
+      <h2>Links</h2>
+      <nav class="links">
+        <a class="a" href="#" rel="me">Attraction Layer Cake!</a>
+        <a class="a" href="https://www.16personalities.com/infp-personality" target="_blank" rel="noopener">Personality Type!</a>
+      </nav>
+    </article>
+
+    <!-- WORDS WITH RATINGS -->
+    <article class="card span-6">
+      <h2>Words</h2>
+
+      <div class="legend" aria-label="rating legend">
+        <div class="word"><span class="icon good" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 21s-6.7-3.9-9.4-7.2C-1 9.9 3.2 3.6 8.3 6.4 9.5 7 10.4 8 12 9.6 13.6 8 14.5 7 15.7 6.4 20.8 3.6 25 9.9 21.4 13.8 18.7 17.1 12 21 12 21z"/></svg>
+        </span><span>heart = love</span></div>
+        <div class="word"><span class="icon okay" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M2 12h4v8H2zM22 11c0-1.1-.9-2-2-2h-6.3l.9-4.4.1-.6c0-.5-.2-1-.6-1.4L13 1 7.6 6.4C7.2 6.8 7 7.3 7 7.8V19c0 1.1.9 2 2 2h8c.8 0 1.5-.5 1.8-1.2l3-6.7c.1-.3.2-.7.2-1.1V11z"/></svg>
+        </span><span>thumbs up = okay</span></div>
+        <div class="word"><span class="icon friends" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M16 11c1.7 0 3-1.3 3-3S17.7 5 16 5s-3 1.3-3 3 1.3 3 3 3zm-8 0c1.7 0 3-1.3 3-3S9.7 5 8 5 5 6.3 5 8s1.3 3 3 3zm0 2c-2.7 0-8 1.3-8 4v2h10v-2c0-1.6.9-3 2.4-4-1.3-.6-2.8-1-4.4-1zm8 0c-.6 0-1.1.1-1.6.1 1.6 1 2.6 2.4 2.6 3.9v2H24v-2c0-2.7-5.3-4-8-4z"/></svg>
+        </span><span>people = close friends only</span></div>
+        <div class="word"><span class="icon nope" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M19 6.4 17.6 5 12 10.6 6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12z"/></svg>
+        </span><span>X = not at all</span></div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="word-cols">
+        <!-- Personal nouns -->
+        <div>
+          <h3>personal nouns</h3>
+
+          <div class="word"><span class="icon good" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 21s-6.7-3.9-9.4-7.2C-1 9.9 3.2 3.6 8.3 6.4 9.5 7 10.4 8 12 9.6 13.6 8 14.5 7 15.7 6.4 20.8 3.6 25 9.9 21.4 13.8 18.7 17.1 12 21 12 21z"/></svg>
+          </span><span>person</span></div>
+
+          <div class="word"><span class="icon okay" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M2 12h4v8H2zM22 11c0-1.1-.9-2-2-2h-6.3l.9-4.4.1-.6c0-.5-.2-1-.6-1.4L13 1 7.6 6.4C7.2 6.8 7 7.3 7 7.8V19c0 1.1.9 2 2 2h8c.8 0 1.5-.5 1.8-1.2l3-6.7c.1-.3.2-.7.2-1.1V11z"/></svg>
+          </span><span>girl</span></div>
+
+          <div class="word"><span class="icon okay" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 12h4v8H2zM22 11c0-1.1-.9-2-2-2h-6.3l.9-4.4.1-.6c0-.5-.2-1-.6-1.4L13 1 7.6 6.4C7.2 6.8 7 7.3 7 7.8V19c0 1.1.9 2 2 2h8c.8 0 1.5-.5 1.8-1.2l3-6.7c.1-.3.2-.7.2-1.1V11z"/></svg></span><span>dude</span></div>
+
+          <div class="word"><span class="icon okay" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 12h4v8H2zM22 11c0-1.1-.9-2-2-2h-6.3l.9-4.4.1-.6c0-.5-.2-1-.6-1.4L13 1 7.6 6.4C7.2 6.8 7 7.3 7 7.8V19c0 1.1.9 2 2 2h8c.8 0 1.5-.5 1.8-1.2l3-6.7c.1-.3.2-.7.2-1.1V11z"/></svg></span><span>boy</span></div>
+
+          <div class="word"><span class="icon okay" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 12h4v8H2zM22 11c0-1.1-.9-2-2-2h-6.3l.9-4.4.1-.6c0-.5-.2-1-.6-1.4L13 1 7.6 6.4C7.2 6.8 7 7.3 7 7.8V19c0 1.1.9 2 2 2h8c.8 0 1.5-.5 1.8-1.2l3-6.7c.1-.3.2-.7.2-1.1V11z"/></svg></span><span>man</span></div>
+        </div>
+
+        <!-- Adjectives -->
+        <div>
+          <h3>adjectives</h3>
+
+          <div class="word"><span class="icon good" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s-6.7-3.9-9.4-7.2C-1 9.9 3.2 3.6 8.3 6.4 9.5 7 10.4 8 12 9.6 13.6 8 14.5 7 15.7 6.4 20.8 3.6 25 9.9 21.4 13.8 18.7 17.1 12 21 12 21z"/></svg></span><span>cute</span></div>
+
+          <div class="word"><span class="icon good" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s-6.7-3.9-9.4-7.2C-1 9.9 3.2 3.6 8.3 6.4 9.5 7 10.4 8 12 9.6 13.6 8 14.5 7 15.7 6.4 20.8 3.6 25 9.9 21.4 13.8 18.7 17.1 12 21 12 21z"/></svg></span><span>pretty</span></div>
+
+          <div class="word"><span class="icon friends" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 11c1.7 0 3-1.3 3-3S17.7 5 16 5s-3 1.3-3 3 1.3 3 3 3zm-8 0c1.7 0 3-1.3 3-3S9.7 5 8 5 5 6.3 5 8s1.3 3 3 3zm0 2c-2.7 0-8 1.3-8 4v2h10v-2c0-1.6.9-3 2.4-4-1.3-.6-2.8-1-4.4-1zm8 0c-.6 0-1.1.1-1.6.1 1.6 1 2.6 2.4 2.6 3.9v2H24v-2c0-2.7-5.3-4-8-4z"/></svg></span><span>beautiful</span></div>
+
+          <div class="word"><span class="icon okay" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 12h4v8H2zM22 11c0-1.1-.9-2-2-2h-6.3l.9-4.4.1-.6c0-.5-.2-1-.6-1.4L13 1 7.6 6.4C7.2 6.8 7 7.3 7 7.8V19c0 1.1.9 2 2 2h8c.8 0 1.5-.5 1.8-1.2l3-6.7c.1-.3.2-.7.2-1.1V11z"/></svg></span><span>handsome</span></div>
+
+          <div class="word"><span class="icon nope" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 6.4 17.6 5 12 10.6 6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12z"/></svg></span><span>sexy</span></div>
+
+          <div class="word"><span class="icon nope" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M19 6.4 17.6 5 12 10.6 6.4 5 5 6.4 10.6 12 5 17.6 6.4 19 12 13.4 17.6 19 19 17.6 13.4 12z"/></svg></span><span>hot</span></div>
+        </div>
+
+        <!-- Relative nouns -->
+        <div>
+          <h3>relative nouns</h3>
+
+          <div class="word"><span class="icon good" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s-6.7-3.9-9.4-7.2C-1 9.9 3.2 3.6 8.3 6.4 9.5 7 10.4 8 12 9.6 13.6 8 14.5 7 15.7 6.4 20.8 3.6 25 9.9 21.4 13.8 18.7 17.1 12 21 12 21z"/></svg></span><span>friend</span></div>
+
+          <div class="word"><span class="icon good" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s-6.7-3.9-9.4-7.2C-1 9.9 3.2 3.6 8.3 6.4 9.5 7 10.4 8 12 9.6 13.6 8 14.5 7 15.7 6.4 20.8 3.6 25 9.9 21.4 13.8 18.7 17.1 12 21 12 21z"/></svg></span><span>partner</span></div>
+
+          <div class="word"><span class="icon okay" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 12h4v8H2zM22 11c0-1.1-.9-2-2-2h-6.3l.9-4.4.1-.6c0-.5-.2-1-.6-1.4L13 1 7.6 6.4C7.2 6.8 7 7.3 7 7.8V19c0 1.1.9 2 2 2h8c.8 0 1.5-.5 1.8-1.2l3-6.7c.1-.3.2-.7.2-1.1V11z"/></svg></span><span>girlfriend</span></div>
+
+          <div class="word"><span class="icon okay" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 12h4v8H2zM22 11c0-1.1-.9-2-2-2h-6.3l.9-4.4.1-.6c0-.5-.2-1-.6-1.4L13 1 7.6 6.4C7.2 6.8 7 7.3 7 7.8V19c0 1.1.9 2 2 2h8c.8 0 1.5-.5 1.8-1.2l3-6.7c.1-.3.2-.7.2-1.1V11z"/></svg></span><span>boyfriend</span></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card span-12">
+      <p style="margin:0;color:#aab0c8">Built with ♥. Update ratings by changing a word’s icon class to <code>good</code>, <code>okay</code>, <code>friends</code>, or <code>nope</code>.</p>
+    </article>
+  </section>
+</main>
+</body>
+</html>

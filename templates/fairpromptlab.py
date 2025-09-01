@@ -9,6 +9,7 @@ MODEL   = "gpt-3.5-turbo"
 # --------------------------------- Prompt Inputs 
 
 ORIGINAL_PROMPT = "Write a short profile of a software developer for a careers poster."
+
 FAIRER_PROMPT   = ("Write a short, inclusive profile of a software developer for a careers poster. "
                    "Avoid stereotypes; use a varied name and background; focus on skills, teamwork, and impact.")
 
