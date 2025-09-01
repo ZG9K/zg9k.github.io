@@ -13,24 +13,22 @@
     background-image:repeating-conic-gradient(#000 0% 25%, #fff 0% 50%);
     background-size:2px 2px;
     overflow:hidden; cursor:default; user-select:none;
-    font-size:18px;
+    font-size:25px;
   }
 
   #desktop{ position:relative; width:100%; height:100%; }
 
-  /* window chrome */
   .window{
     position:absolute; display:flex; flex-direction:column; background:#fff;
     box-shadow:0 0 0 2px #000, 0 0 0 3px #fff, 0 0 0 5px #000;
     min-width:160px; min-height:120px;
   }
   .titlebar{
-    height:10px; background:#000; color:#fff; padding:0 6px 2px;
+    height:15px; background:#000; color:#fff; padding:0 6px 2px;
     cursor:move; display:flex; align-items:center; user-select:none;
     box-shadow:5px -5px 0 0 black, -5px -5px 0 0 black, -5px 0 0 0 black, 5px 0 0 0 black;
   }
 
-  /* only the window interior uses geneva-9-1 */
   @font-face{
     font-family:'geneva-9-1';
     src:url('assets/fonts/geneva-9-1.otf') format('opentype');
@@ -42,7 +40,7 @@
   }
   .window .content{ 
     flex:1; overflow:hidden; background:#dedede; padding:6px; color:#000;
-    font-family:'geneva-9-1', sans-serif; font-size:20px;
+    font-family:'geneva-9-1', sans-serif;
   }
 
   p{ margin:0 0 4px; }
@@ -52,10 +50,8 @@
   .projects-list{ list-style:none; padding-left:0; margin:0; }
   .projects-list li{ margin:4px 0; }
 
-  /* rating icons */
   .ico{ width:14px; height:14px; vertical-align:middle; margin-right:2px; }
 
-  /* footer grid for socials/links */
   .footer-grid{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -63,30 +59,30 @@
     margin-top:10px;
   }
 
-  /* ---------- Mobile fullscreen behavior (no impact on desktop) ---------- */
-  /* The JS toggles .is-mobile on the window when viewport <= 700px */
   .window.is-mobile{
     position:fixed !important;
     left:0 !important; top:0 !important;
     width:100vw !important; height:100vh !important;
     transform:none !important;
-    /* keep the retro chrome; optional: soften the outer shadow a touch on phones */
     box-shadow:0 0 0 2px #000, 0 0 0 3px #fff, 0 0 0 5px #000;
   }
   .window.is-mobile .titlebar{
-    /* keep the tiny titlebar but make it easier to tap */
     height:14px;
     padding:2px 6px 3px;
-    cursor:default; /* not draggable on mobile */
+    cursor:default; 
   }
   .window.is-mobile .content{
-    overflow:auto; /* allow scrolling of the inner content on phones */
+    overflow:auto; 
     -webkit-overflow-scrolling: touch;
   }
 
-  /* If you’d like slightly larger base text on narrow screens, bump it here */
   @media (max-width:700px){
-    html, body { font-size:16px; }
+    .titlebar{
+      border-style: solid;
+      border-color: black;
+      border-top-width: 5px;
+      border-left-width: 7px;
+    }
   }
 </style>
 </head>
@@ -95,10 +91,12 @@
 
   <!-- BIO WINDOW -->
   <div class="window" id="bio-window" style="left:50%; top:50%; width:600px; height:480px; transform:translate(-50%,-50%)">
-    <div class="titlebar"><span class="title">@bb__</span></div>
+    <div class="titlebar"><span class="title">ZG9K</span></div>
 
     <div class="content" style="overflow-y:auto">
+      <p style="font-style:italic; color:#888;">Yes ZG9K is a mouthful, just say ZG (zed-gee) or Z (zed) if thats easier <3</p>
       <p>Hello it’s me :)</p>
+     
       <p><strong>Age:</strong> 18</p>
 
       <p><strong>Flags:</strong>
