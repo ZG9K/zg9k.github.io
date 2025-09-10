@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Card Simulator</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<style>
+  :root{
+    --bg:#fff;
+    --ink:#111827;
+    --muted:#6b7280;
+    --shadow: 0 22px 55px -20px rgba(0,0,0,.35), 0 12px 28px -12px rgba(0,0,0,.18);
+    --radius:18px;
+    --card-w:min(88vw,680px);
+    --card-h:clamp(360px,70vh,760px);
+    --btn-bg:#111827;
+    --btn-ink:#fff;
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font:500 16px/1.55 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+    display:grid; place-items:center;
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .stage{
+    position:relative; width:100%; height:100%;
+    display:grid; place-items:center;
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  /* Controls: two circles, top-right */
+  .controls{
+    position:fixed;
+    top:calc(env(safe-area-inset-top,0px) + 16px);
+    right:calc(env(safe-area-inset-right,0px) + 16px);
+    display:grid; gap:12px; padding:4px;
+  }
+  .controls button{
+    appearance:none; border:0; outline:none; cursor:pointer;
+    width:54px; height:54px; border-radius:999px;
+    background:var(--btn-bg); color:var(--btn-ink);
+    display:grid; place-items:center;
+    box-shadow:var(--shadow);
+    font-weight:800;
+    transition:transform .15s ease;
+    position:relative;
+  }
+  .controls button:active{ transform:scale(.96) }
+
+  .badge{
+    position:absolute; bottom:-4px; right:-4px;
+    min-width:22px; height:22px; padding:0 6px;
+    border-radius:999px;
+    background:#ef4444; color:#fff; font-size:12px; font-weight:800;
+    display:grid; place-items:center;
+    box-shadow:0 6px 16px rgba(239,68,68,.45);
+  }
+
+  /* Deck layers */
+  .deck{
+    position:relative;
+    width:var(--card-w); height:var(--card-h);
+    display:grid; place-items:center;
+  }
+  .cards,
+  .fx{
+    position:absolute; inset:0;
+  }
+  .fx{ pointer-events:none; } /* overlay for animations */
+
+  /* Card */
+  .card{
+    position:absolute; inset:0; margin:auto;
+    width:var(--card-w); height:var(--card-h);
+    background:#fff; /* fully opaque */
+    color:var(--ink);
+    border-radius:var(--radius);
+    border:1px solid rgba(0,0,0,.08);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    display:grid; grid-template-rows:1fr auto;
+    transform-origin:50% 80%;
+    touch-action:manipulation;
+    user-select:none;
+    z-index:1;
+  }
+
+  .card-content{
+    padding:clamp(20px,3.2vmax,36px);
+    display:grid; align-content:start; gap:clamp(10px,1.6vmax,16px);
+  }
+  .title{
+    font-size:clamp(22px,3.6vmax,40px);
+    line-height:1.15; letter-spacing:-.01em; font-weight:800;
+  }
+  .body{
+    font-size:clamp(15px,2.1vmax,18px);
+    color:var(--muted); max-width:65ch;
+  }
+  .colorbar{ width:100%; height:16px; background:#000; }
+
+  /* Subtle, fully-opaque stack preview */
+  .card[data-depth="1"]{ transform:translateY(10px) scale(.992) rotate(-.25deg); }
+  .card[data-depth="2"]{ transform:translateY(20px) scale(.986) rotate(.35deg); }
+
+  /* Empty */
+  .empty{
+    position:absolute; inset:0;
+    display:grid; place-items:center;
+    border:2px dashed rgba(0,0,0,.1);
+    border-radius:var(--radius);
+    color:var(--muted); text-align:center; padding:24px;
+  }
+</style>
+</head>
+<body>
+  <div class="stage" id="stage" aria-live="polite">
+    <div class="deck" role="region" aria-label="Card deck">
+      <div class="cards" id="cards"></div>
+      <div class="fx" id="fx"></div>
+    </div>
+
+    <div class="controls" aria-label="Controls">
+      <button id="shuffleBtn" title="Shuffle" aria-label="Shuffle">⇄</button>
+      <button id="resetBtn" title="Reset deck" aria-label="Reset deck">
+        ↺
+        <span class="badge" id="removedBadge">0</span>
+      </button>
+    </div>
+  </div>
+
+<script>
+  /* ===================== EDIT YOUR CARDS HERE ===================== */
+  const DECK_SOURCE = [
+    { title:"Welcome", body:"Tap/click the card, or press Space/Enter/→ to advance. Shuffle mixes the remaining cards. Reset restores the original deck.", color:"#4F46E5" },
+    { title:"Design", body:"Plain white, fully opaque cards with shadows. The bottom bar uses the card’s hex.", color:"#10B981" },
+    { title:"Mobile", body:"Feels great in webview and on desktop. No see-through glitches while animating.", color:"#F59E0B" },
+    { title:"Tip", body:"Edit the DECK_SOURCE array in this file to add/change cards.", color:"#EF4444" },
+    { title:"Have fun", body:"Swap text, colors, and tweak motion values to taste.", color:"#8B5CF6" },
+  ];
+  /* ================================================================ */
+
+  // State
+  let original = structuredClone(DECK_SOURCE);
+  let stack = structuredClone(DECK_SOURCE);
+  let removedCount = 0;
+  let isAnimating = false;
+
+  // DOM
+  const cardsEl = document.getElementById("cards");
+  const fxEl = document.getElementById("fx");
+  const shuffleBtn = document.getElementById("shuffleBtn");
+  const resetBtn = document.getElementById("resetBtn");
+  const removedBadge = document.getElementById("removedBadge");
+
+  function updateBadge(){
+    removedBadge.textContent = String(removedCount);
+    resetBtn.title = `Reset deck (${removedCount} removed)`;
+    resetBtn.setAttribute("aria-label", resetBtn.title);
+  }
+
+  function clearCards(){
+    while(cardsEl.firstChild) cardsEl.removeChild(cardsEl.firstChild);
+  }
+
+  function makeCard(card, depth=0, asTop=false){
+    const el = document.createElement("article");
+    el.className = "card";
+    if(depth>0) el.dataset.depth = depth;
+    if(asTop) el.dataset.top = "true";
+    el.setAttribute("role","button");
+    el.tabIndex = 0;
+    el.setAttribute("aria-label", `${card.title}. Tap to go to next card.`);
+
+    const inner = document.createElement("div");
+    inner.className = "card-content";
+
+    const h = document.createElement("h2");
+    h.className = "title"; h.textContent = card.title;
+
+    const p = document.createElement("p");
+    p.className = "body"; p.textContent = card.body;
+
+    const bar = document.createElement("div");
+    bar.className = "colorbar"; bar.style.background = card.color || "#000";
+
+    inner.append(h,p);
+    el.append(inner, bar);
+
+    if(asTop){
+      const go = () => advance(el);
+      el.addEventListener("click", go, { passive:true });
+      el.addEventListener("keydown", (e)=>{
+        if(e.key === "Enter" || e.key === " "){
+          e.preventDefault(); go();
+        }
+      });
+    }
+    return el;
+  }
+
+  function render(){
+    clearCards();
+    if(stack.length === 0){
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.innerHTML = "<div><strong>No cards left.</strong><br/>Tap Reset to restore the deck.</div>";
+      cardsEl.appendChild(empty);
+      updateBadge();
+      return;
+    }
+    const top = stack[0], next = stack[1], third = stack[2];
+    cardsEl.appendChild(makeCard(top, 0, true));
+    if(next)  cardsEl.appendChild(makeCard(next, 1, false));
+    if(third) cardsEl.appendChild(makeCard(third, 2, false));
+    updateBadge();
+  }
+
+  function shuffle(){
+    if(isAnimating || stack.length <= 1) return;
+    for(let i = stack.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [stack[i], stack[j]] = [stack[j], stack[i]];
+    }
+    render();
+  }
+
+  function reset(){
+    if(isAnimating) return;
+    stack = structuredClone(original);
+    removedCount = 0;
+    render();
+  }
+
+  function getTopEl(){
+    return cardsEl.querySelector('.card[data-top="true"]');
+  }
+
+  // Robust advance: build a non-interactive ghost in the FX overlay,
+  // render the new stack underneath, then animate the ghost out.
+  function advance(topEl){
+    if(isAnimating || stack.length === 0) return;
+    isAnimating = true;
+
+    const current = stack[0];
+
+    // Remove interactive top immediately
+    topEl.remove();
+
+    // Update state
+    stack.shift();
+    removedCount++;
+
+    // Paint next stack underneath
+    render();
+
+    // Build ghost (no listeners), add to FX overlay
+    const ghost = makeCard(current, 0, false);
+    ghost.style.zIndex = 9;
+    ghost.style.pointerEvents = "none"; // never intercept clicks
+    fxEl.appendChild(ghost);
+
+    // Motion
+    const dir = Math.random() > 0.5 ? 1 : -1;
+    const rotate = (6 + Math.random()*8) * dir;
+    const x = cardsEl.clientWidth * 0.9 * dir;
+    const y = -cardsEl.clientHeight * 0.10;
+
+    const anim = ghost.animate(
+      [
+        { transform: 'translate3d(0,0,0) rotate(0deg) scale(1)' },
+        { transform: `translate3d(${x*0.5}px, ${y*0.2}px, 0) rotate(${rotate*0.5}deg) scale(1.02)`, offset: 0.45 },
+        { transform: `translate3d(${x}px, ${y}px, 0) rotate(${rotate}deg) scale(.98)` }
+      ],
+      { duration: 520, easing: 'cubic-bezier(.2,.8,.25,1)' }
+    );
+
+    anim.onfinish = () => { ghost.remove(); isAnimating = false; };
+  }
+
+  // Controls
+  shuffleBtn.addEventListener("click", shuffle);
+  resetBtn.addEventListener("click", reset);
+
+  // Global keyboard: Space / Enter / ArrowRight to advance (or reset when empty)
+  document.addEventListener("keydown", (e)=>{
+    const tag = (e.target && e.target.tagName || "").toLowerCase();
+    if(tag === "input" || tag === "textarea" || (e.target && e.target.isContentEditable)) return;
+
+    const isSpace = e.code === "Space" || e.key === " " || e.key === "Spacebar";
+    const isEnter = e.key === "Enter";
+    const isRight = e.key === "ArrowRight";
+
+    if(isSpace || isEnter || isRight){
+      e.preventDefault();
+      const topEl = getTopEl();
+      if(topEl) advance(topEl); else reset();
+    }
+  });
+
+// Tap/click ANYWHERE on the screen to advance (ignores control buttons)
+document.addEventListener('pointerup', (e) => {
+  // ignore right/middle clicks
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+  // don’t trigger if you hit the Shuffle/Reset buttons
+  if (e.target.closest('.controls')) return;
+
+  const topEl = document.querySelector('#cards .card[data-top="true"]');
+  if (topEl) {
+    advance(topEl);
+  } else {
+    // If no cards left, tapping resets the deck
+    reset();
+  }
+}, { passive: true });
+  // Initial render
+  render();
+</script>
+</body>
+</html>
