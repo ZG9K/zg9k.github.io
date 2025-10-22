@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Globe Flight — Follow‑Cam</title>
+  <link rel="preconnect" href="https://unpkg.com"/>
+  <style>
+    :root{
+      --bg:#0a0b10;--fg:#e7ecf3;--muted:#9aa6b2;--acc:#61e1ff;--red:#ff5d73;--green:#7dffa8;--glass:rgba(13,15,24,.62);
+      --pill:#121624;--pill-br:#20263a;--shadow:0 10px 30px rgba(0,0,0,.4);
+    }
+    html,body{height:100%;}
+    body{margin:0;background:radial-gradient(1200px 800px at 70% -10%,#121728 0%,#0a0b10 60%);color:var(--fg);font-family:system-ui,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;overflow:hidden}
+    canvas{display:block}
+
+    /* Glassy setup modal */
+    .overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+    .backdrop{position:absolute;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+    .modal{position:relative;max-width:720px;width:min(92vw,760px);border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.12);box-shadow:var(--shadow);padding:22px 22px 18px;pointer-events:auto}
+    .modal h1{margin:0 0 12px;font-weight:700;letter-spacing:.2px;font-size:20px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .field{display:flex;flex-direction:column;gap:6px}
+    label{font-size:12px;color:var(--muted);letter-spacing:.3px}
+    input[type="text"], input[type="search"], select{background:#0e1220;border:1px solid #1a2138;color:var(--fg);border-radius:12px;padding:12px 12px;font-weight:600;letter-spacing:.3px;outline:none}
+    input[type="text"]:focus{border-color:#2a365e;box-shadow:0 0 0 3px rgba(97,225,255,.12)}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .btn{appearance:none;border:none;border-radius:12px;background:#182036;color:#e8f1ff;font-weight:700;letter-spacing:.4px;padding:12px 14px;cursor:pointer;transition:.2s transform,.2s background}
+    .btn:hover{transform:translateY(-1px);background:#1c2743}
+    .btn.secondary{background:#0e1220;border:1px solid #1b233d}
+    .btn.danger{background:#3a1620}
+    .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    .stat{background:#0e1220;border:1px dashed #1a2034;padding:10px;border-radius:12px;font-variant-numeric:tabular-nums}
+    .slider{display:flex;flex:1;align-items:center;gap:10px;background:#0e1220;border:1px solid #1a2034;padding:10px;border-radius:12px}
+    input[type=range]{flex:1}
+    .hint{color:var(--muted);font-size:12px;margin-top:6px}
+
+    /* HUD */
+    .hud{position:fixed;inset:0;pointer-events:none}
+    .hud .pill{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);background:var(--pill);border:1px solid var(--pill-br);border-radius:999px;padding:10px 14px;font-weight:700;font-variant-numeric:tabular-nums;box-shadow:var(--shadow)}
+    .hud .corner{position:absolute;top:16px}
+    .hud .corner.btnwrap{pointer-events:auto}
+    .hud .tl{left:16px}
+    .hud .tr{right:16px}
+    .hud .br{right:16px;bottom:20px;top:auto}
+    .iconbtn{appearance:none;border:none;background:rgba(20,24,38,.8);border:1px solid rgba(255,255,255,.1);color:#dfe8ff;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow)}
+    .iconbtn:focus{outline:2px solid rgba(97,225,255,.5)}
+    .lbl{color:var(--muted);font-weight:600}
+
+    /* Toast */
+    .toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:#1a2033;border:1px solid #2b3557;border-radius:12px;padding:8px 12px;display:none;align-items:center;gap:10px;box-shadow:var(--shadow)}
+    .toast.show{display:flex}
+
+    /* Accessibility helpers */
+    .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      .backdrop{backdrop-filter:none;-webkit-backdrop-filter:none}
+      .btn:hover{transform:none}
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <div class="overlay" id="setupOverlay" aria-hidden="false">
+    <div class="backdrop" aria-hidden="true"></div>
+    <section class="modal" role="dialog" aria-labelledby="title" aria-describedby="desc">
+      <h1 id="title">Globe Flight</h1>
+      <p id="desc" class="hint">Follow‑cam over a dark Earth. Plane stays center‑locked; camera rides behind it. Enter two airports or <em>lat,lon</em>. Keyboard: <strong>Enter</strong> Start, <strong>S</strong> Swap.</p>
+      <div class="grid" style="margin-top:8px">
+        <div class="field">
+          <label for="from">From</label>
+          <input id="from" list="iata" inputmode="text" autocomplete="off" placeholder="MEL or -37.67,144.84" aria-label="From airport code or latitude,longitude" />
+        </div>
+        <div class="field">
+          <label for="to">To</label>
+          <input id="to" list="iata" inputmode="text" autocomplete="off" placeholder="LAX or 33.94,-118.41" aria-label="To airport code or latitude,longitude" />
+        </div>
+        <datalist id="iata"></datalist>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <div class="slider" aria-label="Time scale">
+          <span class="lbl">Time scale</span>
+          <input id="scale" type="range" min="0.25" max="40" step="0.25" value="1" aria-valuemin="0.25" aria-valuemax="40" aria-valuenow="1" aria-label="Simulation time scale"/>
+          <output id="scaleOut">1×</output>
+        </div>
+        <button class="btn" id="startBtn" aria-label="Start flight">Start</button>
+        <button class="btn secondary" id="swapBtn" aria-label="Swap origin and destination">Swap</button>
+        <button class="btn secondary" id="randBtn" aria-label="Random route">Random</button>
+        <button class="btn secondary" id="resetBtn" aria-label="Reset inputs and state">Reset</button>
+      </div>
+
+      <div class="stats" aria-live="polite" style="margin-top:8px">
+        <div class="stat"><div class="lbl">Distance</div><div id="statDist">—</div></div>
+        <div class="stat"><div class="lbl">Total at 1×</div><div id="statTime">—</div></div>
+      </div>
+      <p class="hint" id="etaHint">ETA local: —</p>
+      <p class="hint">Units: <span id="unitsLbl">km</span>. Press <kbd>U</kbd> to toggle.</p>
+      <p class="hint" id="err" role="status" aria-live="assertive" style="color:#ff98aa"></p>
+    </section>
+  </div>
+
+  <div class="hud" aria-hidden="true" id="hud">
+    <div class="corner tl btnwrap"><button class="iconbtn" id="exitBtn" aria-label="Exit to setup" title="Exit (Esc or X)">✕</button></div>
+    <div class="corner tr btnwrap"><button class="iconbtn" id="pauseBtn" aria-label="Pause or resume" title="Pause / Play (Space)">⏯</button></div>
+    <div class="pill" id="timerPill" aria-live="polite">00:00 / 00:00 • 1×</div>
+    <div class="corner br"><div id="routeLbl" class="lbl">—</div></div>
+  </div>
+
+  <div class="toast" id="audioToast" role="status" aria-live="polite">
+    <span>Audio blocked. Click to enable.</span>
+    <button class="btn" id="enableAudioBtn" aria-label="Enable audio">Enable sound</button>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+    import { OBJLoader } from 'https://unpkg.com/three@0.160.0/examples/jsm/loaders/OBJLoader.js';
+
+      window.THREE = THREE;
+
+    // ---------- Constants & Utilities ----------
+    const W = window;
+    const EARTH_RADIUS_KM = 6371.0;
+    const CRUISE_KMH = 900;
+    const KM_PER_NM = 1.852;
+
+    // Scene scale
+    const R = 80;                         // visual Earth radius
+    const PLANE_CAM_DIST = 30;            // plane in front of camera
+    const EARTH_Z_OFFSET = PLANE_CAM_DIST + 0; // push globe farther than plane
+    const ALT_ABOVE = 1.0;                // apparent altitude above surface
+    const BULGE = 0.6;                    // route arc bulge
+    const CAMERA_HEIGHT = 15; // configurable vertical offset above plane
+    const CAMERA_TILT_DEG = 25; // configurable tilt angle in degrees (downward)
+
+    const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const clamp = (x,min,max)=>Math.max(min,Math.min(max,x));
+    const lerp = (a,b,t)=>a+(b-a)*t;
+    const toRad = d=>d*Math.PI/180;
+    const toDeg = r=>r*180/Math.PI;
+
+    const qs = s=>document.querySelector(s);
+
+    function fmtHMS(sec){
+      sec = Math.max(0, sec|0);
+      const h = Math.floor(sec/3600).toString().padStart(2,'0');
+      const m = Math.floor((sec%3600)/60).toString().padStart(2,'0');
+      const s = Math.floor(sec%60).toString().padStart(2,'0');
+      return `${h}:${m}:${s}`;
+    }
+
+    function fmtDist(km, units){
+      if(units==='nm') return `${(km/KM_PER_NM).toFixed(0)} nm`;
+      return `${km.toFixed(0)} km`;
+    }
+
+    function fmtDurHours(hours){
+      const totalSec = Math.round(hours*3600);
+      return fmtHMS(totalSec);
+    }
+
+    function approxLocalDate(utcDate, lonDeg){
+      // crude timezone offset by longitude
+      let offHours = clamp(Math.round(lonDeg/15), -12, 14);
+      const ms = offHours*3600*1000;
+      return new Date(utcDate.getTime()+ms);
+    }
+
+    // ---------- Airport dictionary (20–40+) ----------
+    const AIRPORTS = {
+      MEL:{name:'Melbourne', lat:-37.6733, lon:144.8433}, SYD:{name:'Sydney', lat:-33.9461, lon:151.1772}, BNE:{name:'Brisbane', lat:-27.3842, lon:153.1175}, ADL:{name:'Adelaide', lat:-34.9450, lon:138.5306}, PER:{name:'Perth', lat:-31.9403, lon:115.9672},
+      AKL:{name:'Auckland', lat:-37.0081, lon:174.7917}, CHC:{name:'Christchurch', lat:-43.4894, lon:172.5322}, WLG:{name:'Wellington', lat:-41.3272, lon:174.8053},
+      LAX:{name:'Los Angeles', lat:33.9416, lon:-118.4085}, SFO:{name:'San Francisco', lat:37.6213, lon:-122.3790}, SEA:{name:'Seattle', lat:47.4502, lon:-122.3088}, JFK:{name:'New York JFK', lat:40.6413, lon:-73.7781}, EWR:{name:'Newark', lat:40.6895, lon:-74.1745}, BOS:{name: 'Boston', lat:42.3656, lon:-71.0096}, MIA:{name:'Miami', lat:25.7959, lon:-80.2870}, ORD:{name:'Chicago O\'Hare', lat:41.9742, lon:-87.9073}, DFW:{name:'Dallas/Fort Worth', lat:32.8998, lon:-97.0403}, IAH:{name:'Houston', lat:29.9902, lon:-95.3368}, DEN:{name:'Denver', lat:39.8561, lon:-104.6737}, LAS:{name:'Las Vegas', lat:36.0840, lon:-115.1537}, HNL:{name:'Honolulu', lat:21.3245, lon:-157.9251},
+      YVR:{name:'Vancouver', lat:49.1951, lon:-123.1779}, YYZ:{name:'Toronto', lat:43.6777, lon:-79.6248},
+      LHR:{name:'London Heathrow', lat:51.4700, lon:-0.4543}, LGW:{name:'London Gatwick', lat:51.1537, lon:-0.1821}, CDG:{name:'Paris CDG', lat:49.0097, lon:2.5479}, AMS:{name:'Amsterdam', lat:52.3105, lon:4.7683}, FRA:{name:'Frankfurt', lat:50.0379, lon:8.5622}, MUC:{name:'Munich', lat:48.3538, lon:11.7861}, MAD:{name:'Madrid', lat:40.4719, lon:-3.5626}, BCN:{name:'Barcelona', lat:41.2974, lon:2.0833}, FCO:{name:'Rome FCO', lat:41.8003, lon:12.2389},
+      DOH:{name:'Doha', lat:25.2731, lon:51.6081}, DXB:{name:'Dubai', lat:25.2532, lon:55.3657},
+      HND:{name:'Tokyo Haneda', lat:35.5494, lon:139.7798}, NRT:{name:'Tokyo Narita', lat:35.7720, lon:140.3929}, ICN:{name:'Seoul ICN', lat:37.4602, lon:126.4407}, SIN:{name:'Singapore', lat:1.3644, lon:103.9915}, KUL:{name:'Kuala Lumpur', lat:2.7456, lon:101.7090}, BKK:{name:'Bangkok', lat:13.6900, lon:100.7501}, HKG:{name:'Hong Kong', lat:22.3080, lon:113.9185}, DEL:{name:'Delhi', lat:28.5562, lon:77.1000}, BOM:{name:'Mumbai', lat:19.0896, lon:72.8656},
+      JNB:{name:'Johannesburg', lat:-26.1367, lon:28.2410}, CPT:{name:'Cape Town', lat:-33.9715, lon:18.6021}, CAI:{name:'Cairo', lat:30.1219, lon:31.4056},
+      SCL:{name:'Santiago', lat:-33.3929, lon:-70.7858}, GRU:{name:'Sao Paulo', lat:-23.4356, lon:-46.4731}
+    };
+
+    // Fill datalist
+    (function(){
+      const dl = qs('#iata');
+      dl.innerHTML = Object.entries(AIRPORTS).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('');
+    })();
+
+    // ---------- Geodesy / Math ----------
+    function llToVec(latDeg, lonDeg){
+      const lat=toRad(latDeg), lon=toRad(lonDeg);
+      const x = Math.cos(lat)*Math.cos(lon);
+      const y = Math.sin(lat);
+      const z = Math.cos(lat)*Math.sin(lon);
+      return new THREE.Vector3(x,y,z).normalize();
+    }
+
+    function arcDistanceKm(u,v){
+      const d = clamp(u.dot(v), -1, 1);
+      const ang = Math.acos(d);
+      return EARTH_RADIUS_KM * ang;
+    }
+
+    function slerpVec(u,v,t){
+      let d = clamp(u.dot(v), -1, 1);
+      if(d>0.9995){ // nearly same
+        return new THREE.Vector3().copy(u).lerp(v,t).normalize();
+      }
+      if(d<-0.9995){ // antipodal; pick any orthogonal axis
+        const ortho = Math.abs(u.x) < 0.1 ? new THREE.Vector3(1,0,0) : new THREE.Vector3(0,1,0);
+        const axis = new THREE.Vector3().crossVectors(u, ortho).normalize();
+        const q = new THREE.Quaternion().setFromAxisAngle(axis, Math.PI*t);
+        return new THREE.Vector3().copy(u).applyQuaternion(q).normalize();
+      }
+      const ang = Math.acos(d);
+      const s = Math.sin(ang);
+      const a = Math.sin((1-t)*ang)/s;
+      const b = Math.sin(t*ang)/s;
+      return new THREE.Vector3(
+        u.x*a + v.x*b,
+        u.y*a + v.y*b,
+        u.z*a + v.z*b,
+      ).normalize();
+    }
+
+    function basisFromPtTan(p, t){
+      // p,t are normalized and perpendicular-ish (t tangent on sphere at p)
+      const fwd = new THREE.Vector3().copy(t).normalize();
+      const up  = new THREE.Vector3().copy(p).normalize();
+      const right = new THREE.Vector3().crossVectors(fwd, up).normalize();
+      // Re-orthogonalize up
+      up.copy(new THREE.Vector3().crossVectors(right, fwd)).normalize();
+      return {right, up, fwd};
+    }
+
+    function matrixFromBasis({right,up,fwd}){
+      // Camera forward is -Z, so world basis columns are [right, up, -fwd]
+      const m = new THREE.Matrix4();
+      m.set(
+        right.x, up.x, -fwd.x, 0,
+        right.y, up.y, -fwd.y, 0,
+        right.z, up.z, -fwd.z, 0,
+        0,        0,     0,    1
+      );
+      return m; // maps camera->world; inverse maps world->camera
+    }
+
+    // ---------- Parse inputs ----------
+    function parsePoint(str){
+      if(!str) return null;
+      str=str.trim().toUpperCase();
+      if(AIRPORTS[str]){ const {lat,lon}=AIRPORTS[str]; return { code:str, lat, lon } }
+      // lat,lon
+      const m = str.match(/^\s*(-?\d{1,3}(?:\.\d+)?)\s*,\s*(-?\d{1,3}(?:\.\d+)?)\s*$/);
+      if(m){
+        const lat = clamp(parseFloat(m[1]), -90, 90);
+        let lon = parseFloat(m[2]);
+        while(lon>180) lon-=360; while(lon<-180) lon+=360;
+        return { code:null, lat, lon };
+      }
+      return null;
+    }
+
+    // ---------- Three.js setup ----------
+    const renderer = new THREE.WebGLRenderer({antialias:true, alpha:false});
+    renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setClearColor(0x06070c, 1);
+    document.body.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+
+    // Starfield backdrop (inside-out sphere)
+    const starsGeo = new THREE.SphereGeometry(300, 32, 32);
+    const starsMat = new THREE.MeshBasicMaterial({
+      map: new THREE.TextureLoader().load('https://unpkg.com/three-globe/example/img/night-sky.png'),
+      side: THREE.BackSide,
+      transparent:true, opacity: prefersReduced ? 0.2 : 0.5
+    });
+    const stars = new THREE.Mesh(starsGeo, starsMat);
+    scene.add(stars);
+
+    // Camera rig: keep camera fixed; plane sits in front of it
+    // Camera setup: slightly raised and looking down at the plane
+    const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 2000);
+    camera.position.set(0, CAMERA_HEIGHT, 0);
+    camera.rotation.x = -THREE.MathUtils.degToRad(CAMERA_TILT_DEG);
+    const camRig = new THREE.Object3D();
+    camRig.add(camera);
+    scene.add(camRig);
+
+
+    // ... (keep all your existing code above)
+
+    // Plane placeholder (can be swapped with OBJ model)
+    const planeGroup = new THREE.Group();
+    scene.add(planeGroup);
+
+    // Default primitive plane (box + cone) for fallback
+    function buildPrimitivePlane(){
+      const g = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.BoxGeometry(2.4,0.5,5), new THREE.MeshStandardMaterial({color:0xbfd8ff, metalness:.2, roughness:.4}));
+      const nose = new THREE.Mesh(new THREE.ConeGeometry(0.6,1.4,24), new THREE.MeshStandardMaterial({color:0xbfd8ff, metalness:.2, roughness:.4}));
+      nose.rotation.x = Math.PI/2; nose.position.z = -3.2;
+      body.position.z = -2.0;
+      const wing = new THREE.Mesh(new THREE.BoxGeometry(6,0.1,1.1), new THREE.MeshStandardMaterial({color:0x9fb8ff, metalness:.1, roughness:.5}));
+      wing.position.set(0,0.1,-2.0);
+      const tail = new THREE.Mesh(new THREE.BoxGeometry(1.4,0.15,0.9), new THREE.MeshStandardMaterial({color:0x9fb8ff, metalness:.1, roughness:.5}));
+      tail.position.set(0,0.2,0.3);
+      g.add(body,nose,wing,tail);
+      return g;
+    }
+
+    let planeModel = buildPrimitivePlane();
+    planeModel.position.set(0,0,-30);
+    planeGroup.add(planeModel);
+
+    // Function to load an external OBJ plane
+    function loadPlaneModel(url){
+      const loader = new OBJLoader();
+      loader.load(url, obj => {
+        // Remove existing
+        planeGroup.clear();
+        planeModel = obj;
+        planeModel.traverse(c=>{
+          if(c.isMesh){
+            c.material = new THREE.MeshStandardMaterial({color:0xbfd8ff, metalness:.3, roughness:.4});
+          }
+        });
+        planeModel.scale.set(0.05,0.05,0.05); // adjust depending on model size
+        planeModel.position.set(0,0,-30);
+        planeGroup.add(planeModel);
+      },
+      undefined,
+      err=>{
+        console.error('Failed to load OBJ plane',err);
+      });
+    }
+
+    loadPlaneModel('plane.obj');
+
+    // Lighting
+    const hemi = new THREE.HemisphereLight(0x8bb1ff, 0x0b0c13, 0.8);
+    scene.add(hemi);
+    const dir = new THREE.DirectionalLight(0xffffff, .8);
+    dir.position.set(-2,1,1);
+    scene.add(dir);
+
+    // Earth + route group (rotated each frame)
+    const world = new THREE.Group();
+    scene.add(world);
+
+    const earthMat = new THREE.MeshPhongMaterial({
+      map: new THREE.TextureLoader().load('https://unpkg.com/three-globe/example/img/earth-night.jpg'),
+      specular: 0x111111, shininess: 5
+    });
+    const earth = new THREE.Mesh(new THREE.SphereGeometry(R, 96, 96), earthMat);
+    world.add(earth);
+
+    // Route objects
+    const routeMat = new THREE.LineBasicMaterial({color:0x61e1ff, transparent:true, opacity:.9});
+    const routeGeom = new THREE.BufferGeometry();
+    const routeLine = new THREE.Line(routeGeom, routeMat);
+    world.add(routeLine);
+
+    const pinMatStart = new THREE.MeshBasicMaterial({color:0x7dffa8});
+    const pinMatEnd   = new THREE.MeshBasicMaterial({color:0xff98aa});
+    const pinGeo = new THREE.SphereGeometry(0.35, 16, 12);
+    const pinStart = new THREE.Mesh(pinGeo, pinMatStart);
+    const pinEnd = new THREE.Mesh(pinGeo, pinMatEnd);
+    world.add(pinStart, pinEnd);
+
+    // ---------- Audio (Web Audio API with graceful fallback) ----------
+    let audioCtx=null, masterGain=null, engineBuf=null, dingBuf=null, dongBuf=null;
+    let engineSrc=null; // active engine source
+    let chimeTimeout=null; let isChimePlaying=false;
+    let muted = JSON.parse(localStorage.getItem('muted')||'false');
+
+    async function initAudio(){
+      if(audioCtx) return;
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = muted?0:0.6; masterGain.connect(audioCtx.destination);
+      async function load(url){
+        const res = await fetch(url); const arr = await res.arrayBuffer(); return await audioCtx.decodeAudioData(arr);
+      }
+      // Assume local relative files present
+      [engineBuf, dingBuf, dongBuf] = await Promise.all([
+        load('noise.mp3').catch(()=>null),
+        load('ding.mp3').catch(()=>null),
+        load('dingdong.mp3').catch(()=>null)
+      ]);
+    }
+
+    function startEngine(){
+      if(!audioCtx || !engineBuf) return;
+      stopEngine();
+      engineSrc = audioCtx.createBufferSource();
+      engineSrc.buffer = engineBuf;
+      engineSrc.loop = true;
+      const g = audioCtx.createGain(); g.gain.value = 0; // fade in
+      engineSrc.connect(g).connect(masterGain);
+      engineSrc.start();
+      g.gain.linearRampToValueAtTime(muted?0:0.5, audioCtx.currentTime+0.5);
+    }
+    function stopEngine(){
+      if(engineSrc){ try{engineSrc.stop()}catch{} engineSrc.disconnect(); engineSrc=null; }
+    }
+
+    function scheduleChime(){
+      if(!audioCtx || !dingBuf || !dongBuf) return;
+      clearTimeout(chimeTimeout);
+      const ms = 30000 + Math.random()*60000; // 30–90s real time
+      chimeTimeout = setTimeout(()=>{
+        if(muted) { scheduleChime(); return; }
+        const buf = Math.random()<0.5?dingBuf:dongBuf;
+        const src = audioCtx.createBufferSource(); src.buffer = buf;
+        src.connect(masterGain); isChimePlaying=true; src.start();
+        src.onended = ()=>{ isChimePlaying=false; }
+        scheduleChime();
+      }, ms);
+    }
+
+    function setMuted(m){
+      muted = m; localStorage.setItem('muted', JSON.stringify(muted));
+      if(masterGain){ masterGain.gain.setTargetAtTime(muted?0:0.6, audioCtx.currentTime||0, 0.05); }
+    }
+
+    // ---------- UI Elements ----------
+    const elFrom = qs('#from');
+    const elTo = qs('#to');
+    const elScale = qs('#scale');
+    const elScaleOut = qs('#scaleOut');
+    const elStart = qs('#startBtn');
+    const elSwap = qs('#swapBtn');
+    const elRand = qs('#randBtn');
+    const elReset = qs('#resetBtn');
+    const elOverlay = qs('#setupOverlay');
+    const elErr = qs('#err');
+    const elStatDist = qs('#statDist');
+    const elStatTime = qs('#statTime');
+    const elEta = qs('#etaHint');
+    const elUnitsLbl = qs('#unitsLbl');
+
+    const hud = qs('#hud');
+    const elExit = qs('#exitBtn');
+    const elPause = qs('#pauseBtn');
+    const elTimer = qs('#timerPill');
+    const elRouteLbl = qs('#routeLbl');
+    const audioToast = qs('#audioToast');
+    const enableAudioBtn = qs('#enableAudioBtn');
+
+    let units = localStorage.getItem('units')||'km'; elUnitsLbl.textContent = units;
+
+    // ---------- State ----------
+    let route={ a:null, b:null, u:null, v:null, distKm:0 };
+    let t=0; // 0..1 along route
+    let simScale = parseFloat(localStorage.getItem('scale')||'1');
+    elScale.value = simScale; elScaleOut.textContent = `${simScale}×`;
+
+    let running=false, paused=false, userPaused=false; let lastTs=0;
+    let startUTC=null; // Date when started
+
+    // ---------- Route build & UI live stats ----------
+    function makeRoute(aStr,bStr){
+      const A = parsePoint(aStr); const B = parsePoint(bStr);
+      if(!A || !B) return {ok:false, msg:'Enter two valid IATA codes or lat,lon'};
+      if(A.lat===B.lat && A.lon===B.lon) return {ok:false, msg:'Endpoints are identical'};
+      const u = llToVec(A.lat,A.lon); const v = llToVec(B.lat,B.lon);
+      const distKm = arcDistanceKm(u,v);
+      return {ok:true, A,B,u,v,distKm};
+    }
+
+    function updateLiveStats(){
+      const R = makeRoute(elFrom.value, elTo.value);
+      if(!R.ok){ elStatDist.textContent='—'; elStatTime.textContent='—'; elEta.textContent='ETA local: —'; elErr.textContent=R.msg||''; return; }
+      elErr.textContent='';
+      const km = R.distKm; const hrs = km/CRUISE_KMH;
+      elStatDist.textContent = fmtDist(km, units);
+      elStatTime.textContent = fmtDurHours(hrs);
+      const start = new Date();
+      const etaLocal = approxLocalDate(new Date(start.getTime()+hrs*3600*1000), R.B.lon);
+      const sign = Math.sign(clamp(Math.round(R.B.lon/15),-12,14));
+      const off = clamp(Math.round(R.B.lon/15),-12,14);
+      const tz = `UTC${off>=0?'+':''}${off}`;
+      elEta.textContent = `ETA local: ${etaLocal.toLocaleString()} (${tz})`;
+    }
+
+    elFrom.addEventListener('input', updateLiveStats);
+    elTo.addEventListener('input', updateLiveStats);
+
+    elScale.addEventListener('input', ()=>{
+      simScale = parseFloat(elScale.value); elScaleOut.textContent = `${simScale}×`;
+    });
+
+    elSwap.addEventListener('click', ()=>{
+      const a=elFrom.value; elFrom.value=elTo.value; elTo.value=a; updateLiveStats();
+    });
+
+    elRand.addEventListener('click', ()=>{
+      const keys = Object.keys(AIRPORTS);
+      const a = keys[Math.floor(Math.random()*keys.length)];
+      let b=a; while(b===a) b = keys[Math.floor(Math.random()*keys.length)];
+      elFrom.value=a; elTo.value=b; updateLiveStats();
+    });
+
+    elReset.addEventListener('click', ()=>{
+      elFrom.value=''; elTo.value=''; elScale.value='1'; simScale=1; elScaleOut.textContent='1×'; updateLiveStats();
+      location.hash='';
+      localStorage.removeItem('lastFrom'); localStorage.removeItem('lastTo'); localStorage.setItem('scale','1');
+    });
+
+    // ---------- Build route geometry ----------
+    function rebuildRoute(){
+      const pts = [];
+      const steps = 256; // smooth even for long flights
+      for(let i=0;i<=steps;i++){
+        const tt = i/steps;
+        const p = slerpVec(route.u, route.v, tt);
+        const bul = BULGE * Math.sin(Math.PI*tt);
+        const r = R + bul;
+        pts.push(p.x*r, p.y*r, p.z*r);
+      }
+      routeGeom.setAttribute('position', new THREE.Float32BufferAttribute(pts,3));
+      routeGeom.computeBoundingSphere();
+
+      // Pins
+      const ps = slerpVec(route.u, route.v, 0); pinStart.position.set(ps.x*R, ps.y*R, ps.z*R);
+      const pe = slerpVec(route.u, route.v, 1); pinEnd.position.set(pe.x*R, pe.y*R, pe.z*R);
+    }
+
+    function startFlight(){
+      const Rr = makeRoute(elFrom.value, elTo.value);
+      if(!Rr.ok){ elErr.textContent=Rr.msg; return; }
+      route={ a:Rr.A, b:Rr.B, u:Rr.u, v:Rr.v, distKm:Rr.distKm };
+      rebuildRoute();
+
+      // State
+      t=0; running=true; paused=false; userPaused=false; lastTs=performance.now();
+      startUTC = new Date();
+
+      // Persist & permalink
+      localStorage.setItem('lastFrom', elFrom.value);
+      localStorage.setItem('lastTo', elTo.value);
+      localStorage.setItem('scale', simScale.toString());
+      location.hash = `from=${encodeURIComponent(elFrom.value)}&to=${encodeURIComponent(elTo.value)}&scale=${simScale}`;
+
+      // HUD/UI
+      hud.setAttribute('aria-hidden','false');
+      elOverlay.setAttribute('aria-hidden','true');
+      elOverlay.style.display='none';
+
+      // Audio
+      initAudio().then(()=>{
+        if(audioCtx && audioCtx.state==='suspended') audioCtx.resume().catch(()=>{});
+        startEngine(); scheduleChime();
+      }).catch(()=>{
+        // show toast for manual enable
+        audioToast.classList.add('show');
+      });
+
+      updateTimerPill();
+    }
+
+    elStart.addEventListener('click', startFlight);
+
+    // ---------- HUD controls ----------
+    function exitToSetup(){
+      running=false; paused=false; userPaused=false;
+      hud.setAttribute('aria-hidden','true');
+      elOverlay.style.display='flex';
+      elOverlay.setAttribute('aria-hidden','false');
+      // Stop audio
+      stopEngine(); clearTimeout(chimeTimeout); chimeTimeout=null; isChimePlaying=false;
+      // Reset toast
+      audioToast.classList.remove('show');
+    }
+    elExit.addEventListener('click', exitToSetup);
+
+    function togglePause(force){
+      if(!running) return;
+      paused = (force!==undefined)?!!force:!paused;
+      userPaused = paused;
+      if(paused){ stopEngine(); clearTimeout(chimeTimeout); }
+      else{ startEngine(); scheduleChime(); lastTs=performance.now(); }
+    }
+    elPause.addEventListener('click', ()=>togglePause());
+
+    enableAudioBtn.addEventListener('click', async ()=>{
+      try{ await initAudio(); await audioCtx.resume(); startEngine(); scheduleChime(); audioToast.classList.remove('show'); }
+      catch(e){ /* continue silently */ }
+    });
+
+    // ---------- Keyboard shortcuts ----------
+    window.addEventListener('keydown', (e)=>{
+      if(elOverlay.style.display!=='none'){
+        if(e.key==='Enter') { startFlight(); }
+        if(e.key==='s' || e.key==='S') { elSwap.click(); }
+        return;
+      }
+      // In flight
+      if(e.key===' '){ e.preventDefault(); togglePause(); }
+      if(e.key==='Escape' || e.key.toLowerCase()==='x'){ exitToSetup(); }
+      if(e.key.toLowerCase()==='m'){ setMuted(!muted); }
+      if(e.key.toLowerCase()==='u'){ units = (units==='km'?'nm':'km'); localStorage.setItem('units',units); elUnitsLbl.textContent=units; updateLiveStats(); }
+      if(e.key.toLowerCase()==='r'){ t=0; }
+      if(e.key.toLowerCase()==='t'){ turbulenceEnabled = !turbulenceEnabled; }
+    });
+
+    document.addEventListener('visibilitychange', ()=>{
+      if(document.hidden){ if(running&&!paused){ togglePause(true); paused=true; userPaused=false; } }
+      else{ if(running && !userPaused){ togglePause(false); paused=false; } }
+    });
+
+    // ---------- Timer / HUD text ----------
+    function updateTimerPill(){
+      const totalHrs = route.distKm/CRUISE_KMH;
+      const elapsedHrs = totalHrs * t;
+      const remHrs = totalHrs - elapsedHrs;
+      elTimer.textContent = `${fmtDurHours(elapsedHrs)} / ${fmtDurHours(totalHrs)} • ${simScale}×`;
+      const aLbl = route.a.code?route.a.code:`${route.a.lat.toFixed(2)},${route.a.lon.toFixed(2)}`;
+      const bLbl = route.b.code?route.b.code:`${route.b.lat.toFixed(2)},${route.b.lon.toFixed(2)}`;
+      elRouteLbl.textContent = `${aLbl} → ${bLbl}`;
+    }
+
+    // ---------- Turbulence (tiny jitter) ----------
+    let turbulenceEnabled = false;
+    function applyJitter(){
+      if(prefersReduced || !turbulenceEnabled) return;
+      const j = 0.002; // radians
+      camRig.rotation.x = (Math.random()-0.5)*j;
+      camRig.rotation.y = (Math.random()-0.5)*j;
+    }
+
+    // ---------- Main loop ----------
+    function step(dt){
+      if(!running||paused) return;
+      // Advance along route by scaled speed
+      const kmps = (CRUISE_KMH/3600) * simScale;
+      const totalKm = route.distKm;
+      const deltaKm = kmps * dt;
+      t = clamp(t + (deltaKm/totalKm), 0, 1);
+
+      // Compute current point and tangent
+      const p = slerpVec(route.u, route.v, t);
+      const tAhead = slerpVec(route.u, route.v, clamp(t+0.001, 0, 1));
+      // Tangent in the tangent plane at p
+      const tan = new THREE.Vector3().subVectors(tAhead, p.clone().multiplyScalar(p.dot(tAhead))).normalize();
+
+      // Build basis and rotate world to map (p->+Y, tan->-Z)
+      const basis = basisFromPtTan(p, tan);
+      const B = matrixFromBasis(basis);
+      const invB = new THREE.Matrix4().copy(B).transpose(); // orthonormal inverse
+      world.setRotationFromMatrix(invB);
+
+      // Position Earth center so surface point sits slightly below plane
+      world.position.set(0, -(R+ALT_ABOVE), -EARTH_Z_OFFSET);
+
+      // Optional star slow spin for parallax
+      if(!prefersReduced){ stars.rotation.y += dt*0.0001; }
+
+      // Subtle roll based on turn rate
+      const turn = new THREE.Vector3().crossVectors(basis.fwd, tan).length();
+      planeGroup.rotation.z = THREE.MathUtils.lerp(planeGroup.rotation.z, clamp((Math.random()<0.5?1:-1)*turn*0.3, -0.3, 0.3), 0.15);
+
+      updateTimerPill();
+
+      // Auto exit at end
+      if(t>=1){ stopEngine(); clearTimeout(chimeTimeout); chimeTimeout=null; }
+    }
+
+    function animate(ts){
+      requestAnimationFrame(animate);
+      const dt = lastTs? (ts-lastTs)/1000 : 0; lastTs = ts;
+      step(dt);
+      applyJitter();
+      renderer.render(scene,camera);
+    }
+    requestAnimationFrame(animate);
+
+    // ---------- Resize ----------
+    addEventListener('resize', ()=>{
+      camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+
+    // ---------- Hash & persistence ----------
+    function parseHash(){
+      const h = new URLSearchParams(location.hash.replace(/^#/,'').trim());
+      const from = h.get('from')||localStorage.getItem('lastFrom')||'';
+      const to   = h.get('to')||localStorage.getItem('lastTo')||'';
+      const scale= parseFloat(h.get('scale')||localStorage.getItem('scale')||'1')||1;
+      elFrom.value=from; elTo.value=to; simScale=scale; elScale.value=scale; elScaleOut.textContent=`${simScale}×`;
+      updateLiveStats();
+      if(from && to){ // resume state immediately
+        startFlight();
+      }
+    }
+    window.addEventListener('hashchange', parseHash);
+
+    // ---------- Units init ----------
+    updateLiveStats();
+
+    // ---------- Start from hash ----------
+    parseHash();
+
+  </script>
+</body>
+</html>

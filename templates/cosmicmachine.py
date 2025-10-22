@@ -134,7 +134,7 @@ if __name__ == "__main__":
 
     print("\nGenerating image...")
     # 2) Image
-    pil_img = generate_image(IMAGE_PROMPT)
+    pil_img = generate_image(text_output)
 
     print("Generating audio...")
     # 3) Audio
