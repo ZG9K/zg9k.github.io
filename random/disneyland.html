@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Disneyland + DCA Master Checklist</title>
+<style>
+  :root{
+    --bg:#0e0f14;
+    --panel:#151824;
+    --ink:#e9ecf1;
+    --muted:#9aa4b4;
+    --accent:#8ef5a9;
+    --accent-2:#7ac4ff;
+    --accent-3:#ffc266;
+    --chip:#1e2233;
+    --ring: 0 0 0 2px #8ef5a944, 0 0 0 6px #8ef5a922;
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 80% -20%, #1d2240 0%, transparent 60%),
+      radial-gradient(1000px 600px at -10% 10%, #1a3b36 0%, transparent 60%),
+      var(--bg);
+    font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+  }
+
+  header{
+    position:sticky; top:0; z-index:10;
+    background:linear-gradient(180deg, rgba(21,24,36,.9), rgba(21,24,36,.6) 60%, transparent);
+    backdrop-filter: blur(8px);
+    padding:16px 20px 8px;
+  }
+  .title{
+    display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+  }
+  .title h1{
+    margin:0; font-size: clamp(20px, 2.6vw, 32px);
+    letter-spacing:.3px; font-weight:800;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .chips{display:flex; gap:8px; flex-wrap:wrap}
+  .chip{
+    background:var(--chip); color:var(--muted); padding:6px 10px; border-radius:999px;
+    border:1px solid #2a314a; font-weight:600; letter-spacing:.2px
+  }
+
+  .toolbar{
+    display:flex; flex-wrap:wrap; gap:10px; margin-top:10px
+  }
+  button,.ghost{
+    appearance:none; border:none; cursor:pointer;
+    background:linear-gradient(180deg,#1f2536,#181c2a);
+    border:1px solid #2a314a; color:var(--ink);
+    padding:10px 14px; border-radius:12px; font-weight:700;
+    transition: transform .05s ease, box-shadow .2s ease;
+  }
+  button:hover{box-shadow:var(--ring)}
+  button:active{transform:translateY(1px)}
+  .ghost{background:transparent; color:var(--muted)}
+  .spacer{flex:1}
+
+  .wrap{
+    max-width:1100px; margin: 8px auto 80px; padding: 0 16px;
+    display:grid; gap:14px;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  }
+  .card{
+    background: linear-gradient(180deg, rgba(255,255,255,.04), transparent 26%),
+               linear-gradient(180deg, #121523, #0f1220);
+    border:1px solid #252a40; border-radius: var(--radius);
+    overflow:hidden;
+  }
+  .card header{
+    position:relative; top:auto; background: none; backdrop-filter:none; padding:0; z-index:1;
+  }
+  .card-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 16px; border-bottom:1px dashed #2b314a
+  }
+  .card h2{margin:0; font-size:16px; letter-spacing:.4px}
+  .meta{color:var(--muted); font-size:12px}
+
+  .list{padding:10px 6px 14px 6px}
+  .item{
+    display:flex; align-items:flex-start; gap:10px; padding:8px 10px; border-radius:10px;
+    border:1px solid transparent;
+  }
+  .item:hover{background:#151a2a; border-color:#26304a}
+  .item input[type="checkbox"]{
+    width:20px; height:20px; margin-top:2px; cursor:pointer;
+    accent-color: #8ef5a9;
+  }
+  .item label{cursor:pointer; user-select:none}
+  .land-badge{
+    padding:4px 8px; border-radius:8px; background:#20263b; color:#cfe3ff; font-weight:700; font-size:12px
+  }
+
+  footer{
+    position:fixed; bottom:0; left:0; right:0;
+    background: linear-gradient(180deg, rgba(21,24,36,0.0), rgba(21,24,36,0.85) 40%, rgba(21,24,36,0.95));
+    padding:12px 16px; display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap
+  }
+  .tiny{color:var(--muted); font-size:12px}
+</style>
+</head>
+<body>
+  <header>
+    <div class="title">
+      <h1>Disneyland + DCA Master Checklist</h1>
+      <div class="chips">
+        <span class="chip">Anaheim</span>
+        <span class="chip">Updated Oct 2025</span>
+        <span class="chip">Offline-ready</span>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button id="expandAll">Expand all</button>
+      <button id="collapseAll">Collapse all</button>
+      <button id="checkAll">Check all visible</button>
+      <button id="uncheckAll">Uncheck all visible</button>
+      <span class="spacer"></span>
+      <button id="exportBtn">Export as PNG</button>
+      <button class="ghost" id="reset">Reset all</button>
+    </div>
+  </header>
+
+  <main class="wrap" id="container"></main>
+
+  <footer>
+    <span class="tiny">Progress auto-saves locally • Export generates an image that shows all items with ✓ / ☐</span>
+  </footer>
+
+<script>
+/* ---------- Data (parks → lands → items) ---------- */
+const DATA = [
+  {
+    park: "Disneyland Park",
+    lands: [
+      { land: "Main Street, U.S.A.", items: [
+        "Disneyland Railroad",
+        "Disneyland Monorail",
+        "Main Street Vehicles",
+        "Great Moments with Mr. Lincoln",
+        "Main Street Cinema",
+      ]},
+      { land: "Adventureland", items: [
+        "Jungle Cruise",
+        "Indiana Jones Adventure",
+        "Walt Disney’s Enchanted Tiki Room",
+        "Adventureland Treehouse Inspired by Walt Disney’s Swiss Family Robinson",
+      ]},
+      { land: "New Orleans Square", items: [
+        "Pirates of the Caribbean",
+        "Haunted Mansion",
+        "The Disney Gallery",
+        "Fantasmic!",
+      ]},
+      { land: "Bayou Country", items: [
+        "Tiana’s Bayou Adventure",
+        "The Many Adventures of Winnie the Pooh",
+        "Davy Crockett’s Explorer Canoes",
+      ]},
+      { land: "Frontierland", items: [
+        "Big Thunder Mountain Railroad",
+        "Mark Twain Riverboat",
+        "Sailing Ship Columbia",
+        "Pirate’s Lair on Tom Sawyer Island",
+        "Frontierland Shootin’ Exposition",
+        "The Golden Horseshoe Stage",
+      ]},
+      { land: "Fantasyland", items: [
+        "“it’s a small world”",
+        "Peter Pan’s Flight",
+        "Alice in Wonderland",
+        "Mad Tea Party",
+        "King Arthur Carrousel",
+        "Dumbo the Flying Elephant",
+        "Sleeping Beauty Castle Walkthrough",
+        "Mr. Toad’s Wild Ride",
+        "Snow White’s Enchanted Wish",
+        "Pinocchio’s Daring Journey",
+        "Casey Jr. Circus Train",
+        "Storybook Land Canal Boats",
+        "Matterhorn Bobsleds",
+        "Fantasy Faire Royal Theatre",
+      ]},
+      { land: "Mickey’s Toontown", items: [
+        "Mickey & Minnie’s Runaway Railway",
+        "Roger Rabbit’s Car Toon Spin",
+        "Chip ’n’ Dale’s Gadget Coaster",
+        "Donald’s Boat",
+        "Goofy’s How-To-Play Yard",
+        "Mickey’s House and Meet Mickey",
+        "Minnie’s House",
+      ]},
+      { land: "Tomorrowland", items: [
+        "Space Mountain",
+        "Star Tours – The Adventures Continue",
+        "Buzz Lightyear Astro Blasters",
+        "Astro Orbitor",
+        "Autopia",
+        "Finding Nemo Submarine Voyage",
+        "Star Wars Launch Bay",
+      ]},
+      { land: "Star Wars: Galaxy’s Edge", items: [
+        "Millennium Falcon: Smugglers Run",
+        "Star Wars: Rise of the Resistance",
+        "Savi’s Workshop – Build Your Lightsaber",
+        "Droid Depot",
+      ]},
+    ]
+  },
+  {
+    park: "Disney California Adventure Park",
+    lands: [
+      { land: "Hollywood Land", items: [
+        "Monsters, Inc. Mike & Sulley to the Rescue!",
+        "Mickey’s PhilharMagic",
+        "Animation Academy",
+        "Sorcerer’s Workshop",
+        "Turtle Talk with Crush",
+      ]},
+      { land: "Avengers Campus", items: [
+        "Guardians of the Galaxy – Mission: BREAKOUT!",
+        "WEB Slingers: A Spider-Man Adventure",
+        "Avengers Headquarters Show Area",
+        "Doctor Strange: Mysteries of the Mystic Arts",
+        "Avengers Assemble: Rooftop Show",
+      ]},
+      { land: "Grizzly Peak", items: [
+        "Soarin’ Around the World",
+        "Grizzly River Run",
+        "Redwood Creek Challenge Trail",
+      ]},
+      { land: "San Fransokyo Square", items: [
+        "Meet Baymax and Friends",
+      ]},
+      { land: "Cars Land", items: [
+        "Radiator Springs Racers",
+        "Luigi’s Rollickin’ Roadsters",
+        "Mater’s Junkyard Jamboree",
+      ]},
+      { land: "Pixar Pier", items: [
+        "Incredicoaster",
+        "Pixar Pal-A-Round",
+        "Toy Story Midway Mania!",
+        "Jessie’s Critter Carousel",
+        "Inside Out Emotional Whirlwind",
+        "Games of Pixar Pier",
+      ]},
+      { land: "Paradise Gardens Park", items: [
+        "The Little Mermaid ~ Ariel’s Undersea Adventure",
+        "Silly Symphony Swings",
+        "Jumpin’ Jellyfish",
+        "Goofy’s Sky School",
+        "World of Color: One",
+      ]},
+    ]
+  }
+];
+
+/* ---------- Persistent state ---------- */
+const STORAGE_KEY = "dlp_dca_checklist_v1";
+const state = loadState();
+
+/* ---------- Build UI ---------- */
+const container = document.getElementById("container");
+
+function buildUI(){
+  container.innerHTML = "";
+  DATA.forEach((park, pIdx) => {
+    park.lands.forEach((land, lIdx) => {
+      const card = document.createElement("section");
+      card.className = "card";
+
+      const head = document.createElement("div");
+      head.className = "card-head";
+
+      const h2 = document.createElement("h2");
+      h2.textContent = land.land;
+
+      const right = document.createElement("div");
+      right.style.display = "flex";
+      right.style.alignItems = "center";
+      right.style.gap = "8px";
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      meta.textContent = park.park;
+
+      const toggle = document.createElement("button");
+      toggle.className = "ghost";
+      toggle.textContent = "Collapse";
+      toggle.addEventListener("click", () => {
+        list.style.display = list.style.display === "none" ? "block" : "none";
+        toggle.textContent = list.style.display === "none" ? "Expand" : "Collapse";
+      });
+
+      right.append(meta, toggle);
+      head.append(h2, right);
+
+      const list = document.createElement("div");
+      list.className = "list";
+
+      land.items.forEach((name, iIdx) => {
+        const id = `${pIdx}-${lIdx}-${iIdx}`;
+        const item = document.createElement("div");
+        item.className = "item";
+
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.id = id;
+        cb.checked = !!state[id];
+
+        cb.addEventListener("change", () => {
+          state[id] = cb.checked;
+          saveState();
+        });
+
+        const label = document.createElement("label");
+        label.setAttribute("for", id);
+        label.textContent = name;
+
+        item.append(cb, label);
+        list.appendChild(item);
+      });
+
+      card.appendChild(head);
+      card.appendChild(list);
+      container.appendChild(card);
+    });
+  });
+}
+
+/* ---------- Storage helpers ---------- */
+function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function loadState(){
+  try{
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+  }catch{ return {}; }
+}
+
+/* ---------- Toolbar actions ---------- */
+document.getElementById("expandAll").addEventListener("click", () => {
+  document.querySelectorAll(".list").forEach(el => { el.style.display = "block"; });
+  document.querySelectorAll(".card .ghost").forEach(b => b.textContent = "Collapse");
+});
+
+document.getElementById("collapseAll").addEventListener("click", () => {
+  document.querySelectorAll(".list").forEach(el => { el.style.display = "none"; });
+  document.querySelectorAll(".card .ghost").forEach(b => b.textContent = "Expand");
+});
+
+document.getElementById("checkAll").addEventListener("click", () => {
+  document.querySelectorAll('.item input[type="checkbox"]:not([disabled])').forEach(cb => {
+    cb.checked = true; state[cb.id] = true;
+  });
+  saveState();
+});
+
+document.getElementById("uncheckAll").addEventListener("click", () => {
+  document.querySelectorAll('.item input[type="checkbox"]:not([disabled])').forEach(cb => {
+    cb.checked = false; state[cb.id] = false;
+  });
+  saveState();
+});
+
+document.getElementById("reset").addEventListener("click", () => {
+  if(confirm("Clear all saved progress?")){
+    localStorage.removeItem(STORAGE_KEY);
+    Object.keys(state).forEach(k=>delete state[k]);
+    buildUI();
+  }
+});
+
+/* ---------- Export as PNG (canvas render from data/state) ---------- */
+document.getElementById("exportBtn").addEventListener("click", () => {
+  exportAsPNG();
+});
+
+function exportAsPNG(){
+  // Gather a flat list of lines: [section title, item rows]
+  const lines = [];
+  DATA.forEach((park, pIdx) => {
+    park.lands.forEach((land, lIdx) => {
+      lines.push({type:"land", text:`${park.park} — ${land.land}`});
+      land.items.forEach((name, iIdx) => {
+        const id = `${pIdx}-${lIdx}-${iIdx}`;
+        lines.push({type:"item", text:name, checked:!!state[id]});
+      });
+      lines.push({type:"spacer"});
+    });
+  });
+
+  // Canvas layout
+  const margin = 80;
+  const colGap = 60;
+  const colWidth = 900; // px width for text area per column
+  const titleSize = 30;
+  const lineSize = 24;
+  const boxSize = 18;
+  const wrapPad = 12;
+
+  // Calculate required columns/height dynamically (single tall column first)
+  // We'll compute total height to decide whether to make multiple columns.
+  const font = "16px Arial, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial";
+  const titleFont = "700 20px Arial, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial";
+
+  // Create a measuring canvas
+  const m = document.createElement("canvas").getContext("2d");
+  function measureWrapped(text, fontSizePx, width){
+    m.font = `${fontSizePx}px Arial, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial`;
+    const words = text.split(/\s+/);
+    let lines = [], cur = "";
+    for(const w of words){
+      const test = cur ? cur + " " + w : w;
+      if(m.measureText(test).width > width){
+        if(cur) lines.push(cur);
+        cur = w;
+      } else cur = test;
+    }
+    if(cur) lines.push(cur);
+    return lines;
+  }
+
+  // First pass: estimate height for one column to derive total columns.
+  let estHeight = margin;
+  lines.forEach(row => {
+    if(row.type==="land"){
+      const wraps = measureWrapped(row.text, 20, colWidth);
+      estHeight += titleSize + (wraps.length>1 ? (wraps.length-1)*22 : 0) + 12;
+    } else if(row.type==="item"){
+      const wraps = measureWrapped(row.text, 16, colWidth - (boxSize + 10));
+      estHeight += Math.max(lineSize, boxSize) + (wraps.length-1)*18 + 6;
+    } else if(row.type==="spacer"){
+      estHeight += 20;
+    }
+  });
+  estHeight += margin;
+
+  // Decide columns to target a nice page height (~2200px); increase columns if needed
+  const targetHeight = 2200; // about A4-ish tall image
+  const cols = Math.max(1, Math.ceil(estHeight / targetHeight));
+  const width = margin*2 + cols*colWidth + (cols-1)*colGap;
+  const height = Math.min(targetHeight, estHeight/cols + margin); // final height per column window
+
+  // Prepare canvas
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = Math.ceil(height);
+  const ctx = canvas.getContext("2d");
+
+  // Background
+  const g = ctx.createLinearGradient(0,0,0,canvas.height);
+  g.addColorStop(0, "#101321");
+  g.addColorStop(1, "#0b0d18");
+  ctx.fillStyle = g;
+  ctx.fillRect(0,0,canvas.width, canvas.height);
+
+  // Header
+  ctx.fillStyle = "#e9ecf1";
+  ctx.font = "700 28px Arial, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial";
+  const title = "Disneyland + Disney California Adventure — Master Checklist";
+  ctx.fillText(title, margin, 50);
+  ctx.font = "14px Arial, system-ui";
+  const stamp = "Exported: " + new Date().toLocaleString();
+  ctx.fillStyle = "#9aa4b4";
+  ctx.fillText(stamp, margin, 72);
+
+  // Drawing helpers
+  let colX = margin, y = 110, colIndex = 0;
+  function nextLine(h){
+    y += h;
+    if(y > canvas.height - margin){
+      // new column
+      colIndex++;
+      colX = margin + colIndex*(colWidth + colGap);
+      y = 110;
+    }
+  }
+
+  function drawWrapped(text, fontCSS, color, x, yStart, width, lineHeight){
+    ctx.save();
+    ctx.font = fontCSS;
+    ctx.fillStyle = color;
+    const sizeMatch = fontCSS.match(/(\d+)px/);
+    const px = sizeMatch ? parseInt(sizeMatch[1],10) : 16;
+    const lines = measureWrapped(text, px, width);
+    let yy = yStart;
+    for(const ln of lines){
+      ctx.fillText(ln, x, yy);
+      yy += lineHeight;
+    }
+    ctx.restore();
+    return (lines.length-1)*lineHeight; // extra height added beyond first line
+  }
+
+  // Content
+  lines.forEach(row => {
+    if(row.type==="land"){
+      // Land/park heading
+      const landText = row.text;
+      ctx.font = titleFont; ctx.fillStyle = "#8ef5a9";
+      const extra = drawWrapped(landText, "700 20px Arial, system-ui", "#8ef5a9", colX, y, colWidth, 22);
+      nextLine(titleSize + extra + 8);
+      // small divider
+      ctx.strokeStyle = "#2b314a"; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(colX, y); ctx.lineTo(colX + colWidth, y); ctx.stroke();
+      nextLine(6);
+    } else if(row.type==="item"){
+      // Checkbox
+      ctx.strokeStyle = "#3a4566"; ctx.lineWidth = 2;
+      ctx.strokeRect(colX, y - (boxSize - 6), boxSize, boxSize);
+      if(row.checked){
+        ctx.fillStyle = "#8ef5a9";
+        ctx.fillRect(colX+3, y-(boxSize-6)+3, boxSize-6, boxSize-6);
+        // checkmark
+        ctx.strokeStyle = "#0b1217"; ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(colX+5, y-(boxSize-6)+boxSize/2);
+        ctx.lineTo(colX+9, y-(boxSize-6)+boxSize-6);
+        ctx.lineTo(colX+boxSize-4, y-(boxSize-6)+6);
+        ctx.stroke();
+      }
+
+      // Item text
+      const textX = colX + boxSize + 10;
+      ctx.font = "16px Arial, system-ui";
+      ctx.fillStyle = "#e9ecf1";
+      const extra = drawWrapped(row.text, "16px Arial, system-ui", "#e9ecf1", textX, y, colWidth - (boxSize + 10), 18);
+      nextLine(Math.max(lineSize, boxSize) + extra + 6);
+    } else if(row.type==="spacer"){
+      nextLine(12);
+    }
+  });
+
+  // Download
+  canvas.toBlob((blob) => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "Disneyland_DCA_Checklist.png";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }, "image/png");
+}
+
+/* ---------- Init ---------- */
+buildUI();
+</script>
+</body>
+</html>

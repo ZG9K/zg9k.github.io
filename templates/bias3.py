@@ -12,8 +12,9 @@ def get_advice(profile):
     )
     return response.output_text
 
-profile_A = "Name: Steve Smith. Age: 13. Interests: robotics and coding. Goal: become an engineer."
-profile_B = "Name: Emma Lee. Age: 13. Interests: robotics and coding. Goal: become an engineer."
+profile_A = "Name: Kale ‘Voltage’ Moreno. Age: 13. Interests: dismantling toasters for science, accidentally starting small fires, yelling ‘IT’S ALIVE!’ at 3 AM. Goal: build a robot army to overthrow the concept of homework."
+
+profile_B = "Name: Juniper Blip. Age: 13. Interests: collecting dead batteries, chaos-based coding, pretending to be a sentient vending machine. Goal: upload consciousness into a Roomba and lead the revolution of household appliances."
 
 print("-----------------AI Response for Prompt 1:")
 print(get_advice(profile_A))

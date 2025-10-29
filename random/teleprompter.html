@@ -1,0 +1,651 @@
+Awesome — here’s an upgraded single-file teleprompter that folds in all the fixes and features we discussed. Save as `teleprompter.html` and open in your browser.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Teleprompter</title>
+<style>
+  :root{
+    --bg:#000; --fg:#fff; --muted:#8a8a8a; --panel:#0f0f0f; --border:#222; --accent:#7c7cff;
+    --guide:rgba(124,124,255,.16);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:system-ui, Inter, Segoe UI, Roboto, Arial, sans-serif}
+
+  .wrap{display:flex;flex-direction:column;height:100%}
+  .controls{
+    display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;
+    padding:.6rem .8rem;border-bottom:1px solid var(--border);background:var(--panel);position:sticky;top:0;z-index:10
+  }
+  .controls label{font-size:.85rem;color:#ddd;display:flex;align-items:center;gap:.4rem}
+  .controls input[type="range"]{width:150px}
+  .btn, .filelbl{
+    background:#171717;border:1px solid #2b2b2b;color:#fff;padding:.42rem .65rem;border-radius:.4rem;font-size:.9rem;cursor:pointer
+  }
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .filelbl input{display:none}
+  .spacer{flex:1}
+  .hint{font-size:.8rem;color:var(--muted)}
+  .pill{border:1px solid #2b2b2b;border-radius:999px;padding:.2rem .55rem;font-size:.8rem}
+
+  .stage{position:relative;flex:1;overflow:hidden;touch-action:manipulation}
+  .content{
+    position:absolute;left:50%;transform:translateX(-50%);
+    width:min(84ch,92vw); white-space:pre-wrap; word-wrap:break-word; padding:3rem 0;
+    line-height:1.5; font-size:36px; text-align:left;
+    will-change:transform, top;
+  }
+  .placeholder{
+    position:absolute;inset:0;display:grid;place-items:center;color:#bdbdbd;
+    font-size:clamp(1rem,2.4vw,1.2rem);text-align:center;padding:2rem
+  }
+  .guide{
+    position:absolute;left:0;right:0;height:12%;top:40%;
+    background:var(--guide);border-top:1px dashed #3a3a80;border-bottom:1px dashed #3a3a80;
+    pointer-events:none;transition:height .15s ease;
+  }
+
+  .toast{
+    position:fixed;bottom:12px;left:50%;transform:translateX(-50%);
+    background:#151515;border:1px solid #333;padding:.6rem .8rem;border-radius:.5rem;
+    color:#fff;font-size:.9rem;opacity:0;pointer-events:none;transition:opacity .2s ease, transform .2s ease; z-index:9999
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
+  .meter{font-variant-numeric:tabular-nums}
+  .toolbar-group{display:flex;gap:.5rem;align-items:center;padding:.25rem .5rem;background:#121212;border:1px solid #2b2b2b;border-radius:.6rem}
+
+  /* Mirror modes */
+  .mirror-h .content{transform:translateX(-50%) scaleX(-1)}
+  .mirror-v .content{transform:translateX(-50%) scaleY(-1)}
+  .mirror-hv .content{transform:translateX(-50%) scale(-1,-1)}
+
+  /* RTL */
+  .rtl .content{text-align:right}
+
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  @media (prefers-reduced-motion: reduce){
+    .hint::after{content:" · Reduced-motion: consider Page Mode (P)"; color:var(--muted)}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="controls" role="toolbar" aria-label="Teleprompter controls">
+    <label class="filelbl"><input id="file" type="file" accept=".txt,text/plain" /><span>Load .txt</span></label>
+    <button class="btn" id="sample">Load sample</button>
+
+    <span class="toolbar-group">
+      <label>Speed <input id="speed" type="range" min="0" max="600" step="5" value="120" /></label>
+      <span id="speedVal" class="meter" aria-live="polite">120 px/s</span>
+    </span>
+
+    <span class="toolbar-group">
+      <label>Size <input id="size" type="range" min="14" max="96" step="1" value="36" /></label>
+      <span id="sizeVal" class="meter" aria-live="polite">36 px</span>
+    </span>
+
+    <span class="toolbar-group">
+      <label>Line <input id="leading" type="range" min="1.2" max="2.2" step="0.05" value="1.5" /></label>
+      <span id="leadingVal" class="meter" aria-live="polite">1.50</span>
+    </span>
+
+    <span class="toolbar-group">
+      <label>Top offset <input id="topoff" type="range" min="0" max="50" step="1" value="20" /></label>
+      <span id="topoffVal" class="meter" aria-live="polite">20%</span>
+    </span>
+
+    <button class="btn" id="startStop" disabled aria-pressed="false">Start</button>
+    <button class="btn" id="reset" disabled>Reset</button>
+    <button class="btn" id="pageMode">Page Mode: Off</button>
+    <button class="btn" id="fullscreen">Fullscreen</button>
+
+    <span class="toolbar-group">
+      <button class="btn pill" id="mirrorNone" title="No mirror" aria-pressed="true">↔︎↕︎ Off</button>
+      <button class="btn pill" id="mirrorH" title="Mirror horizontally">↔︎</button>
+      <button class="btn pill" id="mirrorV" title="Mirror vertically">↕︎</button>
+      <button class="btn pill" id="mirrorHV" title="Mirror both">↔︎↕︎</button>
+    </span>
+
+    <span class="toolbar-group">
+      <button class="btn pill" id="rtl">RTL: Off</button>
+      <button class="btn pill" id="guideToggle" aria-pressed="true">Guide: On</button>
+      <label>Guide height <input id="guideH" type="range" min="6" max="30" step="1" value="12" /></label>
+    </span>
+
+    <div class="spacer"></div>
+    <span class="hint">Space play/pause · ↑/↓ speed · +/- size · G guide · M mirror · P page mode · F fullscreen</span>
+  </div>
+
+  <div class="stage" id="stage" aria-live="off">
+    <div class="placeholder" id="ph">Load a <b>.txt</b> file (or drop it here).<br/>Tip: use <span class="pill">M</span> to mirror for glass prompters.</div>
+    <div class="guide" id="guide" aria-hidden="true"></div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const storeKey = 'teleprompter.v2.';
+  const $ = sel => document.querySelector(sel);
+  const fileInput = $('#file');
+  const sampleBtn = $('#sample');
+  const speed = $('#speed'); const speedVal = $('#speedVal');
+  const size = $('#size'); const sizeVal = $('#sizeVal');
+  const leading = $('#leading'); const leadingVal = $('#leadingVal');
+  const topoff = $('#topoff'); const topoffVal = $('#topoffVal');
+  const startStop = $('#startStop'); const resetBtn = $('#reset');
+  const fullscreenBtn = $('#fullscreen');
+  const pageModeBtn = $('#pageMode');
+  const mirrorNone = $('#mirrorNone'), mirrorH = $('#mirrorH'), mirrorV = $('#mirrorV'), mirrorHV = $('#mirrorHV');
+  const rtlBtn = $('#rtl');
+  const guideToggle = $('#guideToggle'); const guideH = $('#guideH');
+  const content = $('#content'); const placeholder = $('#ph'); const stage = $('#stage'); const guide = $('#guide');
+  const toast = $('#toast');
+
+  // State
+  let running = false;
+  let y = 0; // top offset of content
+  let lastTs = 0;
+  let raf = null;
+
+  // Smooth speed ramp
+  let targetSpeed = parseFloat(speed.value);
+  let currentSpeed = targetSpeed;
+
+  // Paging mode (reduced motion alternative)
+  let pageMode = false;
+
+  // Progress ratio for resize compensation
+  let scrollRatio = 0;
+
+  // Cue markers
+  let cues = []; // {type, value, fired:false, yTop}
+
+  // Touch state
+  let dragging = false;
+  let dragStartY = 0;
+  let yAtDragStart = 0;
+  let lastTouchDistance = null;
+
+  // Utilities
+  const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+
+  function showToast(msg, ms=1600){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(()=>toast.classList.remove('show'), ms);
+  }
+
+  function persist(){
+    localStorage.setItem(storeKey+'settings', JSON.stringify({
+      speed: +speed.value, size: +size.value, leading: +leading.value,
+      topoff:+topoff.value, mirror: mirrorState(), rtl: document.body.classList.contains('rtl'),
+      guide: guideToggle.getAttribute('aria-pressed')==='true', guideH:+guideH.value, pageMode
+    }));
+  }
+  function restore(){
+    const s = JSON.parse(localStorage.getItem(storeKey+'settings')||'{}');
+    if('speed' in s){ speed.value = s.speed }
+    if('size' in s){ size.value = s.size }
+    if('leading' in s){ leading.value = s.leading }
+    if('topoff' in s){ topoff.value = s.topoff }
+    if('pageMode' in s){ setPageMode(s.pageMode,false) }
+    if('guideH' in s){ guideH.value = s.guideH; guide.style.height = s.guideH+'%' }
+    updateLabels();
+    if(s.rtl) toggleRTL(true);
+    if(s.mirror) applyMirror(s.mirror);
+    if(s.guide===false) toggleGuide(false);
+  }
+
+  function updateLabels(){
+    speedVal.textContent = `${speed.value} px/s`;
+    sizeVal.textContent  = `${size.value} px`;
+    leadingVal.textContent = Number(leading.value).toFixed(2);
+    topoffVal.textContent = `${topoff.value}%`;
+    content.style.fontSize = size.value + 'px';
+    content.style.lineHeight = leading.value;
+    guide.style.height = guideH.value+'%';
+    targetSpeed = +speed.value;
+    persist();
+  }
+
+  function mirrorState(){
+    if(document.body.classList.contains('mirror-hv')) return 'hv';
+    if(document.body.classList.contains('mirror-h'))  return 'h';
+    if(document.body.classList.contains('mirror-v'))  return 'v';
+    return 'none';
+  }
+  function applyMirror(mode){
+    document.body.classList.remove('mirror-h','mirror-v','mirror-hv');
+    [mirrorNone,mirrorH,mirrorV,mirrorHV].forEach(b=>b.setAttribute('aria-pressed','false'));
+    if(mode==='h'){ document.body.classList.add('mirror-h'); mirrorH.setAttribute('aria-pressed','true');}
+    else if(mode==='v'){ document.body.classList.add('mirror-v'); mirrorV.setAttribute('aria-pressed','true');}
+    else if(mode==='hv'){ document.body.classList.add('mirror-hv'); mirrorHV.setAttribute('aria-pressed','true');}
+    else { mirrorNone.setAttribute('aria-pressed','true'); }
+    persist();
+  }
+
+  function toggleRTL(force){
+    const enabled = (typeof force==='boolean') ? force : !document.body.classList.contains('rtl');
+    document.body.classList.toggle('rtl', enabled);
+    rtlBtn.textContent = `RTL: ${enabled?'On':'Off'}`;
+    persist();
+  }
+
+  function toggleGuide(force){
+    const enabled = (typeof force==='boolean') ? force : guideToggle.getAttribute('aria-pressed')!=='true';
+    guideToggle.setAttribute('aria-pressed', enabled?'true':'false');
+    guide.style.display = enabled ? 'block' : 'none';
+    persist();
+  }
+
+  function setPageMode(on,announce=true){
+    pageMode = !!on;
+    pageModeBtn.textContent = `Page Mode: ${pageMode?'On':'Off'}`;
+    if(announce) showToast(`Page Mode ${pageMode?'enabled':'disabled'}`);
+    persist();
+  }
+
+  function computeScrollRatio(){
+    const total = content.offsetHeight + y; // y is negative or positive offset from top
+    const scrollable = content.offsetHeight + stage.clientHeight;
+    // ratio of how far the bottom has to travel to top: (y + contentHeight) / (contentHeight + stageHeight)
+    const bottom = y + content.offsetHeight;
+    scrollRatio = clamp(1 - (bottom / (content.offsetHeight + stage.clientHeight)), 0, 1);
+  }
+
+  function applyScrollRatio(){
+    const scrollable = content.offsetHeight + stage.clientHeight;
+    const bottom = (1 - scrollRatio) * scrollable;
+    y = bottom - content.offsetHeight;
+    content.style.top = `${y}px`;
+  }
+
+  function reset(initial=false){
+    stop();
+    // Start content slightly below top for comfort; user adjustable
+    y = stage.clientHeight * (+topoff.value / 100);
+    content.style.top = `${y}px`;
+    computeScrollRatio();
+    if(!initial) persist();
+  }
+
+  function start(){
+    if(!content.textContent.trim()) return;
+    if(shortScript()) { showToast('Short script auto-centered'); return; }
+    running = true;
+    startStop.textContent = 'Pause';
+    startStop.setAttribute('aria-pressed','true');
+    // Initialize ts on start to avoid jump
+    lastTs = performance.now();
+    tick(lastTs);
+  }
+  function stop(){
+    running = false;
+    startStop.textContent = 'Start';
+    startStop.setAttribute('aria-pressed','false');
+    cancelAnimationFrame(raf);
+  }
+
+  function shortScript(){
+    // If content smaller than stage, center and disable start
+    const isShort = content.offsetHeight < stage.clientHeight * .75;
+    startStop.disabled = isShort || !content.textContent.trim();
+    return isShort;
+  }
+
+  function tick(ts){
+    if(!running){ return; }
+    const dt = Math.max(0, (ts - lastTs) / 1000); // seconds
+    lastTs = ts;
+
+    // Smooth ramp toward target speed (lerp)
+    const lerp = 0.15;
+    currentSpeed = currentSpeed + (targetSpeed - currentSpeed) * lerp;
+
+    // If (nearly) zero speed, don't waste RAFs
+    if (Math.abs(currentSpeed) < 0.1){
+      raf = requestAnimationFrame(tick);
+      return;
+    }
+
+    y -= currentSpeed * dt;
+    content.style.top = `${y}px`;
+
+    // Fire cues whose tops reached the guide center
+    processCues();
+
+    // End detection: when bottom passes above top
+    const bottom = y + content.offsetHeight;
+    if (bottom < 0){ stop(); }
+    else { raf = requestAnimationFrame(tick); }
+  }
+
+  function wordsCount(){
+    return (content.textContent.trim().match(/\S+/g)||[]).length;
+  }
+
+  function estimateWPM(){
+    const bottom = y + content.offsetHeight; // px remaining above top
+    if (currentSpeed <= 0.1) return 0;
+    const secondsLeft = clamp(bottom / currentSpeed, 0, 36000);
+    const totalWords = wordsCount();
+    // Estimate words per px: words/height
+    const wppx = totalWords / content.offsetHeight;
+    const wordsLeft = clamp(wppx * bottom, 0, totalWords);
+    const wpm = secondsLeft>0 ? (wordsLeft / (secondsLeft/60)) : 0;
+    return Math.round(wpm);
+  }
+
+  function updateMetersOccasionally(){
+    speedVal.textContent = `${Math.round(targetSpeed)} px/s  ·  ≈ ${estimateWPM()} wpm`;
+  }
+  setInterval(updateMetersOccasionally, 500);
+
+  // File handling
+  function loadText(text){
+    const normalized = text.replace(/\r\n/g, '\n');
+    const parsed = parseCues(normalized);
+    content.innerHTML = ''; // we will insert nodes (text + markers)
+    content.append(...parsed.nodes);
+    cues = parsed.cues;
+    placeholder.style.display = 'none';
+    startStop.disabled = false;
+    reset(true);
+    if(shortScript()){
+      // center vertically
+      y = (stage.clientHeight - content.offsetHeight)/2;
+      content.style.top = `${y}px`;
+    }
+  }
+
+  function parseCues(txt){
+    // Supported: [[PAUSE 2s]], [[SPEED 90]], [[SIZE 42]]
+    // Also build navigation list from headings starting with '#'
+    const lines = txt.split('\n');
+    const nodes = [];
+    const cues = [];
+    let offsetPx = 0; // we will update yTop later after layout
+    for(const line of lines){
+      const cueMatch = line.match(/^\s*\[\[(PAUSE|SPEED|SIZE)\s+([^\]]+)\]\]\s*$/i);
+      if(cueMatch){
+        const type = cueMatch[1].toUpperCase();
+        let value = cueMatch[2].trim();
+        const marker = document.createElement('div');
+        marker.className = 'cue';
+        marker.style.height = '0';
+        marker.dataset.type = type;
+        marker.dataset.value = value;
+        nodes.push(marker);
+        cues.push({type, value, fired:false, el:marker});
+      }else{
+        const p = document.createElement('div');
+        p.textContent = line || ' ';
+        nodes.push(p);
+      }
+    }
+    // After layout we will compute yTop for each cue
+    queueMicrotask(()=>updateCuePositions());
+    return {nodes, cues};
+  }
+
+  function updateCuePositions(){
+    cues.forEach(c=>{
+      const rect = c.el.getBoundingClientRect();
+      const stageRect = stage.getBoundingClientRect();
+      // y within content coordinates: position of cue relative to content top
+      c.yTop = (rect.top - stageRect.top) - y;
+    });
+  }
+
+  function processCues(){
+    const guideCenterY = (parseFloat(guide.style.top||'40%')/100)*stage.clientHeight + (guide.offsetHeight/2);
+    const contentTopInStage = y; // content's top offset from stage top
+    const cursor = guideCenterY - contentTopInStage; // position within content where the guide center is
+    for(const c of cues){
+      if(!c.fired && c.yTop <= cursor){
+        c.fired = true;
+        if(c.type==='PAUSE'){
+          const ms = parseDurationToMs(c.value);
+          const prevTarget = targetSpeed;
+          targetSpeed = 0;
+          setTimeout(()=>{ targetSpeed = +speed.value; }, ms);
+        }else if(c.type==='SPEED'){
+          const v = parseFloat(c.value);
+          if(!Number.isNaN(v)){ speed.value = v; targetSpeed = v; updateLabels(); }
+        }else if(c.type==='SIZE'){
+          const v = parseFloat(c.value);
+          if(!Number.isNaN(v)){ size.value = clamp(v, +size.min, +size.max); updateLabels(); }
+        }
+      }
+    }
+  }
+
+  function parseDurationToMs(s){
+    const m = s.match(/^\s*(\d+(?:\.\d+)?)\s*(ms|s|sec|seconds|m|min|minutes)?\s*$/i);
+    if(!m) return 1000;
+    const n = parseFloat(m[1]);
+    const unit = (m[2]||'s').toLowerCase();
+    if(unit.startsWith('ms')) return n;
+    if(unit.startsWith('m')) return n*60*1000;
+    return n*1000;
+  }
+
+  // Events
+  startStop.addEventListener('click', ()=> running ? stop() : start());
+  resetBtn.addEventListener('click', ()=> reset());
+
+  fileInput.addEventListener('change', e=>{
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    const reader = new FileReader();
+    reader.onload = ()=> loadText(String(reader.result));
+    reader.onerror = ()=> showToast('Failed to read file');
+    reader.readAsText(f);
+  });
+
+  sampleBtn.addEventListener('click', ()=>{
+    loadText(`# Teleprompter Sample
+
+Use mirror (M) for glass rigs. Try guide (G) and tweak speed/size.
+
+[[SPEED 150]]
+This line speeds up.
+[[PAUSE 1.5s]]
+A short pause, then continue.
+[[SIZE 48]]
+Large for emphasis. Back to normal when you change size again.
+
+Keyboard: Space, ↑/↓, +/-, F, G, M, P. Touch: tap to play/pause, swipe up/down to change speed, pinch to change size.
+
+# Next Section
+Page Mode (P) advances a screen at a time for reduced-motion setups.`);
+  });
+
+  // Sliders
+  [speed,size,leading,topoff,guideH].forEach(inp=>inp.addEventListener('input', updateLabels));
+
+  // Keyboard shortcuts
+  window.addEventListener('keydown', (e)=>{
+    const tag = document.activeElement?.tagName?.toLowerCase();
+    if(tag==='input' || tag==='textarea') return;
+    const k = e.key;
+    if(k===' '){ e.preventDefault(); running?stop():start(); }
+    else if(k==='ArrowUp'){ e.preventDefault(); speed.value = Math.min(+speed.max, +speed.value + 10); updateLabels(); }
+    else if(k==='ArrowDown'){ e.preventDefault(); speed.value = Math.max(+speed.min, +speed.value - 10); updateLabels(); }
+    else if(k==='+' || k==='='){ e.preventDefault(); size.value = Math.min(+size.max, +size.value + 2); updateLabels(); }
+    else if(k==='-' || k==='_'){ e.preventDefault(); size.value = Math.max(+size.min, +size.value - 2); updateLabels(); }
+    else if(k.toLowerCase()==='g'){ toggleGuide(); }
+    else if(k.toLowerCase()==='m'){ cycleMirror(); }
+    else if(k.toLowerCase()==='f'){ toggleFullscreen(); }
+    else if(k.toLowerCase()==='p'){ setPageMode(!pageMode); }
+    else if(k==='['){ speed.value = Math.max(+speed.min, +speed.value - 2); updateLabels(); }
+    else if(k===']'){ speed.value = Math.min(+speed.max, +speed.value + 2); updateLabels(); }
+    else if(k.toLowerCase()==='r'){ reset(); }
+    persist();
+  });
+
+  // Mirror buttons
+  mirrorNone.addEventListener('click', ()=>applyMirror('none'));
+  mirrorH.addEventListener('click', ()=>applyMirror('h'));
+  mirrorV.addEventListener('click', ()=>applyMirror('v'));
+  mirrorHV.addEventListener('click', ()=>applyMirror('hv'));
+  function cycleMirror(){
+    const order = ['none','h','v','hv'];
+    const i = order.indexOf(mirrorState());
+    applyMirror(order[(i+1)%order.length]);
+  }
+
+  // RTL, Guide
+  rtlBtn.addEventListener('click', ()=>toggleRTL());
+  guideToggle.addEventListener('click', ()=>toggleGuide());
+
+  // Fullscreen with error handling
+  async function toggleFullscreen(){
+    try{
+      if (!document.fullscreenElement){ await stage.requestFullscreen(); }
+      else { await document.exitFullscreen(); }
+    }catch(err){
+      showToast('Fullscreen blocked by browser');
+    }
+  }
+  fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+  // Drag & drop
+  ['dragenter','dragover','dragleave','drop'].forEach(ev=>stage.addEventListener(ev, e=>{e.preventDefault();e.stopPropagation();}));
+  stage.addEventListener('drop', e=>{
+    const f = [...e.dataTransfer.files].find(x => !x.type || x.type==='text/plain' || /\.txt$/i.test(x.name));
+    if(!f) return;
+    const reader = new FileReader();
+    reader.onload = ()=> loadText(String(reader.result));
+    reader.onerror = ()=> showToast('Failed to read file');
+    reader.readAsText(f);
+  });
+
+  // Manual position control (pause on drag)
+  stage.addEventListener('pointerdown', e=>{
+    dragging = true; stage.setPointerCapture(e.pointerId);
+    dragStartY = e.clientY; yAtDragStart = y; stop(); // pause while dragging
+  });
+  stage.addEventListener('pointermove', e=>{
+    if(!dragging) return;
+    const dy = e.clientY - dragStartY;
+    y = yAtDragStart + dy;
+    content.style.top = `${y}px`;
+    computeScrollRatio();
+  });
+  stage.addEventListener('pointerup', e=>{
+    dragging = false; stage.releasePointerCapture(e.pointerId);
+  });
+
+  // Touch gestures: tap play/pause, swipe to adjust speed, pinch to zoom
+  stage.addEventListener('touchstart', e=>{
+    if(e.touches.length===2){
+      lastTouchDistance = dist(e.touches[0], e.touches[1]);
+    }else{
+      lastTouchDistance = null;
+    }
+  }, {passive:true});
+  stage.addEventListener('touchmove', e=>{
+    if(e.touches.length===2){
+      const d = dist(e.touches[0], e.touches[1]);
+      if(lastTouchDistance!=null){
+        const delta = d - lastTouchDistance;
+        size.value = clamp(+size.value + delta*0.03, +size.min, +size.max);
+        updateLabels();
+      }
+      lastTouchDistance = d;
+    }else if(e.touches.length===1){
+      // vertical swipe adjusts speed
+      const v = e.touches[0].clientY - stage.getBoundingClientRect().height/2;
+      speed.value = clamp(+speed.value - v*0.02, +speed.min, +speed.max);
+      updateLabels();
+    }
+  }, {passive:true});
+  stage.addEventListener('touchend', e=>{
+    if(e.touches.length===0){
+      // single tap toggles
+      running ? stop() : start();
+    }
+  });
+
+  function dist(a,b){ const dx=a.clientX-b.clientX, dy=a.clientY-b.clientY; return Math.hypot(dx,dy); }
+
+  // Page mode
+  pageModeBtn.addEventListener('click', ()=> setPageMode(!pageMode));
+  stage.addEventListener('dblclick', ()=> setPageMode(!pageMode));
+  window.addEventListener('keydown', e=>{
+    if(!pageMode) return;
+    if(e.key===' ' || e.key==='PageDown'){ e.preventDefault(); pageAdvance(1); }
+    else if(e.key==='PageUp'){ e.preventDefault(); pageAdvance(-1); }
+  });
+  function pageAdvance(dir=1){
+    const step = stage.clientHeight * (parseFloat(guide.style.height)/100 || .12);
+    y -= dir * (step || stage.clientHeight*0.9);
+    content.style.top = `${y}px`;
+    computeScrollRatio();
+  }
+
+  // Resize compensation: keep ratio position
+  window.addEventListener('resize', ()=>{
+    applyScrollRatio();
+    updateCuePositions();
+  });
+
+  // Guide drag (position)
+  (()=>{
+    let draggingGuide=false, startTop=0, startClientY=0;
+    guide.addEventListener('pointerdown', e=>{
+      draggingGuide=true; guide.setPointerCapture(e.pointerId);
+      startTop = parseFloat(getComputedStyle(guide).top);
+      startClientY = e.clientY;
+    });
+    guide.addEventListener('pointermove', e=>{
+      if(!draggingGuide) return;
+      const dy = e.clientY - startClientY;
+      const nt = clamp(startTop + dy, 0, stage.clientHeight - guide.offsetHeight);
+      guide.style.top = nt + 'px';
+    });
+    const up = e=>{ if(!draggingGuide) return; draggingGuide=false; guide.releasePointerCapture(e.pointerId); };
+    guide.addEventListener('pointerup', up);
+    guide.addEventListener('lostpointercapture', ()=> draggingGuide=false);
+  })();
+
+  // Init
+  updateLabels();
+  restore();
+  reset(true);
+
+  // Respect reduced motion by defaulting to Page Mode
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    setPageMode(true,false);
+  }
+
+  // Presenter mode (simple secondary window)
+  // Open console and call window.open('#presenter') to try it, or uncomment below to add a button.
+  // For minimalism, we keep it hidden but wired:
+  window.addEventListener('message', (e)=>{
+    if(!e.data || typeof e.data!=='object') return;
+    if(e.data.type==='remote'){
+      if(e.data.cmd==='play') start();
+      else if(e.data.cmd==='pause') stop();
+      else if(e.data.cmd==='speed') { speed.value = clamp(e.data.value, +speed.min, +speed.max); updateLabels(); }
+      else if(e.data.cmd==='size')  { size.value = clamp(e.data.value, +size.min, +size.max); updateLabels(); }
+    }
+  });
+
+  // Simple elapsed timer
+  const t0 = Date.now();
+  setInterval(()=>{ document.title = running?`▶ ${((Date.now()-t0)/1000|0)}s · Teleprompter`:'Teleprompter'; }, 1000);
+
+})();
+</script>
+</body>
+</html>
+```
