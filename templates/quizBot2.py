@@ -11,7 +11,7 @@ topic = input("What topic do you want your question to be about? ")
 question_response = client.chat.completions.create(
     model="gpt-4o-mini",
     messages=[
-        {"role": "system", "content": "You are a teacher who writes short quiz questions."},
+        {"role": "system", "content": "You are a teacher who writes short quiz questions. Put the answer after questions in this format: `Answer: <answer>`."},
         {"role": "user", "content": f"Write one simple quiz question about {topic}."}
     ]
 )
