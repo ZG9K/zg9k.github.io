@@ -19,3 +19,5 @@ while True:
     reply = response.choices[0].message.content
     print("AI:", reply)
     messages.append({"role": "assistant", "content": reply})
+
+    print(messages)
