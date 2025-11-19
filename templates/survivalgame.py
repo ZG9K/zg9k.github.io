@@ -27,7 +27,7 @@ scenario_response = client.chat.completions.create(
     ]
 )
 
-scenario_text = scenario_response.choices[0].message["content"]
+scenario_text = scenario_response.choices[0].message.content
 
 print("\nSCENARIO:")
 print(scenario_text)
@@ -47,8 +47,10 @@ Here is how the player tries to survive:
 
 Your job:
 - Explain what happens next.
-- Say whether their action succeeds or fails- wether they live or die.
+- Say whether their action succeeds or fails.
+- Keep it light, fun, and safe.
 - 2–4 sentences.
+- End with "Your move."
 """
 
 outcome_response = client.chat.completions.create(
@@ -58,7 +60,7 @@ outcome_response = client.chat.completions.create(
     ]
 )
 
-outcome_text = outcome_response.choices[0].message["content"]
+outcome_text = outcome_response.choices[0].message.content
 
 print("\nOUTCOME:")
 print(outcome_text)
