@@ -60,6 +60,7 @@ outcome_response = client.chat.completions.create(
     ]
 )
 
+
 outcome_text = outcome_response.choices[0].message.content
 
 print("\nOUTCOME:")

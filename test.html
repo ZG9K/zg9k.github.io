@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apex Legacy Bridge // SESSION ID: 89-X</title>
+  <link rel="stylesheet" href="https://use.typekit.net/dsm0ynv.css">
+  <style>
+    :root {
+      --bg-pattern: repeating-conic-gradient(#000 0% 25%, #fff 0% 50%);
+      --win-bg: #ffffff;
+      --win-border: #000000;
+      --highlight: #000000;
+      --highlight-text: #ffffff;
+      --font-main: 'lores-9-narrow', 'Courier New', monospace;
+    }
+
+    /* --- CRT & SCANLINES EFFECT --- */
+    body::after {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+      z-index: 9999;
+      background-size: 100% 2px, 3px 100%;
+      pointer-events: none;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: var(--font-main);
+      background-color: #444; /* Desktop BG outside mac screen */
+      overflow: hidden;
+      cursor: default;
+      user-select: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* The 640x480 Macintosh Screen Container */
+    #mac-screen {
+      width: 100%;
+      max-width: 1024px;
+      height: 100%;
+      max-height: 768px;
+      background-color: #fff;
+      background-image: var(--bg-pattern);
+      background-size: 2px 2px;
+      position: relative;
+      border: 20px solid #dedede;
+      box-shadow: 0 0 50px rgba(0,0,0,0.5);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    /* --- MENUBAR --- */
+    #menubar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 24px;
+      background: #fff;
+      border-bottom: 2px solid #000;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      gap: 20px;
+      z-index: 100;
+      font-size: 18px;
+    }
+    .menu-item { cursor: pointer; }
+    .menu-item:hover { text-decoration: underline; }
+    .apple-logo { font-weight: bold; }
+
+    /* --- DESKTOP ICONS --- */
+    .desktop-icon {
+      width: 64px;
+      text-align: center;
+      position: absolute;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .icon-img {
+      width: 48px;
+      height: 48px;
+      border: 2px solid black;
+      background: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      box-shadow: 2px 2px 0 #000;
+    }
+    .icon-label {
+      background: #fff;
+      border: 1px solid transparent;
+      padding: 0 4px;
+      font-size: 14px;
+    }
+    .desktop-icon:active .icon-img { background: #000; color: #fff; }
+    .desktop-icon:active .icon-label { background: #000; color: #fff; }
+
+    /* --- WINDOWS --- */
+    .window {
+      position: absolute;
+      display: none; /* Hidden by default */
+      flex-direction: column;
+      background: var(--win-bg);
+      box-shadow: 4px 4px 0 #000;
+      border: 2px solid #000;
+      min-width: 200px;
+      min-height: 150px;
+      font-size: 16px;
+    }
+    .visible { display: flex; }
+
+    .titlebar {
+      height: 24px;
+      background: repeating-linear-gradient(
+        90deg,
+        #000,
+        #000 2px,
+        #fff 2px,
+        #fff 4px
+      );
+      color: #000;
+      padding: 2px;
+      cursor: move;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #000;
+    }
+    .title-text {
+      background: #fff;
+      padding: 0 10px;
+      font-weight: bold;
+      margin: 0 auto;
+      border: 1px solid #000;
+    }
+    .close-btn {
+      width: 18px;
+      height: 18px;
+      border: 1px solid #000;
+      background: #fff;
+      cursor: pointer;
+      margin-left: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: bold;
+    }
+    .close-btn:hover { background: #000; color: #fff; }
+
+    .content {
+      flex: 1;
+      overflow: auto;
+      padding: 10px;
+      position: relative;
+    }
+
+    /* --- SPECIFIC APP STYLES --- */
+    
+    /* Excel Clone */
+    .spreadsheet { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .spreadsheet td, .spreadsheet th { border: 1px solid #000; padding: 2px 5px; }
+    .spreadsheet th { background: #ccc; }
+    .spreadsheet tr.glitch-row { display: none; } /* Hidden until sorted */
+    .spreadsheet tr.glitch-row.revealed { 
+      display: table-row; 
+      background: #000; 
+      color: #fff; 
+      animation: flicker 0.1s infinite;
+    }
+
+    /* PDF Manual */
+    .manual-page {
+      border: 1px solid #000;
+      padding: 20px;
+      font-family: 'Courier New', monospace;
+      line-height: 1.4;
+      height: 300px;
+      overflow-y: scroll;
+      background: #fffdf0;
+    }
+    .manual-note {
+      font-family: cursive;
+      color: #444;
+      transform: rotate(-2deg);
+      border: 2px solid #444;
+      padding: 5px;
+      display: inline-block;
+      margin: 10px;
+    }
+
+    /* Terminal */
+    .terminal-screen {
+      background: #000;
+      color: #33ff00;
+      font-family: 'Courier New', monospace;
+      padding: 10px;
+      height: 100%;
+      box-sizing: border-box;
+      overflow-y: auto;
+    }
+    .terminal-input {
+      background: transparent;
+      border: none;
+      color: #33ff00;
+      font-family: inherit;
+      width: 80%;
+      outline: none;
+    }
+
+    /* Chat Overlay (Director Sterling) */
+    #chat-overlay {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 280px;
+      background: #dedede;
+      border: 2px solid #444;
+      border-top: 4px solid #444;
+      font-family: sans-serif;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      z-index: 2000;
+    }
+    #chat-header {
+      background: #444;
+      color: #fff;
+      padding: 5px;
+      font-weight: bold;
+    }
+    #chat-history {
+      height: 150px;
+      overflow-y: auto;
+      padding: 10px;
+      background: #fff;
+      border-bottom: 1px solid #ccc;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .msg { padding: 5px; border-radius: 4px; }
+    .msg.sterling { background: #e1f5fe; border-left: 3px solid #0288d1; }
+    .msg.system { background: #ffebee; border-left: 3px solid #d32f2f; font-style: italic;}
+    .hidden { display: none; }
+    
+    /* Utilities */
+    button.retro-btn {
+      background: #fff;
+      border: 2px solid #000;
+      padding: 5px 10px;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 2px 2px 0 #000;
+    }
+    button.retro-btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: none;
+    }
+
+    /* Animations */
+    @keyframes flicker {
+      0% { opacity: 1; }
+      50% { opacity: 0.8; }
+      100% { opacity: 1; }
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+    .blink { animation: blink 1s steps(1) infinite; }
+
+    /* Printer Buffer */
+    .buffer-grid {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 2px;
+      margin-top: 10px;
+    }
+    .buffer-cell {
+      width: 20px;
+      height: 20px;
+      background: #000;
+      cursor: pointer;
+    }
+    .buffer-cell.cleaned { background: #fff; border: 1px solid #ccc; }
+
+  </style>
+</head>
+<body>
+
+<div id="mac-screen">
+  
+  <!-- MENU BAR -->
+  <div id="menubar">
+    <span class="apple-logo"></span>
+    <span class="menu-item" onclick="alert('System 4.2 - Apex Legacy Build')">System</span>
+    <span class="menu-item">File</span>
+    <span class="menu-item">Edit</span>
+    <span class="menu-item">Special</span>
+    <span style="margin-left:auto; font-size:14px;" id="clock">09:00 AM</span>
+  </div>
+
+  <!-- DESKTOP ICONS -->
+  <div class="desktop-icon" style="top: 50px; right: 20px;" onclick="openWindow('hard-drive')">
+    <div class="icon-img">💾</div>
+    <div class="icon-label">Apex_HD</div>
+  </div>
+
+  <div class="desktop-icon" style="top: 140px; right: 20px;" onclick="openWindow('manual-viewer')">
+    <div class="icon-img">📄</div>
+    <div class="icon-label">MANUAL.PDF</div>
+  </div>
+
+  <div class="desktop-icon" style="bottom: 50px; right: 20px;" onclick="triggerTrash()">
+    <div class="icon-img">🗑️</div>
+    <div class="icon-label">Trash</div>
+  </div>
+
+  <div class="desktop-icon hidden" id="icon-truth" style="top: 230px; right: 20px;" onclick="openWindow('printer-spooler')">
+    <div class="icon-img">🖨️</div>
+    <div class="icon-label">TRUTH.SIT</div>
+  </div>
+
+  <!-- WINDOW: HARD DRIVE -->
+  <div class="window" id="win-hard-drive" style="left: 50px; top: 80px; width: 400px; height: 300px;">
+    <div class="titlebar" onmousedown="startDrag(event, 'win-hard-drive')">
+      <div class="close-btn" onclick="closeWindow('win-hard-drive')">X</div>
+      <div class="title-text">Apex_HD (12MB free)</div>
+    </div>
+    <div class="content">
+      <div style="display:flex; flex-wrap:wrap; gap:20px;">
+        <div class="desktop-icon" style="position:relative;" onclick="openWindow('ledger-app')">
+          <div class="icon-img">📊</div>
+          <div class="icon-label">Ledger</div>
+        </div>
+        <div class="desktop-icon" style="position:relative;" onclick="checkSystemAccess()">
+          <div class="icon-img">📁</div>
+          <div class="icon-label">System</div>
+        </div>
+        <div class="desktop-icon" style="position:relative;" onclick="openWindow('mail-app')">
+          <div class="icon-img">✉️</div>
+          <div class="icon-label">Eudora</div>
+        </div>
+        <div class="desktop-icon" style="position:relative;" onclick="openWindow('terminal-app')">
+          <div class="icon-img">💻</div>
+          <div class="icon-label">Terminal</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WINDOW: LEDGER -->
+  <div class="window" id="win-ledger-app" style="left: 80px; top: 100px; width: 450px; height: 350px;">
+    <div class="titlebar" onmousedown="startDrag(event, 'win-ledger-app')">
+      <div class="close-btn" onclick="closeWindow('win-ledger-app')">X</div>
+      <div class="title-text">Apex_Ledger v1.0</div>
+    </div>
+    <div class="content">
+      <div style="margin-bottom: 10px; border-bottom: 1px solid #000; padding-bottom:5px;">
+        <button class="retro-btn" onclick="sortLedger()">Data > Sort by Date</button>
+        <span id="sort-status" style="margin-left:10px; font-style:italic;"></span>
+      </div>
+      <table class="spreadsheet" id="ledger-table">
+        <thead><tr><th>ID</th><th>Date</th><th>Amount</th><th>Ref</th></tr></thead>
+        <tbody id="ledger-body">
+          <!-- JS will populate -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- WINDOW: MANUAL -->
+  <div class="window" id="win-manual-viewer" style="left: 150px; top: 50px; width: 400px; height: 400px;">
+    <div class="titlebar" onmousedown="startDrag(event, 'win-manual-viewer')">
+      <div class="close-btn" onclick="closeWindow('win-manual-viewer')">X</div>
+      <div class="title-text">Preview: MANUAL.PDF</div>
+    </div>
+    <div class="content">
+      <div class="manual-page">
+        <h2 style="text-align:center; text-decoration:underline;">APEX SYSTEM ADMIN MANUAL (1987)</h2>
+        <p><strong>Page 12: Extension Management</strong></p>
+        <p>The System Folder contains critical .INIT files. Do not modify unless authorized.</p>
+        <div class="manual-note">NOTE: The OMEGA extension conflicts with the modem driver! If the modem initializes while OMEGA is active, the system will hang. -Gary</div>
+        <hr>
+        <p><strong>Page 42: Error Codes</strong></p>
+        <p>Error -101: Disk Full.</p>
+        <p>Error -192: Resource locked by extension 'OMEGA'. Cannot delete file.</p>
+        <p>Error -404: Coffee machine empty.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- WINDOW: MAIL (EUDORA) -->
+  <div class="window" id="win-mail-app" style="left: 200px; top: 120px; width: 380px; height: 300px;">
+    <div class="titlebar" onmousedown="startDrag(event, 'win-mail-app')">
+      <div class="close-btn" onclick="closeWindow('win-mail-app')">X</div>
+      <div class="title-text">Eudora Lite - gary@apex.local</div>
+    </div>
+    <div class="content">
+      <ul style="list-style:none; padding:0;">
+        <li style="border-bottom:1px solid #000; padding:4px; cursor:pointer;" onclick="showEmail(1)">From: The Founder | Subj: URGENT</li>
+        <li style="border-bottom:1px solid #000; padding:4px; cursor:pointer;" onclick="showEmail(2)">From: Martha | Subj: The Derby!</li>
+        <li style="border-bottom:1px solid #000; padding:4px; cursor:pointer;" onclick="showEmail(3)">From: HR | Subj: Parking Spot</li>
+      </ul>
+      <div id="email-preview" style="background:#eee; padding:5px; height:150px; margin-top:10px; border:1px solid #000;">
+        Select an email to read.
+      </div>
+    </div>
+  </div>
+
+  <!-- WINDOW: SYSTEM FOLDER (Password Protected) -->
+  <div class="window" id="win-system-auth" style="left: 300px; top: 200px; width: 300px; height: 150px; z-index:999;">
+    <div class="titlebar">
+      <div class="close-btn" onclick="closeWindow('win-system-auth')">X</div>
+      <div class="title-text">Security</div>
+    </div>
+    <div class="content" style="text-align:center;">
+      <p>Enter Admin Password:</p>
+      <p>Hint: Gary's big win (1989)</p>
+      <input type="text" id="sys-pass" class="retro-btn" style="width:80%; text-transform:uppercase;">
+      <br><br>
+      <button class="retro-btn" onclick="unlockSystem()">Unlock</button>
+    </div>
+  </div>
+
+  <!-- WINDOW: SYSTEM CONTENTS -->
+  <div class="window" id="win-system-folder" style="left: 100px; top: 100px; width: 350px; height: 250px;">
+    <div class="titlebar" onmousedown="startDrag(event, 'win-system-folder')">
+      <div class="close-btn" onclick="closeWindow('win-system-folder')">X</div>
+      <div class="title-text">System Folder</div>
+    </div>
+    <div class="content">
+      <div class="desktop-icon" style="position:relative;" onmousedown="tryDeleteOmega()">
+        <div class="icon-img">⚙️</div>
+        <div class="icon-label">OMEGA.INIT</div>
+      </div>
+      <p style="margin-top:80px; font-size:12px;">Drag file to Trash to delete.</p>
+      <div id="omega-msg" style="color:red;"></div>
+    </div>
+  </div>
+
+  <!-- WINDOW: TERMINAL -->
+  <div class="window" id="win-terminal-app" style="left: 150px; top: 150px; width: 500px; height: 350px;">
+    <div class="titlebar" onmousedown="startDrag(event, 'win-terminal-app')">
+      <div class="close-btn" onclick="closeWindow('win-terminal-app')">X</div>
+      <div class="title-text">Apex_Term v.2.0</div>
+    </div>
+    <div class="content" style="padding:0; background:black;">
+      <div class="terminal-screen" id="term-output">
+        <div>APEX CAPITAL MAINFRAME LINK [ONLINE]</div>
+        <div>Type 'HELP' for commands.</div>
+        <br>
+      </div>
+      <div style="display:flex; padding:5px; border-top:1px solid #33ff00;">
+        <span style="color:#33ff00;">></span>
+        <input type="text" class="terminal-input" id="term-input" autofocus onkeydown="handleTermInput(event)">
+      </div>
+    </div>
+  </div>
+
+  <!-- WINDOW: DISK SWAPPER -->
+  <div class="window" id="win-disk-utility" style="left: 300px; top: 300px; width: 300px; height: 200px;">
+    <div class="titlebar" onmousedown="startDrag(event, 'win-disk-utility')">
+      <div class="title-text">Disk Utility</div>
+    </div>
+    <div class="content" style="text-align:center;">
+      <p>Current Mount: <span id="current-disk">SYSTEM_DISK</span></p>
+      <hr>
+      <button class="retro-btn" onclick="swapDisk('SYSTEM')">Insert SYSTEM</button>
+      <br><br>
+      <button class="retro-btn" onclick="swapDisk('UTILS')">Insert UTILS</button>
+      <br><br>
+      <p id="disk-msg" style="font-style:italic; font-size:12px;"></p>
+    </div>
+  </div>
+
+  <!-- WINDOW: PRINTER SPOOLER -->
+  <div class="window" id="win-printer-spooler" style="left: 200px; top: 100px; width: 400px; height: 450px;">
+    <div class="titlebar" onmousedown="startDrag(event, 'win-printer-spooler')">
+      <div class="close-btn" onclick="closeWindow('win-printer-spooler')">X</div>
+      <div class="title-text">ImageWriter II Queue</div>
+    </div>
+    <div class="content">
+      <p>Status: JAMMED. Clear buffer to print.</p>
+      <div class="buffer-grid" id="buffer-grid"></div>
+      <div id="doc-reveal" class="hidden" style="margin-top:20px; border:2px solid #000; padding:10px; background:#fff;">
+        <h3 style="text-align:center;">THE OZYMANDIAS PROTOCOL</h3>
+        <p style="font-size:12px;">Dated: Feb 1989. To: The Board.</p>
+        <p style="font-size:12px;">This document confirms the transfer of $50M in cartel assets to Apex Offshore Holdings...</p>
+        <br>
+        <button class="retro-btn" style="width:100%; color:red;" onclick="endGame('leak')">UPLOAD TO FTP (LEAK)</button>
+        <br><br>
+        <button class="retro-btn" style="width:100%;" onclick="endGame('rich')">DELETE FILE (GET PAID)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT OVERLAY -->
+  <div id="chat-overlay">
+    <div id="chat-header">Direct Link: Dir. Sterling</div>
+    <div id="chat-history">
+      <div class="msg sterling">Sterling: Connection established. The 1989 drive is live. Listen to me carefully.</div>
+      <div class="msg sterling">Sterling: There is a glitch in the ledger. Old corruption. Find it and delete it.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  /* --- AUDIO SYSTEM (Web Audio API) --- */
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  
+  function playSound(type) {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    const now = audioCtx.currentTime;
+
+    if (type === 'click') {
+      // Hard drive click
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(150, now);
+      osc.frequency.exponentialRampToValueAtTime(40, now + 0.1);
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+      osc.start(now);
+      osc.stop(now + 0.1);
+    } else if (type === 'alert') {
+      // System beep
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(800, now);
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+      osc.start(now);
+      osc.stop(now + 0.3);
+    } else if (type === 'modem') {
+      // Modem screech simulation
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(1200, now);
+      osc.frequency.linearRampToValueAtTime(2400, now + 1);
+      gain.gain.setValueAtTime(0.1, now);
+      osc.start(now);
+      
+      // Add noise
+      const bufferSize = audioCtx.sampleRate * 2; // 2 seconds
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+      
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+      const noiseGain = audioCtx.createGain();
+      noiseGain.gain.value = 0.15;
+      noise.connect(noiseGain);
+      noiseGain.connect(audioCtx.destination);
+      noise.start(now);
+      
+      setTimeout(() => { osc.stop(); noise.stop(); }, 2000);
+    }
+  }
+
+  /* --- GAME STATE --- */
+  const state = {
+    phase: 1,
+    ledgerSorted: false,
+    systemUnlocked: false,
+    omegaCrashed: false,
+    connectedBBS: false,
+    diskMounted: 'SYSTEM', // or UTILS
+    fileDownloaded: false,
+    bufferCleared: 0
+  };
+
+  /* --- CHAT SYSTEM --- */
+  function sendChat(text, sender = 'sterling') {
+    const hist = document.getElementById('chat-history');
+    const div = document.createElement('div');
+    div.className = `msg ${sender}`;
+    div.innerText = (sender === 'sterling' ? 'Sterling: ' : 'System: ') + text;
+    hist.appendChild(div);
+    hist.scrollTop = hist.scrollHeight;
+    playSound('alert');
+  }
+
+  /* --- WINDOW MANAGEMENT --- */
+  let highestZ = 10;
+  function openWindow(id) {
+    playSound('click');
+    
+    // Special checks
+    if (id === 'printer-spooler' && !state.fileDownloaded) {
+      alert("File is compressed. Use Disk Utility to mount Expander.");
+      return;
+    }
+
+    const win = document.getElementById('win-' + id);
+    win.classList.add('visible');
+    win.style.zIndex = ++highestZ;
+  }
+
+  function closeWindow(id) {
+    document.getElementById(id).classList.remove('visible');
+  }
+
+  // Dragging Logic
+  let dragItem = null;
+  let dragOffsetX = 0;
+  let dragOffsetY = 0;
+
+  function startDrag(e, id) {
+    dragItem = document.getElementById(id);
+    dragItem.style.zIndex = ++highestZ;
+    const rect = dragItem.getBoundingClientRect();
+    dragOffsetX = e.clientX - rect.left;
+    dragOffsetY = e.clientY - rect.top;
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', stopDrag);
+  }
+
+  function drag(e) {
+    if (!dragItem) return;
+    const screen = document.getElementById('mac-screen').getBoundingClientRect();
+    let x = e.clientX - screen.left - dragOffsetX;
+    let y = e.clientY - screen.top - dragOffsetY;
+    dragItem.style.left = x + 'px';
+    dragItem.style.top = y + 'px';
+  }
+
+  function stopDrag() {
+    dragItem = null;
+    document.removeEventListener('mousemove', drag);
+    document.removeEventListener('mouseup', stopDrag);
+  }
+
+  /* --- APP LOGIC --- */
+
+  // 1. LEDGER
+  function initLedger() {
+    const tbody = document.getElementById('ledger-body');
+    let html = '';
+    for(let i=0; i<15; i++) {
+      html += `<tr><td>TX-${8000+i}</td><td>04/12/1989</td><td>$${(Math.random()*1000).toFixed(2)}</td><td>VALID</td></tr>`;
+    }
+    // Glitch rows
+    html += `<tr class="glitch-row"><td>ERR-192</td><td>02/30/1989</td><td>RES_LOCKED</td><td>OMEGA</td></tr>`;
+    html += `<tr class="glitch-row"><td>ERR-192</td><td>02/30/1989</td><td>SEE_MANUAL</td><td>PG_42</td></tr>`;
+    
+    for(let i=0; i<10; i++) {
+      html += `<tr><td>TX-${9000+i}</td><td>04/15/1989</td><td>$${(Math.random()*1000).toFixed(2)}</td><td>VALID</td></tr>`;
+    }
+    tbody.innerHTML = html;
+  }
+  initLedger();
+
+  function sortLedger() {
+    playSound('click');
+    document.getElementById('sort-status').innerText = "Sorting...";
+    document.body.style.cursor = "wait";
+    
+    setTimeout(() => {
+      document.body.style.cursor = "default";
+      document.getElementById('sort-status').innerText = "Done.";
+      document.querySelectorAll('.glitch-row').forEach(el => el.classList.add('revealed'));
+      state.ledgerSorted = true;
+      setTimeout(() => sendChat("Sterling: Impossible dates? Check the Error Code in the Manual."), 2000);
+    }, 3000); // 3s lag
+  }
+
+  // 2. MAIL
+  function showEmail(id) {
+    const preview = document.getElementById('email-preview');
+    if(id === 1) preview.innerHTML = "<strong>To: Gary</strong><br>Hide the assets. Use the 'Omega' extension to lock the drive. If the Feds come, pull the plug.";
+    if(id === 2) preview.innerHTML = "<strong>To: Gary</strong><br>Gary! Can you believe it? 'SUNCHASER' won the Derby! We're rich! I'm using that name for everything now!";
+    if(id === 3) preview.innerHTML = "<strong>To: Gary</strong><br>Please stop parking your motorcycle in the lobby.";
+  }
+
+  // 3. SYSTEM UNLOCK
+  function checkSystemAccess() {
+    if (state.systemUnlocked) {
+      openWindow('system-folder');
+    } else {
+      openWindow('system-auth');
+    }
+  }
+
+  function unlockSystem() {
+    const input = document.getElementById('sys-pass').value.toUpperCase();
+    if (input === 'SUNCHASER') {
+      state.systemUnlocked = true;
+      closeWindow('win-system-auth');
+      openWindow('system-folder');
+      playSound('alert');
+    } else {
+      alert("ACCESS DENIED");
+    }
+  }
+
+  function tryDeleteOmega() {
+    alert("Error -192: Resource Locked. Extension Active.");
+  }
+
+  // 4. TERMINAL & MODEM
+  function handleTermInput(e) {
+    if (e.key === 'Enter') {
+      const input = e.target.value.toUpperCase().trim();
+      const output = document.getElementById('term-output');
+      output.innerHTML += `<div>> ${input}</div>`;
+      e.target.value = '';
+
+      if (input === 'HELP') {
+        output.innerHTML += `<div>COMMANDS: LIST, CD, ATDT [NUMBER]</div>`;
+      } else if (input.startsWith('ATDT')) {
+        if (input.includes('555-0199')) {
+          // Dialing
+          output.innerHTML += `<div>DIALING 555-0199...</div>`;
+          playSound('modem');
+          setTimeout(() => {
+             startBBS();
+          }, 2500);
+        } else {
+          output.innerHTML += `<div>NO CARRIER</div>`;
+        }
+      } else {
+        output.innerHTML += `<div>UNKNOWN COMMAND</div>`;
+      }
+      output.scrollTop = output.scrollHeight;
+    }
+  }
+
+  function startBBS() {
+    const term = document.getElementById('term-output');
+    term.style.color = "#00ff00"; // Hacker green
+    term.innerHTML = "";
+    term.innerHTML += `<div>CONNECT 1200 BAUD</div>`;
+    term.innerHTML += `<div>WELCOME TO OZYMANDIAS ARCHIVE.</div>`;
+    term.innerHTML += `<div>DOWNLOADING PAYLOAD...</div>`;
+    
+    // Sterling panic
+    sendChat("WHAT ARE YOU DOING? STOP!", 'sterling');
+    sendChat("YOU ARE TRIGGERING THE FAILSAFE!", 'sterling');
+
+    setTimeout(() => {
+      term.innerHTML += `<div>DOWNLOAD COMPLETE: TRUTH.SIT</div>`;
+      term.innerHTML += `<div>CONNECTION CLOSED.</div>`;
+      document.getElementById('icon-truth').classList.remove('hidden');
+      state.fileDownloaded = true;
+      state.omegaCrashed = true; // Conflict triggered
+      // Crash Omega Logic
+      document.getElementById('omega-msg').innerText = "EXTENSION CRASHED DUE TO MODEM CONFLICT.";
+    }, 3000);
+  }
+
+  // 5. DISK SWAP & EXPANDER
+  function swapDisk(diskName) {
+    playSound('click');
+    playSound('click'); // Grinding sound
+    document.getElementById('disk-msg').innerText = "Mounting " + diskName + "...";
+    setTimeout(() => {
+      state.diskMounted = diskName;
+      document.getElementById('current-disk').innerText = diskName + "_DISK";
+      document.getElementById('disk-msg').innerText = "Ready.";
+      
+      if (diskName === 'UTILS' && state.fileDownloaded) {
+        // Automatically expand file if Utils is mounted and file exists
+        setTimeout(() => {
+          alert("StuffIt Expander: Archive TRUTH.SIT expanded to Printer Spooler.");
+          openWindow('printer-spooler');
+          initBufferGame();
+        }, 1000);
+      }
+    }, 2000);
+  }
+
+  // 6. PRINTER GAME
+  function initBufferGame() {
+    const grid = document.getElementById('buffer-grid');
+    grid.innerHTML = '';
+    for(let i=0; i<50; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'buffer-cell';
+      cell.onclick = function() {
+        this.classList.add('cleaned');
+        state.bufferCleared++;
+        playSound('click');
+        if (state.bufferCleared >= 10) { // Simplified for demo
+          document.getElementById('doc-reveal').classList.remove('hidden');
+        }
+      };
+      grid.appendChild(cell);
+    }
+    sendChat("Don't read it. Just delete it. I'm sending $50k now.", 'sterling');
+  }
+
+  function endGame(choice) {
+    document.body.innerHTML = "";
+    document.body.style.backgroundColor = "black";
+    document.body.style.color = "white";
+    document.body.style.display = "flex";
+    document.body.style.flexDirection = "column";
+    document.body.style.justifyContent = "center";
+    document.body.style.alignItems = "center";
+    document.body.style.fontFamily = "Courier New";
+
+    if (choice === 'rich') {
+      document.body.innerHTML = `<h1>TRANSFER COMPLETE</h1><h2>$50,000.00 DEPOSITED</h2><p>Apex Capital thanks you for your discretion.</p>`;
+    } else {
+      document.body.innerHTML = `<h1>UPLOAD COMPLETE</h1><h2>SYSTEM FAILURE</h2><p>News feeds are picking up the signal...</p><p>The truth is out.</p>`;
+    }
+  }
+
+  function triggerTrash() {
+    if (state.omegaCrashed) {
+      alert("Trash is empty.");
+    } else {
+      alert("Cannot empty trash. Resource busy.");
+    }
+  }
+
+  // Start Clock
+  setInterval(() => {
+    const d = new Date();
+    document.getElementById('clock').innerText = d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  }, 1000);
+
+</script>
+</body>
+</html>
