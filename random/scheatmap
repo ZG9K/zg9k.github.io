@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schamilton Theatre Seat Map</title>
+    <style>
+        :root {
+            --seat-color: #4a90e2;
+            --seat-hover: #357abd;
+            --booth-color: #666;
+            --door-color: #8b4513;
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            min-width: 800px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .stage {
+            width: 60%;
+            height: 40px;
+            background: #333;
+            color: white;
+            margin: 0 auto 50px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0 0 50px 50px;
+            font-weight: bold;
+        }
+
+        .section-label {
+            margin: 30px 0 15px 0;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #ddd;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .walkway {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-style: italic;
+            color: #888;
+            font-size: 0.9rem;
+            margin: 10px 0;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 6px;
+            white-space: nowrap;
+        }
+
+        .row-label {
+            width: 30px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        .wing {
+            display: flex;
+            gap: 2px;
+        }
+
+        .center-block {
+            display: flex;
+            gap: 2px;
+            margin: 0 30px;
+        }
+
+        .seat {
+            width: 14px;
+            height: 14px;
+            background-color: var(--seat-color);
+            border-radius: 3px 3px 0 0;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .seat:hover {
+            background-color: var(--seat-hover);
+        }
+
+        .tech-booth {
+            background: var(--booth-color);
+            color: white;
+            padding: 0 70px;
+            height: 20px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .door {
+            background: var(--door-color);
+            color: white;
+            padding: 0 10px;
+            height: 18px;
+            font-size: 0.6rem;
+            display: flex;
+            align-items: center;
+            border-radius: 2px;
+        }
+
+        .gap {
+            width: 50px;
+        }
+
+        .empty-wing {
+            visibility: hidden;
+        }
+
+        .legend {
+            margin-top: 40px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .legend-item { display: flex; align-items: center; gap: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="stage">STAGE</div>
+
+    <div class="section-label">STALLS</div>
+    
+    <div id="stalls-container">
+        <script>
+            const stallsData = [
+                {row: 'A', l: 5, c: 17, r: 5},
+                {row: 'B', l: 7, c: 17, r: 7},
+                {row: 'C', l: 9, c: 17, r: 9},
+                {row: 'D', l: 9, c: 17, r: 9},
+                {row: 'E', l: 10, c: 17, r: 10},
+                {row: 'F', l: 10, c: 17, r: 10},
+                {row: 'G', l: 11, c: 19, r: 11},
+                {row: 'H', l: 12, c: 19, r: 12},
+            ];
+
+            function createSeats(num) {
+                let html = '';
+                for(let i=0; i<num; i++) html += '<div class="seat"></div>';
+                return html;
+            }
+
+            stallsData.forEach(data => {
+                document.write(`
+                    <div class="row">
+                        <div class="row-label">${data.row}</div>
+                        <div class="wing">${createSeats(data.l)}</div>
+                        <div class="center-block">${createSeats(data.c)}</div>
+                        <div class="wing">${createSeats(data.r)}</div>
+                        <div class="row-label">${data.row}</div>
+                    </div>
+                `);
+            });
+        </script>
+
+        <div class="walkway">WALKWAY</div>
+
+        <div class="row">
+            <div class="row-label">I</div>
+            <div class="wing empty-wing" style="width: 168px"></div>
+            <div class="center-block"><script>document.write(createSeats(19))</script></div>
+            <div class="wing empty-wing" style="width: 168px"></div>
+            <div class="row-label">I</div>
+        </div>
+
+        <script>
+            const stallsUnderData = [
+                {row: 'J', l: 12, c: 19, r: 12},
+                {row: 'K', l: 12, c: 19, r: 12},
+                {row: 'L', l: 11, c: 21, r: 11},
+                {row: 'M', l: 11, c: 21, r: 11},
+                {row: 'N', l: 11, c: 21, r: 11},
+                {row: 'O', l: 11, c: 21, r: 11}
+            ];
+            stallsUnderData.forEach(data => {
+                document.write(`
+                    <div class="row">
+                        <div class="row-label">${data.row}</div>
+                        <div class="wing">${createSeats(data.l)}</div>
+                        <div class="center-block">${createSeats(data.c)}</div>
+                        <div class="wing">${createSeats(data.r)}</div>
+                        <div class="row-label">${data.row}</div>
+                    </div>
+                `);
+            });
+        </script>
+
+        <div class="row">
+            <div class="row-label">P</div>
+            <div class="wing"><script>document.write(createSeats(11))</script></div>
+            <div class="center-block">
+                <div class="wing"><script>document.write(createSeats(4))</script></div>
+                <div class="tech-booth">TECH BOOTH</div>
+                <div class="wing"><script>document.write(createSeats(4))</script></div>
+            </div>
+            <div class="wing"><script>document.write(createSeats(11))</script></div>
+            <div class="row-label">P</div>
+        </div>
+
+        <div class="row">
+            <div class="row-label">Q</div>
+            <div class="wing"><script>document.write(createSeats(11))</script></div>
+            <div class="center-block">
+                <div class="tech-booth" style="width: 200px; justify-content: center;">TECH BOOTH</div>
+            </div>
+            <div class="wing"><script>document.write(createSeats(11))</script></div>
+            <div class="row-label">Q</div>
+        </div>
+    </div>
+
+    <div class="section-label">DRESS CIRCLE</div>
+
+    <div id="dress-container">
+        <script>
+            const dressDataTop = [
+                {row: 'A', l: 12, c: 19, r: 12},
+                {row: 'B', l: 12, c: 19, r: 12},
+                {row: 'C', l: 12, c: 19, r: 12},
+                {row: 'D', l: 12, c: 19, r: 12}
+            ];
+            dressDataTop.forEach(data => {
+                document.write(`
+                    <div class="row">
+                        <div class="row-label">${data.row}</div>
+                        <div class="wing">${createSeats(data.l)}</div>
+                        <div class="center-block">${createSeats(data.c)}</div>
+                        <div class="wing">${createSeats(data.r)}</div>
+                        <div class="row-label">${data.row}</div>
+                    </div>
+                `);
+            });
+        </script>
+
+        <div class="walkway">WALKWAY</div>
+
+        <div class="row">
+            <div class="row-label">E</div>
+            <div class="wing"><div class="door">DOORS</div></div>
+            <div class="center-block"><script>document.write(createSeats(21))</script></div>
+            <div class="wing"><div class="door">DOORS</div></div>
+            <div class="row-label">E</div>
+        </div>
+
+        <div class="row">
+            <div class="row-label">F</div>
+            <div class="wing">
+                <script>document.write(createSeats(5))</script>
+                <div class="door">DOORS</div>
+            </div>
+            <div class="center-block"><script>document.write(createSeats(21))</script></div>
+            <div class="wing">
+                <div class="door">DOORS</div>
+                <script>document.write(createSeats(5))</script>
+            </div>
+            <div class="row-label">F</div>
+        </div>
+
+        <div class="row">
+            <div class="row-label">G</div>
+            <div class="wing">
+                <script>document.write(createSeats(5))</script>
+                <div class="door">DOORS</div>
+            </div>
+            <div class="center-block"><div class="gap" style="width: 335px;"></div></div>
+            <div class="wing">
+                <div class="door">DOORS</div>
+                <script>document.write(createSeats(5))</script>
+            </div>
+            <div class="row-label">G</div>
+        </div>
+
+        <script>
+            const dressDataBottom = [
+                {row: 'H', l: 11, c: 21, r: 11},
+                {row: 'I', l: 11, c: 21, r: 11}
+            ];
+            dressDataBottom.forEach(data => {
+                document.write(`
+                    <div class="row">
+                        <div class="row-label">${data.row}</div>
+                        <div class="wing">${createSeats(data.l)}</div>
+                        <div class="center-block">${createSeats(data.c)}</div>
+                        <div class="wing">${createSeats(data.r)}</div>
+                        <div class="row-label">${data.row}</div>
+                    </div>
+                `);
+            });
+        </script>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item"><div class="seat"></div> Available Seat</div>
+        <div class="legend-item"><div class="door" style="width:10px; height:10px"></div> Access Door</div>
+        <div class="legend-item"><div class="tech-booth" style="width:10px; height:10px; padding:0"></div> Tech Booth</div>
+    </div>
+</div>
+
+</body>
+</html>
