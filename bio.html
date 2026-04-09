@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Desktop</title>
 <link rel="stylesheet" href="https://use.typekit.net/dsm0ynv.css">
 <style>
-  /* keep your global site font */
   html, body{
     height:100%; margin:0;
     font-family: lores-9-narrow, sans-serif;
@@ -34,11 +32,11 @@
     src:url('assets/fonts/geneva-9-1.otf') format('opentype');
     font-weight:normal; font-style:normal;
   }
-  .window .title{ 
-    font-family:'geneva-9-1', sans-serif; 
+  .window .title{
+    font-family:'geneva-9-1', sans-serif;
     transform:translate(-5px,-3px);
   }
-  .window .content{ 
+  .window .content{
     flex:1; overflow:hidden; background:#dedede; padding:6px; color:#000;
     font-family:'geneva-9-1', sans-serif;
   }
@@ -52,6 +50,39 @@
 
   .ico{ width:14px; height:14px; vertical-align:middle; margin-right:2px; }
 
+  /* Horizontal image banner */
+  .bio-banner{
+    width:100%;
+    height:120px;
+    background:
+      repeating-linear-gradient(45deg, #bbb 0 8px, #cfcfcf 8px 16px);
+    border:2px solid #000;
+    box-sizing:border-box;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#555;
+    font-family:'geneva-9-1', sans-serif;
+    margin-bottom:8px;
+    overflow:hidden;
+    position:relative;
+  }
+  .bio-banner::after{
+    content:"[ banner image ]";
+    background:#fff;
+    border:1px solid #000;
+    padding:2px 6px;
+  }
+
+  /* Text bio block */
+  .text-bio{
+    background:#fff;
+    border:1px solid #000;
+    padding:6px 8px;
+    margin:6px 0 8px;
+    line-height:1.35;
+  }
+
   .footer-grid{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -59,6 +90,7 @@
     margin-top:10px;
   }
 
+  /* ===== Mobile ===== */
   .window.is-mobile{
     position:fixed !important;
     left:0 !important; top:0 !important;
@@ -67,22 +99,38 @@
     box-shadow:0 0 0 2px #000, 0 0 0 3px #fff, 0 0 0 5px #000;
   }
   .window.is-mobile .titlebar{
-    height:14px;
-    padding:2px 6px 3px;
-    cursor:default; 
+    height:18px;
+    padding:3px 8px 4px;
+    cursor:default;
+    font-size:16px;
   }
   .window.is-mobile .content{
-    overflow:auto; 
+    overflow:auto;
     -webkit-overflow-scrolling: touch;
+    padding:12px;
+    font-size:15px;
   }
 
   @media (max-width:700px){
+    html, body{ font-size:16px; }
+
     .titlebar{
       border-style: solid;
       border-color: black;
       border-top-width: 5px;
       border-left-width: 7px;
     }
+
+    .bio-banner{ height:140px; }
+
+    .footer-grid{
+      grid-template-columns:1fr;
+      gap:10px;
+    }
+
+    .text-bio{ font-size:14px; }
+
+    .ico{ width:16px; height:16px; }
   }
 </style>
 </head>
@@ -90,85 +138,61 @@
 <div id="desktop">
 
   <!-- BIO WINDOW -->
-  <div class="window" id="bio-window" style="left:50%; top:50%; width:600px; height:480px; transform:translate(-50%,-50%)">
-    <div class="titlebar"><span class="title">Bea / ZG9K</span></div>
+  <div class="window" id="bio-window" style="left:50%; top:50%; width:600px; height:auto; transform:translate(-50%,-50%)">
+    <div class="titlebar" style="pointer-events: auto; cursor: move;"><span class="title">Bea / ZG9K</span></div>
 
     <div class="content" style="overflow-y:auto">
-      <p style="font-style:italic; color:#888;">Yes ZG9K is a mouthful, just say ZG (zed-gee) or Z (zed) if you want to! <3</p>
+
+      <!-- Banner image placeholder -->
+
+      <p style="font-style:italic; color:#888;">Yes ZG9K is a mouthful, just say ZG (zed-gee) or Z (zed) if you want to! &lt;3</p>
+
+      <!-- Actual text bio -->
+
+
       <p><strong>Names:</strong> Bea, Max</p>
       <p><strong>Pronouns:</strong> they/them, she/her</p>
-     
-      <p><strong>Age:</strong> 18</p>
+      <p><strong>Age:</strong> 19</p>
 
       <p><strong>Flags:</strong>
         <span style="background:linear-gradient(to bottom,#d60270 0 40%,#9b4f96 40% 60%,#0038a8 60% 100%);
           display:inline-block;width:40px;height:12px;vertical-align:middle;margin:0 4px"></span> Bisexual
-<span style="background:linear-gradient(to bottom,
-  #5BCEFA 0 20%,   /* Light blue */
-  #F5A9B8 20% 40%, /* Pink */
-  #fff 40% 60%,    /* White */
-  #F5A9B8 60% 80%, /* Pink */
-  #5BCEFA 80% 100% /* Light blue */
-);
-display:inline-block;width:40px;height:12px;vertical-align:middle;margin:0 4px"></span> Trans
-
-
-
-
+        <span style="background:linear-gradient(to bottom,
+          #5BCEFA 0 20%,
+          #F5A9B8 20% 40%,
+          #fff 40% 60%,
+          #F5A9B8 60% 80%,
+          #5BCEFA 80% 100%
+        );display:inline-block;width:40px;height:12px;vertical-align:middle;margin:0 4px"></span> Trans
+      </p><br>
+            <div class="text-bio">
+        hi! i'm bea!! i'm an architecture student at RMIT in melbourne, and a part-time AI ethics & coding teacher. i run solarion events (minecraft roleplay stuff), and have a bunch of other projects I've worked on as a narrative designer & builder!
+      </div>
       <hr>
-
-      <p><strong>Words (legend):</strong><br>
-        <img class="ico" src="assets/icons/heart.png" alt="heart"> good |
-        <img class="ico" src="assets/icons/thumb.png" alt="thumb"> okay |
-        <img class="ico" src="assets/icons/people.png" alt="people"> close friends |
-        <img class="ico" src="assets/icons/x.png" alt="x"> not at all
-      </p>
-
-      <table style="width:100%">
-        <tr>
-          <td valign="top" style="padding-right:10px">
-            <u>personal nouns</u><br>
-            
-            <img class="ico" src="assets/icons/heart.png"  alt=""> person<br>
-            <img class="ico" src="assets/icons/thumb.png"  alt=""> girl<br>
-            <img class="ico" src="assets/icons/thumb.png"  alt=""> dude<br>
-            <img class="ico" src="assets/icons/thumb.png"  alt=""> boy<br>
-          </td>
-          <td valign="top" style="padding-right:10px">
-            <u>adjectives</u><br>
-            <img class="ico" src="assets/icons/heart.png"   alt=""> cute<br>
-            <img class="ico" src="assets/icons/heart.png"   alt=""> pretty<br>
-            <img class="ico" src="assets/icons/people.png"  alt=""> beautiful<br>
-            <img class="ico" src="assets/icons/thumb.png"   alt=""> handsome<br>
-            <img class="ico" src="assets/icons/x.png"       alt=""> sexy<br>
-            <img class="ico" src="assets/icons/x.png"       alt=""> hot
-          </td>
-          <td valign="top">
-            <u>relative nouns</u><br>
-            <img class="ico" src="assets/icons/heart.png"   alt=""> friend<br>
-            <img class="ico" src="assets/icons/heart.png"   alt=""> partner<br>
-            <img class="ico" src="assets/icons/thumb.png"   alt=""> girlfriend<br>
-            <img class="ico" src="assets/icons/thumb.png"   alt=""> boyfriend
-          </td>
-        </tr>
-      </table>
+      <div class="bio-banner" role="img" aria-label="Banner image placeholder"></div>
 
       <hr>
 
       <div class="footer-grid">
         <div>
-          <p><strong>Socials:</strong></p>
+          <p><strong>Projects:</strong></p>
           <ul class="projects-list">
-            <li>* <a href="https://www.instagram.com/beanie7__/"target="_blank">Instagram | @beanie7__</a></li>
-            <li>* <a href="#">Discord | @zg9k</a></li>
-            <li>* <a href="https://x.com/zg9k_"target="_blank">Twt | @zg9k_</a></li>
+            <li>* <a href="" target="_blank">Solarion Murder Mystery</a></li>
+            <li>* <a href="" target="_blank">Solarion Zombies</a></li>
+            <li>* <a href="" target="_blank">Schpood's Hamilton Lighting & Build</a></li>
+            <li>* <a href="" target="_blank">Solarion Camp</a></li>
+            <li>* <a href="" target="_blank">Evergreen Events Builder</a></li>
+            <li>* <a href="" target="_blank">Decayed & Decrepit Designer</a></li>
+
           </ul>
         </div>
         <div>
-          <p><strong>Links:</strong></p>
+
+                    <p><strong>Socials:</strong></p>
           <ul class="projects-list">
-            <li>* <a href="https://cake.avris.it/rC4" target="_blank">Attraction Layer Cake</a></li>
-            <li>* <a href="https://www.16personalities.com/infp-personality" target="_blank">Infp Personality</a></li>
+            <li>* <a href="https://www.instagram.com/beanie7__/" target="_blank">Instagram | @beanie7__</a></li>
+            <li>* <a href="#">Discord | @zg9k</a></li>
+            <li>* <a href="https://x.com/zg9k_" target="_blank">Twt | @zg9k_</a></li>
           </ul>
         </div>
       </div>
@@ -182,12 +206,10 @@ display:inline-block;width:40px;height:12px;vertical-align:middle;margin:0 4px">
   const getMaxZ = () =>
     [...desktop.children].reduce((m, el) => Math.max(m, +el.style.zIndex || 0), 0);
 
-  // ========== Drag logic (desktop only) ==========
   function initWindow(win){
     const titlebar = win.querySelector(".titlebar");
     win.addEventListener("mousedown", () => win.style.zIndex = getMaxZ() + 1);
 
-    // keep these in a closure so we can enable/disable them
     let move, up, pointerDown;
 
     function enableDrag(){
@@ -227,36 +249,29 @@ display:inline-block;width:40px;height:12px;vertical-align:middle;margin:0 4px">
       if (up)   win.removeEventListener("pointerup", up);
     }
 
-    // expose to the responsive controller
     win.__enableDrag = enableDrag;
     win.__disableDrag = disableDrag;
   }
 
-  // ========== Responsive controller ==========
   function applyResponsive(){
     const isMobile = window.matchMedia("(max-width: 700px)").matches;
     document.querySelectorAll('.window').forEach(win=>{
       if (isMobile){
-        // go fullscreen and disable drag
         win.classList.add('is-mobile');
         win.style.zIndex = 1;
         if (win.__disableDrag) win.__disableDrag();
       } else {
-        // restore desktop behavior and re-enable drag
         win.classList.remove('is-mobile');
         if (win.__enableDrag) win.__enableDrag();
       }
     });
-    // Allow the page to scroll the inner content on mobile while keeping outer fixed
-    document.body.style.overflow = isMobile ? "hidden" : "hidden"; // unchanged global; inner scroll handles it
   }
 
   window.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.window').forEach(initWindow);
-    applyResponsive(); // initial pass
+    applyResponsive();
   });
   window.addEventListener('resize', applyResponsive);
   window.matchMedia("(max-width: 700px)").addEventListener('change', applyResponsive);
 </script>
-</body>
-</html>
+</body></html>
