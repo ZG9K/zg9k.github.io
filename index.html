@@ -457,6 +457,7 @@ const linkMap = {
   aimemory: "https://zg9k.github.io/templates/AImemory.py",
   survival: "https://zg9k.github.io/templates/survivalgame.py",
   images: "https://zg9k.github.io/templates/imagegen2.py",
+  final: "https://zg9k.github.io/templates/final.py"
 };
 
 const funcMap = {
@@ -537,6 +538,19 @@ const funcMap = {
       x: 100, y: 100, w: 500, h: 250
     });
     updateStatus("[err] blue screen invoked.");
+  },
+
+  programs: () => {
+  window.open("https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user", "_blank");
+  window.open("https://www.python.org/ftp/python/pymanager/python-manager-26.0.msix", "_blank");
+  createWindow({
+    title: "install",
+    html: `<p class="highlight">[sys] fetching dependencies...</p>
+           <p>[dl] vscode stable → win32-x64</p>
+           <p>[dl] python manager → 26.0.msix</p>`,
+    x: 200, y: 200, w: 280, h: 130
+  });
+  updateStatus("[ok] downloads initiated.");
   },
 
   emma: () => {
@@ -1373,3 +1387,4 @@ document.addEventListener("keydown", (e) => {
 </script>
 </body>
 </html>
+
