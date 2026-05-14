@@ -212,6 +212,50 @@
     const titlebar = win.querySelector(".titlebar");
     win.addEventListener("mousedown", () => win.style.zIndex = getMaxZ() + 1);
 
+   let move, up, pointerDown;
+
+    function enableDrag(){
+      titlebar.style.pointerEvents = "auto";
+      titlebar.style.cursor = "move";
+      pointerDown = (e)=>{
+        if (e.button !== 0) return;
+        const ox = e.clientX - win.offsetLeft;
+        const oy = e.clientY - win.offsetTop;
+        win.setPointerCapture(e.pointerId);
+        win.style.zIndex = getMaxZ() + 1;
+
+        move = (ev)=>{
+          const dx = ev.clientX - ox;
+          const dy = ev.clientY - oy;
+          const maxX = window.innerWidth  - win.offsetWidth;
+          const maxY = window.innerHeight - win.offsetHeight;
+          win.style.left = Math.max(0, Math.min(dx, maxX)) + 'px';
+          win.style.top  = Math.max(0, Math.min(dy, maxY)) + 'px';
+        };
+        up = (ev)=>{
+          win.releasePointerCapture(ev.pointerId);
+          win.removeEventListener("pointermove", move);
+          win.removeEventListener("pointerup",    up);
+        };
+        win.addEventListener("pointermove", move);
+        win.addEventListener("pointerup",    up);
+      };
+      titlebar.addEventListener("pointerdown", pointerDown);
+    }
+
+    function disableDrag(){
+      titlebar.style.pointerEvents = "none";
+      titlebar.style.cursor = "default";
+      if (pointerDown) titlebar.removeEventListener("pointerdown", pointerDown);
+      if (move) win.removeEventListener("pointermove", move);
+      if (up)   win.removeEventListener("pointerup", up);
+    }
+
+    win.__enableDrag = enableDrag;
+    win.__disableDrag = disableDrag;
+  }
+
+
   function applyResponsive(){
     const isMobile = window.matchMedia("(max-width: 700px)").matches;
     document.querySelectorAll('.window').forEach(win=>{
