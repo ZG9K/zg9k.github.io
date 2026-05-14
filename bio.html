@@ -151,10 +151,10 @@
 
 
       <p><strong>Name(s):</strong> Bea</p>
-      <p><strong>Pronouns:</strong> they/them, she/her</p>
+      <p><strong>Pronouns:</strong> they/them</p>
       <p><strong>Age:</strong> 19</p>
 
-      <p><strong>Flags:</strong>
+      <!--<p><strong>Flags:</strong>
         <span style="background:linear-gradient(to bottom,#d60270 0 40%,#9b4f96 40% 60%,#0038a8 60% 100%);
           display:inline-block;width:40px;height:12px;vertical-align:middle;margin:0 4px"></span> Bisexual
         <span style="background:linear-gradient(to bottom,
@@ -164,9 +164,9 @@
           #F5A9B8 60% 80%,
           #5BCEFA 80% 100%
         );display:inline-block;width:40px;height:12px;vertical-align:middle;margin:0 4px"></span> Trans
-      </p><hr>
+      </p>--><hr>
             <div class="text-bio">
-        hi! i'm bea!! i'm an architecture student and a part-time AI ethics & coding teacher. i run solarion events (minecraft roleplay stuff), and have a bunch of other projects I've worked on as a narrative designer & builder!
+        hi! i'm bea!! i'm an architecture student and a part-time AI ethics & coding teacher. i design narrative experiences, and have a bunch of minecraft projects I've worked on as a narrative designer & builder!
       </div>
       <hr>
       <div class="bio-banner">
@@ -179,12 +179,12 @@
         <div>
           <p><strong>Projects:</strong></p>
           <ul class="projects-list">
-            <li>* <a href="" target="_blank">Solarion Murders Event</a></li>
-            <li>* <a href="" target="_blank">Solarion Zombies Event</a></li>
+            <li>* <a href="" target="_blank">Murder at Solarion Manor</a></li>
+            <li>* <a href="" target="_blank">City of Ashes</a></li>
             <li>* <a href="" target="_blank">Schpood's Hamilton Tech Lead & Build</a></li>
-            <li>* <a href="" target="_blank">Solarion Camp Event</a></li>
+            <li>* <a href="" target="_blank">The Mystery of Camp Solarion</a></li>
             <li>* <a href="" target="_blank">Evergreen Events Builder</a></li>
-            <li>* <a href="" target="_blank">Decayed & Decrepit Designer</a></li>
+            <li>* <a href="" target="_blank">Decayed & Decrepit Designer & Builder</a></li>
 
           </ul>
         </div>
@@ -211,49 +211,6 @@
   function initWindow(win){
     const titlebar = win.querySelector(".titlebar");
     win.addEventListener("mousedown", () => win.style.zIndex = getMaxZ() + 1);
-
-    let move, up, pointerDown;
-
-    function enableDrag(){
-      titlebar.style.pointerEvents = "auto";
-      titlebar.style.cursor = "move";
-      pointerDown = (e)=>{
-        if (e.button !== 0) return;
-        const ox = e.clientX - win.offsetLeft;
-        const oy = e.clientY - win.offsetTop;
-        win.setPointerCapture(e.pointerId);
-        win.style.zIndex = getMaxZ() + 1;
-
-        move = (ev)=>{
-          const dx = ev.clientX - ox;
-          const dy = ev.clientY - oy;
-          const maxX = window.innerWidth  - win.offsetWidth;
-          const maxY = window.innerHeight - win.offsetHeight;
-          win.style.left = Math.max(0, Math.min(dx, maxX)) + 'px';
-          win.style.top  = Math.max(0, Math.min(dy, maxY)) + 'px';
-        };
-        up = (ev)=>{
-          win.releasePointerCapture(ev.pointerId);
-          win.removeEventListener("pointermove", move);
-          win.removeEventListener("pointerup",    up);
-        };
-        win.addEventListener("pointermove", move);
-        win.addEventListener("pointerup",    up);
-      };
-      titlebar.addEventListener("pointerdown", pointerDown);
-    }
-
-    function disableDrag(){
-      titlebar.style.pointerEvents = "none";
-      titlebar.style.cursor = "default";
-      if (pointerDown) titlebar.removeEventListener("pointerdown", pointerDown);
-      if (move) win.removeEventListener("pointermove", move);
-      if (up)   win.removeEventListener("pointerup", up);
-    }
-
-    win.__enableDrag = enableDrag;
-    win.__disableDrag = disableDrag;
-  }
 
   function applyResponsive(){
     const isMobile = window.matchMedia("(max-width: 700px)").matches;
